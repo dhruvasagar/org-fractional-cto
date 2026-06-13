@@ -1,0 +1,374 @@
+#+title: org-fractional-cto
+#+subtitle: An opinionated Org-mode workflow for running fractional-CTO engagements
+#+options: toc:2 num:nil
+
+[[https://www.gnu.org/licenses/gpl-3.0][https://img.shields.io/badge/license-GPLv3-blue.svg]]
+
+* What it is
+
+=org-fractional-cto= turns Org mode into an operating system for running
+technical client engagements as a *fractional CTO* or *engagement director*.
+
+It is opinionated: it encodes a particular way of working — onboard a client,
+discover the system, make and record decisions, run a delivery cadence,
+delegate and track work, manage people, and grow the account — and gives you
+the Org scaffolding to do all of it without leaving Emacs.
+
+Three moving parts, one workflow:
+
+1. *Onboarding* — =org-fractional-cto-new-client= scaffolds a complete
+   per-client workspace in seconds (operational hub, standup, context file).
+2. *Capture* — a single =e= prefix (~C-c c e ...~) routes every kind of note —
+   discovery, ADRs, risks, commitments, delegated tasks, blockers,
+   retrospectives, QBRs, innovation ideas — straight into the active client's
+   file. No per-client key prefixes.
+3. *Dashboard* — a per-client agenda view (~C-c a e~) surfacing delegated work
+   awaiting response, blockers, open actions, commitments, and active risks.
+
+It is *multi-client by design*. Set an "active client" once per session and
+every capture and the dashboard follow it. Switch clients with one command.
+
+* Why it is built this way
+
+- *One =e= prefix, not one prefix per client.* Adding a client never means
+  editing capture config. The active-client variable does the routing.
+- *The dashboard is a real Org agenda command* (registered under ~C-c a e~), not
+  a bespoke function. It therefore inherits everything the agenda dispatcher
+  gives you: it appears in the ~C-c a~ menu, it is exportable, filterable with
+  =/=, refreshable with =r=, and sticky-agenda aware. It stays per-client by
+  computing =org-agenda-files= from the active client at run time.
+- *Captures file directly into the client hub*, not into a refile inbox. Open
+  =<client>.org= and the whole engagement is there, organised by section.
+- *Templates are bundled and overridable.* Everything ships with the package;
+  point =org-fractional-cto-template-directory= at your own folder to customise.
+
+* Installation
+
+Requires Emacs 27.1+ and Org 9.4+.
+
+** use-package (from a local clone)
+
+#+begin_src emacs-lisp
+(use-package org-fractional-cto
+  :load-path "~/src/org-fractional-cto"
+  :after org
+  :custom
+  (org-fractional-cto-clients-directory "~/org/clients")
+  (org-fractional-cto-author "Your Name")
+  :config
+  (org-fractional-cto-setup))
+#+end_src
+
+** Manual
+
+#+begin_src emacs-lisp
+(add-to-list 'load-path "~/src/org-fractional-cto")
+(require 'org-fractional-cto)
+(setq org-fractional-cto-clients-directory "~/org/clients")
+(org-fractional-cto-setup)
+#+end_src
+
+=org-fractional-cto-setup= installs the captures, registers the dashboard,
+adds your client directories to =org-agenda-files=, and binds the command map
+(see [[*Key bindings & legend][Key bindings]]).
+
+* Core concepts
+
+** The active client
+
+Most of the workflow is scoped to one client at a time.
+
+| Command                                  | Effect                                  |
+|------------------------------------------+-----------------------------------------|
+| =M-x org-fractional-cto-set-active-client= | Pick the client for this session        |
+| =M-x org-fractional-cto-clear-active-client= | Go back to being prompted per capture   |
+| =M-x org-fractional-cto-switch-client=     | Set active *and* open its dashboard     |
+
+With an active client set, ~C-c c e ...~ and ~C-c a e~ never prompt. With none
+set, they prompt you to choose — nothing breaks, it is just one extra step.
+
+** The client hub
+
+Each client owns a directory:
+
+#+begin_example
+<clients-directory>/
+  acme/
+    acme.org      ← operational hub: one section per capture type
+    standup.org   ← per-client standup template
+    CONTEXT.md    ← domain glossary, people, tech stack (load in AI sessions)
+#+end_example
+
+The hub's sections, the capture targets, and the dashboard all agree by
+construction — they are generated from one section list.
+
+* Quick start
+
+1. =M-x org-fractional-cto-new-client= → name = "Acme Corp", slug = "acme".
+2. Fill in the =CONTEXT.md= that opens.
+3. =M-x org-fractional-cto-set-active-client= → =acme=.
+4. Capture: ~C-c c e w~ (an action), ~C-c c e g~ (delegate a task), ~C-c c e d~
+   (a discovery session)…
+5. Review: ~C-c a e~ opens the Acme dashboard.
+
+* Capture reference
+
+All engagement captures are under ~C-c c e~. They file directly into the active
+client's hub.
+
+** Action tracking & delegation
+| Key  | Captures            | Files to        |
+|------+---------------------+-----------------|
+| =ew= | Action item (TODO)  | Actions         |
+| =eg= | Delegate (WAITING)  | Delegations     |
+| =eb= | Blocker / escalation | Blockers       |
+| =eW= | Weekly review       | Weekly Reviews  |
+| =eP= | Person / team note  | People          |
+
+** Relationship & communication
+| Key  | Captures            | Files to            |
+|------+---------------------+---------------------|
+| =es= | Standup             | Standup Notes       |
+| =em= | Client meeting      | Meeting Notes       |
+| =ei= | Internal sync       | Internal Syncs      |
+| =ec= | Commitment          | Commitments         |
+| =ep= | Stakeholder profile | Stakeholder Profiles |
+| =eh= | Client health check | Health Checks       |
+| =eM= | Metrics snapshot    | Health Checks       |
+| =eq= | QBR                 | QBRs                |
+
+** Risk & delivery
+| Key  | Captures            | Files to        |
+|------+---------------------+-----------------|
+| =er= | Risk                | Risks           |
+| =ee= | Scope change        | Scope Changes   |
+| =ef= | Post-mortem         | Post-Mortems    |
+| =eR= | Retrospective       | Retrospectives  |
+
+A *post-mortem* (=ef=) is reactive — you write it because something failed. A
+*retrospective* (=eR=) is routine — you run it every sprint whether or not
+anything broke. Keep them separate.
+
+** Technical
+| Key  | Captures              | Files to               |
+|------+-----------------------+------------------------|
+| =ed= | Discovery session     | Discovery Sessions     |
+| =ek= | Tech spike            | Discovery Sessions     |
+| =ea= | ADR                   | Architecture Decisions |
+| =eD= | Quick decision        | Architecture Decisions |
+| =eA= | Architecture review   | Architecture Reviews   |
+| =ev= | Vendor evaluation     | Vendor Evaluations     |
+| =et= | Technical debt item   | Technical Debt         |
+| =ex= | Security finding      | Security Findings      |
+| =en= | Innovation idea       | Innovation Pipeline    |
+| =eI= | Innovation meeting    | Innovation Pipeline    |
+
+* The dashboard
+
+~C-c a e~ (or =M-x org-fractional-cto-dashboard=) opens the active client's
+board. Blocks, in order:
+
+1. *Next 7 days* — scheduled items and deadlines.
+2. *Delegated — awaiting response* — everything in the =WAITING= state, sorted
+   by deadline. This is "work I am owed."
+3. *Blockers & escalations* — anything tagged =BLOCKER=.
+4. *Open actions* — your =TODO=/=NEXT=/=IN-PROGRESS= work, with blockers and
+   commitments filtered out so they are not double-listed.
+5. *Commitments* — promises made, by you or the client.
+6. *Active risks* — the risk register (the section container is skipped, so you
+   see only the risks themselves).
+
+Reorder or extend the blocks with =org-fractional-cto-dashboard-blocks=.
+
+=M-x org-fractional-cto-switch-client= sets a different client active and opens
+their board in one step — the fast path for context switching.
+
+* Key bindings & legend
+
+** Key bindings
+
+Under the agenda dispatcher (=C-c a=):
+
+| Key       | Action                                    |
+|-----------+-------------------------------------------|
+| ~C-c a e~ | Active-client dashboard                   |
+| ~C-c a t~ | All TODOs across clients                  |
+| ~C-c a m TAG~ | Match a tag across clients (see below) |
+
+Under the command prefix (=org-fractional-cto-keymap-prefix=, default =C-c f=):
+
+| Key       | Action                                    |
+|-----------+-------------------------------------------|
+| ~C-c f n~ | New client (onboard)                      |
+| ~C-c f s~ | Set active client                         |
+| ~C-c f k~ | Clear active client                       |
+| ~C-c f d~ | Dashboard for active client               |
+| ~C-c f w~ | Switch client + open dashboard            |
+
+Captures: ~C-c c e~ then the key from the [[*Capture reference][capture reference]].
+
+** TODO keywords
+
+Scaffolded client files declare:
+
+#+begin_example
+#+TODO: TODO NEXT IN-PROGRESS WAITING | DONE CANCELLED
+#+end_example
+
+| Keyword       | Meaning in this workflow                                |
+|---------------+---------------------------------------------------------|
+| =TODO=        | Open action you own                                     |
+| =NEXT=        | The next physical action (GTD-style)                    |
+| =IN-PROGRESS= | Actively being worked                                   |
+| =WAITING=     | *Delegated* — owned by someone else, you are tracking it |
+| =DONE=        | Completed                                               |
+| =CANCELLED=   | Dropped                                                 |
+
+=WAITING= is load-bearing: it is what separates "things I owe" from "things I
+am owed," and it feeds the dashboard's *Delegated* block.
+
+** Tags
+
+Every capture is tagged with the client tag (e.g. =:ACME:=) plus a *type tag*.
+The type tags are what the dashboard and =C-c a m= search on:
+
+| Tag           | Section / capture           |
+|---------------+-----------------------------|
+| =DELEGATED=   | Delegations (=eg=)          |
+| =BLOCKER=     | Blockers (=eb=)             |
+| =COMMITMENT=  | Commitments (=ec=)          |
+| =RISK=        | Risks (=er=)                |
+| =REVIEW=      | Weekly Reviews (=eW=)       |
+| =PEOPLE=      | People (=eP=)               |
+| =MEETING=     | Meeting Notes (=em=)        |
+| =STANDUP=     | Standup Notes (=es=)        |
+| =INTERNAL=    | Internal Syncs (=ei=)       |
+| =DISCOVERY=   | Discovery Sessions (=ed=, =ek=) |
+| =STAKEHOLDER= | Stakeholder Profiles (=ep=) |
+| =ADR=         | Architecture Decisions (=ea=, =eD=) |
+| =ARCHREVIEW=  | Architecture Reviews (=eA=) |
+| =VENDOR=      | Vendor Evaluations (=ev=)   |
+| =TECHDEBT=    | Technical Debt (=et=)       |
+| =SECURITY=    | Security Findings (=ex=)    |
+| =HEALTH=      | Health Checks (=eh=, =eM=)  |
+| =QBR=         | QBRs (=eq=)                 |
+| =INNOVATION=  | Innovation Pipeline (=en=, =eI=) |
+| =SCOPE=       | Scope Changes (=ee=)        |
+| =POSTMORTEM=  | Post-Mortems (=ef=)         |
+| =RETRO=       | Retrospectives (=eR=)       |
+
+Example lookups: ~C-c a m RISK~ (all risks across clients), ~C-c a m DELEGATED~
+(everything you have delegated anywhere).
+
+** Priorities
+
+Standard Org priorities apply to actionable items:
+
+| Priority | Use                                          |
+|----------+----------------------------------------------|
+| =[#A]=   | Blocking or time-critical (blockers default here) |
+| =[#B]=   | Important, not urgent                        |
+| =[#C]=   | Nice to have / backlog                       |
+
+* New client onboarding
+
+=M-x org-fractional-cto-new-client= (or ~C-c f n~) asks for a display name and a
+slug, then creates:
+
+- =<slug>/<slug>.org= — the hub, with every section pre-created and tagged.
+- =<slug>/standup.org= — a standup template you can tailor (rename the streams
+  to your actual team; the standup capture reads this file).
+- =<slug>/CONTEXT.md= — fill this with domain vocabulary, key people, and the
+  tech stack. Load it at the start of any AI coding session for that client.
+
+The new client is added to =org-agenda-files= immediately — no restart.
+
+* Customisation
+
+| Variable                                  | Default                          | Purpose                                   |
+|-------------------------------------------+----------------------------------+-------------------------------------------|
+| =org-fractional-cto-clients-directory=    | =<org-directory>/clients=        | Where client engagements live             |
+| =org-fractional-cto-template-directory=   | bundled =templates/=             | Capture templates (override to customise) |
+| =org-fractional-cto-author=               | =user-full-name=                 | =#+AUTHOR= in scaffolded files            |
+| =org-fractional-cto-agenda-key=           | ="e"                             | Dispatcher key for the dashboard          |
+| =org-fractional-cto-keymap-prefix=        | ="C-c f"                         | Command-map prefix (nil to disable)       |
+| =org-fractional-cto-dashboard-blocks=     | (6 blocks)                       | The dashboard's agenda blocks             |
+
+To customise a single template, copy the bundled =templates/= folder somewhere,
+edit the file you care about, and point =org-fractional-cto-template-directory=
+at your copy.
+
+* Working with AI session skills (optional)
+
+This package manages the *record* of an engagement. When you also do hands-on
+implementation with an AI agent (Claude Code, etc.), two skill packs pair well
+with it. They are entirely optional and live in your *code* repositories, not
+here — the connection is the =CONTEXT.md= file plus the captured artifacts.
+
+** How they associate with the current work item
+
+There is no magic binding between an Org heading and a skill. The association
+is deliberate and manual, and that is the point:
+
+1. *Pick the work item* in Org — an ADR you are about to write (=ea=), a tech
+   spike (=ek=), a discovery session (=ed=), a security review (=ex=).
+2. *Open the client's code repo* in your AI tool and load its =CONTEXT.md= so
+   the agent has the domain vocabulary.
+3. *Run the matching skill* (below) in that repo's AI session.
+4. *Capture the result* back into Org with the relevant =e= key.
+
+So the flow is: Org tells you /what/ and /why/; the skill helps you /do/ it; Org
+records the /outcome/.
+
+** [[https://github.com/mattpocock/skills][mattpocock/skills]] — calibration before a session
+
+Install in the client repo: =npx skills@latest add mattpocock/skills=, then run
+=/setup-matt-pocock-skills= once.
+
+| Before this capture | Run this skill   | Why                                       |
+|---------------------+------------------+-------------------------------------------|
+| Discovery (=ed=)    | =/grill-me=      | Surface your assumptions before you anchor the interview |
+| Discovery on a doc  | =/grill-with-docs= | Same, anchored to an SOW/PRD            |
+| Any unfamiliar area | =/zoom-out=      | Map the system before touching it         |
+| Session handoff     | =/handoff=       | Compact context so the next session starts fresh |
+
+** [[https://github.com/garrytan/gstack][gstack]] — structure during execution
+
+Install globally: =git clone https://github.com/garrytan/gstack ~/.claude/skills/gstack && ./setup=.
+
+| Before / during this capture | Run this skill | Why                                     |
+|------------------------------+----------------+-----------------------------------------|
+| ADR / Quick decision (=ea=, =eD=) | =/office-hours= | Six forcing questions to challenge your framing |
+| Architecture review (=eA=)   | =/plan-eng-review= | Engineering review with diagrams      |
+| Security finding (=ex=)      | =/cso=          | OWASP Top 10 + STRIDE threat model      |
+| Retrospective (=eR=)         | =/retro=        | Facilitation prompt for the sprint retro |
+| After any implementation     | =/review=       | Staff-engineer audit                    |
+
+*Rule of thumb:* run =/office-hours= (gstack) or =/grill-me= (mattpocock) at the
+/start/ of any non-trivial session. The sessions where you feel you least need
+them are usually the ones where you most do.
+
+* The methodology in brief
+
+The package encodes a role that operates across several modes ("hats"). The
+discipline is not to switch hats mid-session.
+
+| Hat                 | When                              | Captures           |
+|---------------------+-----------------------------------+--------------------|
+| Engagement Director | Client calls, QBRs, scope         | =em ec eq eh ee=   |
+| Discovery           | Stream interviews, system mapping | =ed ek=            |
+| Fractional CTO      | ADRs, roadmap, build-vs-buy       | =ea eD eA ev=      |
+| People Manager      | Delegation, standups, retros      | =eg eb eW eP es eR= |
+| QA / Security       | Coverage, compliance posture      | =ex et=            |
+
+A typical cadence:
+
+- *Daily*: attend standups (=es=), capture blockers (=eb=) as they surface.
+- *Weekly*: delegation + pulse review (=eW=); internal sync (=ei=) before any
+  client-facing comms; client sync (=em=); sprint retro (=eR=).
+- *Monthly*: client health check (=eh=); review the innovation pipeline (=en=).
+- *Quarterly*: QBR (=eq=); architecture health review (=eA=).
+
+* License
+
+GPL-3.0-or-later. See [[file:LICENSE][LICENSE]].

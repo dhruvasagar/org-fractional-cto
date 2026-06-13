@@ -1,0 +1,31 @@
+* RETROSPECTIVE %^{Sprint / period}  :%(org-capture-get :ofc-client-tag):RETRO:
+%U
+Facilitator: %^{Facilitator}
+Attendees: %^{Attendees}
+
+** Sprint Goals vs. Actuals
+| Goal | Committed | Delivered | Notes |
+|------+-----------+-----------+-------|
+|      |           |           |       |
+
+** What Went Well
+(Keep doing — name people, call out wins)
+- %?
+
+** What Didn't Go Well
+(Process problems, not blame — focus on the system)
+-
+
+** What We'll Change
+(Concrete, owned, time-boxed — each becomes a TODO)
+| Change | Owner | By When |
+|--------+-------+---------|
+|        |       |         |
+
+** Team Health Signals
+- Capacity / load:
+- Morale / engagement:
+- Anything to escalate:
+
+** Action Items
+- [ ]

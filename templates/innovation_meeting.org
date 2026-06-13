@@ -1,0 +1,59 @@
+* INNOVATION MEETING %^{Date|%<%Y-%m-%d>} :ENGAGEMENT:INNOVATION:MEETING:
+%U
+Client: %^{Client}
+Attendees: %^{Attendees}
+Session context: %^{What triggered or framed this session}
+
+** Summary Table
+| # | Idea | Category | Effort | Business Case | Status |
+|---+------+----------+--------+---------------+--------|
+|   |      |          |        |               | Idea   |
+
+** Ideas
+(Add one *** subsection per idea; duplicate the block as needed)
+
+*** Idea: %^{First idea title}
+Category: %^{Category|AI/ML|Data|Platform|Integration|UX|Music Tech|Compliance|Other}
+Raised by: %^{Who raised it}
+Effort: %^{Effort|Low|Medium|High}
+
+**** The Opportunity
+(Business framing first — what problem does this solve or what value does it create?)
+%?
+
+**** The Technology
+(What would need to be built or integrated?)
+
+**** Why This Client / Why Now
+(Why does this make sense for this engagement at this stage?)
+
+**** Constraints & Risks
+
+**** Next Step
+%^{Next|Explore further|Prototype|Propose to client|Park|Reject}
+
+*** Idea: (copy this block for each additional idea)
+Category:
+Raised by:
+Effort:
+
+**** The Opportunity
+
+**** The Technology
+
+**** Why This Client / Why Now
+
+**** Constraints & Risks
+
+**** Next Step
+
+** Themes & Patterns Noticed
+(What problem space keeps surfacing? What do these ideas have in common?)
+
+** Ideas to Develop Before Next Meeting
+- [ ]
+
+** Follow-up Actions
+| Action | Owner | Due |
+|--------+-------+-----|
+|        |       |     |

@@ -1,0 +1,25 @@
+* STANDUP %^{Date|%<%Y-%m-%d>}  :%(org-capture-get :ofc-client-tag):STANDUP:
+%U
+
+** Stream 1 — Lead: (TBD)
+- Shipped: %?
+- Next:
+- Blockers:
+
+** Stream 2 — Lead: (TBD)
+- Shipped:
+- Next:
+- Blockers:
+
+** Stream 3 — Lead: (TBD)
+- Shipped:
+- Next:
+- Blockers:
+
+** Key Metrics This Week
+| Metric | This Week | Last Week | Trend |
+|--------+-----------+-----------+-------|
+|        |           |           |       |
+
+** Escalations / Actions
+- [ ]

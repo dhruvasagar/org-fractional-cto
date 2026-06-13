@@ -1,0 +1,13 @@
+* WAITING %^{Delegated task}  :%(org-capture-get :ofc-client-tag):DELEGATED:
+DEADLINE: %^{Expected delivery}t
+SCHEDULED: %^{Check-in / follow-up}t
+:PROPERTIES:
+:ASSIGNED_TO: %^{Assigned to}
+:DELEGATED_ON: %U
+:END:
+
+*Context:* %^{What they need to deliver and why}
+
+*Success criteria:* %?
+
+*Escalate if:* no update by scheduled check-in date.

@@ -1,0 +1,35 @@
+* MEETING %^{Client} - %^{Meeting title} :ENGAGEMENT:MEETING:
+%U
+Attendees (Client): %^{Client attendees}
+Attendees (Us): %^{Our attendees}
+
+** Agenda / Context
+%?
+
+** Discussion
+
+** Decisions Made
+
+** Technical Decisions & Specifications
+(Capture any technical choices, constraints, or specs surfaced — link to ADR if significant)
+| Decision | Rationale | Owner | ADR Needed? |
+|----------+-----------+-------+-------------|
+|          |           |       |             |
+
+- Open technical questions raised:
+- Anything requiring a spike or investigation:
+
+** Commitments Made (by us)
+- [ ]
+
+** Commitments Made (by client)
+- [ ]
+
+** Action Items
+| Action | Owner | Due |
+|--------+-------+-----|
+|        |       |     |
+
+** Follow-up
+DEADLINE: %^{Follow-up by}t
+Send meeting summary to client within 2 hours.

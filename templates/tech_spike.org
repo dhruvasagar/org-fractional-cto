@@ -1,0 +1,43 @@
+* SPIKE: %^{Question being investigated} :ENGAGEMENT:SPIKE:
+%U
+Client: %^{Client}
+Stream / Area: %^{Area}
+Time-box: %^{Time allocated|Half day|1 day|2 days|3 days}
+Triggered by: %^{What prompted this — decision needed, blocker, unknown risk}
+
+** Hypothesis
+What do you expect to find or confirm?
+%?
+
+** Approach
+What steps did you take? What did you look at?
+
+** Findings
+
+*** What Is True
+
+*** What Is Uncertain
+
+*** What Is False (assumptions disproved)
+
+** Unknowns Remaining
+(What couldn't be answered in this time-box?)
+
+** Recommendation
+%^{Recommendation|Build|Buy|Defer|Spike further|Escalate|No action}
+
+Rationale:
+
+** Technical Specs / Evidence
+(Paste relevant code, schema snippets, API responses, logs, benchmarks here)
+
+#+begin_src
+%?
+#+end_src
+
+** References & Links
+
+** Follow-up Actions
+| Action | Owner | Due |
+|--------+-------+-----|
+|        |       |     |

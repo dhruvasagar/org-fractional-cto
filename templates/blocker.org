@@ -1,0 +1,14 @@
+* TODO [#A] BLOCKER: %^{What is blocked}  :%(org-capture-get :ofc-client-tag):BLOCKER:
+%U
+:PROPERTIES:
+:BLOCKING: %^{Feature / work stream being blocked}
+:UNBLOCK_OWNER: %^{Who can remove this blocker}
+:END:
+
+*Root cause:* %?
+
+*Options:*
+- [ ]
+
+*Escalate to:* %^{Escalation path if unresolved}
+DEADLINE: %^{Resolve by}t

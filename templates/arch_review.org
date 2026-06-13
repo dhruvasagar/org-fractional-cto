@@ -1,0 +1,42 @@
+* ARCH REVIEW: Q%^{Quarter} %^{Year} :ENGAGEMENT:ARCHREVIEW:
+%U
+Client: %^{Client}
+Conducted by: %^{Your name}
+Teams / streams reviewed: %^{Teams reviewed}
+
+** Scalability
+- Current platform limits:
+- Projected bottlenecks at scale:
+- Third-party / platform ceilings:
+%?
+
+** Maintainability
+- Code complexity hotspots:
+- Documentation gaps:
+- Test coverage status:
+
+** Integration Fragility
+- Single points of failure identified:
+- API / webhook reliability:
+- Sync job failure modes:
+
+** Dependency Risk
+- Critical third-party dependencies:
+- Vendor lock-in exposure:
+- Licence / pricing risk:
+
+** Technical Debt
+| Area | Debt Description | Severity | Priority |
+|------+------------------+----------+----------|
+|      |                  |          |          |
+
+** Technology Roadmap Review
+- Still on track?
+- What changed this quarter that affects the roadmap?
+- Adjustments needed:
+
+** Recommendations for Next Quarter
+- [ ]
+
+** How to Present to Client
+(Frame as transparency and forward planning, not a list of problems)

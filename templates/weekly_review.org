@@ -1,0 +1,32 @@
+* WEEKLY REVIEW %^{Week ending}  :%(org-capture-get :ofc-client-tag):REVIEW:
+%U
+
+** What shipped / completed this week
+- %?
+
+** What slipped and why
+-
+
+** Delegation inbox — check-in status
+| Task | Assigned To | Due | Status | Action Needed |
+|------+-------------+-----+--------+---------------|
+|      |             |     |        |               |
+
+** Blockers requiring escalation
+-
+
+** Key decisions made
+-
+
+** Team pulse
+(Capacity issues, morale signals, wins to call out)
+-
+
+** Top 3 focus areas next week
+1.
+2.
+3.
+
+** Communication to send
+- [ ] Client status update
+- [ ] Team summary

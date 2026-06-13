@@ -1,0 +1,126 @@
+* DISCOVERY: %^{Team / Role} :ENGAGEMENT:DISCOVERY:
+%U
+Client: %^{Client}
+Attendees: %^{Attendees}
+Focus area: %^{Focus|PM|Frontend|Backend|Auth|Payments|Data|DevOps|QA|Integration|AI|Other}
+Stream: %^{Work stream or product area}
+
+** Context: What This Team / Role Does
+(Scope, responsibility, where they sit in the broader system)
+%?
+
+** Active Workstreams & Current Priorities
+| Workstream | Status | Owner | Due |
+|------------+--------+-------+-----|
+|            |        |       |     |
+
+** Tech Stack & Tooling
+| Layer | Technology | Version / Detail | Notes |
+|-------+------------+------------------+-------|
+|       |            |                  |       |
+
+** Architecture & Integration Points
+- Upstream (what does this team depend on?):
+- Downstream (who depends on this team's output?):
+- External services / third-party APIs:
+- Data flows and ownership:
+- Known assumptions baked into the design:
+
+** API Surface
+(Every API this team owns or consumes that is relevant to the engagement)
+
+| Endpoint / Method | Auth | Rate Limit | Owner | Notes |
+|-------------------+------+------------+-------+-------|
+|                   |      |            |       |       |
+
+- Request / response shapes worth noting:
+- Versioning strategy:
+- Breaking changes policy:
+- Webhook / event contracts (if any):
+
+** Data Models & Schemas
+- Primary entities and key fields:
+- Key relationships:
+- Schema location (repo path / migration tool):
+- Notable constraints or invariants:
+- PII fields (flag for GDPR / CCPA):
+
+** Environment Configuration
+| Environment | URL / Endpoint | Notable Differences | Who Has Access |
+|-------------+----------------+---------------------+----------------|
+| Production  |                |                     |                |
+| Staging     |                |                     |                |
+| Dev         |                |                     |                |
+
+- Secrets management (how / where):
+- Feature flags (tool and scope):
+- Config drift between environments:
+
+** Performance Characteristics
+- Typical response times (p50 / p99):
+- Peak load observed or expected:
+- Known bottlenecks:
+- SLAs / SLOs in place:
+- Caching strategy:
+
+** Observability & Monitoring
+- Metrics tooling:
+- Key dashboards (links):
+- Alert thresholds and who gets paged:
+- Log aggregation (tool and retention):
+- Current blind spots:
+
+** Failure Modes & Error Handling
+- Most likely failure scenarios:
+- How errors are surfaced (silent / logged / alerted / user-facing):
+- Retry / circuit breaker patterns in use:
+- Behaviour on third-party outage:
+- Known reliability issues or past incidents:
+
+** Business Rules & Domain Logic
+- Key invariants the system enforces:
+- Edge cases with special handling:
+- State machines or lifecycle flows:
+- Business logic that could be moved, extracted, or automated:
+
+** Pain Points & Blockers
+(Problems they live with daily — signal for tech debt and innovation)
+-
+
+** Quality & Testing Approach
+- Test strategy (unit / integration / E2E / manual):
+- Coverage level (approximate):
+- Who owns QA for this stream:
+- Known gaps or skipped test areas:
+- How bugs are triaged and tracked:
+
+** Deployment & Operations
+- Deployment frequency:
+- Pipeline / CI-CD tooling:
+- Environment setup (dev / staging / prod):
+- Monitoring and alerting:
+- On-call / incident ownership:
+- Known reliability issues:
+
+** Technical Debt Identified
+| Area | Description | Severity | Impact if Left | Owner |
+|------+-------------+----------+----------------+-------|
+|      |             |          |                |       |
+
+** Security & Compliance Observations
+- Authentication / authorisation model:
+- Sensitive data handling:
+- Any known vulnerabilities or gaps:
+- Relevant compliance requirements (GDPR / CCPA / PCI / other):
+
+** Innovation Opportunities Spotted
+(Anything that could be done better, smarter, or that the client doesn't yet know is possible)
+-
+
+** Key Decisions / Open Questions
+-
+
+** Follow-up Actions
+| Action | Owner | Due |
+|--------+-------+-----|
+|        |       |     |
