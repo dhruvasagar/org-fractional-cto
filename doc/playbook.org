@@ -1,0 +1,389 @@
+:PROPERTIES:
+:ID:       PLAYBOOK-FRACTIONAL-CTO
+:END:
+#+title: Fractional CTO Engagement Playbook
+#+date: [2026-06-10 Tue]
+#+STARTUP: overview
+#+OPTIONS: date:nil
+
+* Fractional CTO Engagement Playbook
+:PROPERTIES:
+:CATEGORY: Playbook
+:END:
+
+A repeatable process for onboarding, running, and growing client engagements as a
+Fractional CTO & Engagement Director. Adapt per client — this is a map, not a script.
+
+The playbook operates across five phases. Each phase has a dominant *hat*, a set of
+*questions to drive the work*, the *capture templates* to use, and a *deliverable*.
+
+** The Hat Model
+
+You operate across six modes. The discipline is to not switch hats mid-session.
+Schedule explicit *hat blocks* — a discovery session is discovery only; an
+architecture session is architecture only. Mixing them produces mediocre output
+in both directions.
+
+| Hat | When to wear it | Key discipline |
+|------------------+-------------------------------------------+--------------------------------------|
+| Engagement Director | Client calls, QBRs, scope conversations | Speak business outcomes, not tech |
+| Discovery | Stream interviews, system mapping | Listen more than you talk |
+| Fractional CTO | ADRs, roadmap, build vs. buy decisions | First principles, not vendor bias |
+| QA Auditor | Test coverage review, release gates | Find the gaps the team normalised |
+| Security Reviewer | Compliance posture, infra review | Assume breach, work backwards |
+| DevOps Reviewer | CI/CD, infra, deployment, on-call | Optimise for recovery speed, not uptime |
+
+*** Hat-switching tools
+
+*[[https://github.com/mattpocock/skills][mattpocock/skills]]* — precision tools for focused sessions:
+- =/grill-me= — structured interview *before* any work starts; surfaces misalignment early
+- =/grill-with-docs= — same, but anchored to a specific document (e.g. an SOW or PRD)
+- =/zoom-out= — forces system-level thinking before diving into a stream
+- =/handoff= — compacts the session into a document so context survives a hat switch
+- =CONTEXT.md= — per-client domain glossary; load it at the start of every Claude Code session
+
+*[[https://github.com/garrytan/gstack][garrytan/gstack]]* — sprint structure for execution phases:
+- =/office-hours= — six forcing questions that challenge your framing *before* you commit to a direction
+- =/autoplan= — chains CEO review, engineering review, design review
+- =/review= — staff-engineer audit after implementation
+- =/cso= — OWASP Top 10 + STRIDE threat model
+- =/qa= — real browser QA with regression test generation
+- =/retro= — weekly retrospective
+
+*Rule:* Run =/office-hours= (gstack) or =/grill-me= (mattpocock) at the *start* of any
+non-trivial session. These are your calibration tools. Skip them when you feel rushed.
+That's exactly when you need them most.
+
+** Phase 0 — Engagement Setup
+/Days 1–3. Hat: Engagement Director./
+
+*** Purpose
+Establish the working relationship, boundaries, and rhythm before any technical work
+begins. Everything in Phase 1 is harder if you skip this.
+
+*** Checklist
+- [ ] Create =clients/<client>/CONTEXT.md= (domain vocabulary, key people, tech stack)
+- [ ] Create system discovery master doc (=C-c c ed= for sessions; master doc manually)
+- [ ] Capture all known stakeholders (=C-c c ep= for each)
+- [ ] Confirm internal reporting line and executive sponsor
+- [ ] Agree communication channels: async vs. sync, email vs. Slack, cadence
+- [ ] Confirm ClickUp (or equivalent) workspace access
+- [ ] Schedule recurring ceremonies: internal sync, client sync, QBR dates
+- [ ] Draft role scope document — what you do and explicitly do not do
+- [ ] Identify any compliance obligations (GDPR, CCPA, PCI, SOC2) upfront
+
+*** Questions to answer
+- Who are the decision makers vs. influencers on the client side?
+- What does "success" mean to each key stakeholder personally (not the project)?
+- What has failed or frustrated them in previous engagements?
+- What's the one thing they'll judge this engagement on?
+
+*** Capture templates
+- =C-c c ep= Stakeholder profile — one per key contact
+- =C-c c ec= Commitment captured — any commitment made in setup calls
+- =C-c c er= Risk item — anything that looks like a blocker this early
+- =C-c c eP= Team member note — one per key internal team member (stream leads, eng leads)
+
+*** Deliverable
+Working =CONTEXT.md=. Confirmed ceremony calendar. Role scope document shared internally.
+
+** Phase 1 — Discovery
+/Week 1–2. Hat: Discovery./
+
+*** Purpose
+Build a grounded picture of the system: what exists, who owns it, where the debt
+and risk live, and where innovation is possible. Do not skip streams that seem
+"boring" (DevOps, QA) — they consistently surface the most critical risks.
+
+*** Rhythm
+One session per stream. After every 2–3 sessions, a 15-minute synthesis pass to
+update cross-cutting sections of the master discovery doc before memory fades.
+
+*** Per-session approach
+1. Run =/grill-me= or =/zoom-out= (mattpocock/skills) *before* the session to surface
+   what you're assuming and what you don't know
+2. Use =C-c c d= (discovery template) to start a clocked session
+3. During the session: listen for what they *don't* say as much as what they do
+4. After the session: refile the capture; update the master doc immediately
+5. After every 2–3 sessions: update cross-cutting sections (security, tech debt, integrations)
+
+*** Questions that cut across all streams
+- What would break first if load doubled tomorrow?
+- What's the one thing you'd fix if you had a sprint of uninterrupted time?
+- What do you not have visibility into that you wish you did?
+- What's the thing nobody talks about but everyone knows is a problem?
+- Where are the handoffs between your stream and others rough?
+
+*** Capture templates
+- =C-c c ed= Discovery session (one per stream)
+- =C-c c et= Technical debt item (capture as you hear them)
+- =C-c c ex= Security finding (any compliance or security signal)
+- =C-c c er= Risk item (any delivery or engagement risk)
+
+*** Deliverable
+Populated master discovery document with:
+- System architecture map
+- Component inventory and integration map
+- Per-domain deep dives
+- Cross-cutting concerns (security, compliance, performance)
+- Innovation opportunities list
+- Open questions and priority action items
+
+** Phase 2 — Architecture Assessment
+/Week 2–4. Hat: Fractional CTO./
+
+*** Purpose
+Turn discovery findings into decisions and direction. This is where you earn the
+"CTO" part of the title — not by having all the answers, but by asking the right
+questions and making the call when teams are stuck.
+
+*** Approach
+Use =/office-hours= (gstack) before each significant architecture decision to
+challenge your own framing. Architecture decisions made under time pressure without
+a forcing function tend to optimise for comfort over correctness.
+
+*** Checklist
+- [ ] ADR for each significant architectural decision in flight
+- [ ] Technology roadmap draft: what we're building, what we're retiring, and when
+- [ ] Technical debt register: prioritised, owned, with timelines
+- [ ] Compliance posture document: gap analysis for each relevant framework
+- [ ] Build vs. buy positions for all significant components
+- [ ] Engineering standards baseline: what varies across teams that should be standardised
+- [ ] Security posture assessment (run =/cso= from gstack)
+
+*** Build vs. Buy decision frame
+Before recommending build:
+1. Does a commercial solution exist that solves 80%+ of the problem?
+2. What is the total 2-year cost of building vs. buying (including maintenance)?
+3. Is this a differentiating capability or commodity infrastructure?
+4. What is the opportunity cost of the engineering time?
+
+Before recommending buy:
+1. What is the lock-in exposure if we need to exit?
+2. Does it touch customer data? What are their data handling practices?
+3. Are there contractual terms that could bind the client uncomfortably?
+
+*** Capture templates
+- =C-c c ea= ADR — one per significant technology or architecture decision
+- =C-c c ev= Vendor evaluation — any tool or vendor being assessed
+- =C-c c et= Technical debt item — from the assessment, not just discovery
+- =C-c c ex= Security finding — from the compliance posture review
+
+*** Deliverable
+Technology roadmap (quarters, not just quarters). ADR log. Technical debt register
+with owners and timelines. Compliance gap analysis with remediation plan.
+
+** Phase 3 — Operating Rhythm
+/Ongoing. Multiple hats, scheduled./
+
+*** Purpose
+Maintain visibility, momentum, and client trust through consistent, structured
+communication. The rhythm removes the need to make "how often should I check in?"
+decisions under pressure.
+
+*** Ceremonies
+
+*Daily (Hat: Discovery or Fractional CTO)*
+- Attend one or more team standups — observe, don't manage
+- Capture notes and blockers (=C-c c es=)
+- Any new blocker spotted → =C-c c eb= immediately
+- Identify anything that needs to surface to the client or internally
+
+*Weekly — Delegation review (Hat: People Manager)*
+- Friday, 15 minutes, before the week closes
+- =C-c c eW= — weekly review capture
+- Check every WAITING item: has the owner responded? Is the deadline at risk?
+- Ping directly (don't wait for standup) for anything due within 2 days
+- =C-c A= → "Delegated — Awaiting Response" block is your inbox
+- Rule: nothing WAITING goes more than one week without a check-in
+
+*Weekly — Internal sync (Hat: Engagement Director)*
+- Monday, before any client-facing communication that week
+- Template: =C-c c ei=
+- Topics: delegation status, commitments vs. reality gap, blockers to escalate,
+  risk register updates, client comms review
+- Rule: nothing surfaces to the client that hasn't been through this sync first
+
+*Weekly — Client sync (Hat: Engagement Director)*
+- Topics: delivery progress, decisions needed, anything that changed
+- Template: =C-c c em= (client meeting)
+- Always send a written summary within 2 hours
+- Capture any commitments made (=C-c c ec=) during the call
+
+*Weekly — Sprint retrospective (Hat: People Manager)*
+- End of each sprint; separate from client sync
+- Use =gstack =/retro== as the facilitation prompt
+- Focus: team process, not delivery status (that's what the client sync is for)
+- Output: 1–3 concrete process changes, captured as TODO items in the Actions section
+
+*Monthly — Client health check (Hat: Engagement Director)*
+- Three pulse questions (=C-c c eh=)
+- Analyse the gap between what they say and what you observe
+- Act on one thing from their feedback before the next month
+
+*Monthly — Architecture review prep (Hat: Fractional CTO)*
+- Review open ADRs, tech debt register, security findings
+- Update technology roadmap
+- Identify anything that needs a formal architecture review this quarter
+
+*Quarterly — QBR (Hat: Engagement Director)*
+- Template: =C-c c eq=
+- Translate delivery into business language — what did the client gain?
+- Include one strategic recommendation they didn't ask for (business framing first)
+- Surface renewal/expansion conversation naturally
+- Send written summary within 24 hours
+
+*Quarterly — Architecture health review (Hat: Fractional CTO)*
+- Template: =C-c c eA=
+- Scalability, maintainability, integration fragility, dependency risk, tech debt
+- Frame findings as transparency and forward planning, not a problem list
+
+*** Capture templates
+| Key | Template | Ceremony |
+|-----+-----------+----------|
+| =C-c c es= | Standup notes | Daily |
+| =C-c c eg= | Delegate action (WAITING) | When delegating any task |
+| =C-c c eb= | Blocker / escalation | When a blocker is identified |
+| =C-c c eW= | Weekly review | Friday delegation + team review |
+| =C-c c em= | Client meeting | Weekly client sync |
+| =C-c c ei= | Internal sync | Weekly internal sync |
+| =C-c c eh= | Client health check | Monthly |
+| =C-c c eq= | QBR | Quarterly |
+| =C-c c eA= | Architecture health review | Quarterly |
+
+*** Managing client expectations
+- Under-promise on timelines; over-deliver on quality
+- Bring problems with mitigations, not just problems
+- Never let a surprise reach the client — if something is going wrong, surface it early
+  and frame it as: "here's what's happening, here's what we're doing, here's what we
+  need from you"
+- The client's confidence in you is built between meetings, not during them
+
+** Phase 4 — Growth & Innovation
+/Quarterly, alongside Phase 3. Hat: Engagement Director + Fractional CTO./
+
+*** Purpose
+Expand the engagement scope and deepen the relationship through genuine strategic
+value — not sales pushes. The best expansions feel like the client's idea.
+
+*** Innovation pipeline approach
+1. Capture opportunities as you discover them (=C-c c n=) — never filter at capture time
+2. Monthly: review the pipeline and select one to develop into a brief
+3. Brief format: business opportunity first, technology second, effort estimate third
+4. Present the best one at each QBR under "Strategic Recommendation"
+5. Frame as: "here's what becomes possible if we..." not "here's what we could build"
+
+*** Expansion conversation triggers
+- A stream is hitting a ceiling the client hasn't named yet
+- You've identified a capability gap across multiple streams
+- A partner or tool evaluation opens a new product direction
+- The client asks a question that reveals a problem outside current scope
+
+*** Scope change discipline
+Any work identified outside the current SOW must be captured immediately (=C-c c e=)
+and brought through the internal sync before any client conversation about it.
+Never agree to out-of-scope work in a client meeting — "let me come back to you on
+what that would look like" is always the right answer in the room.
+
+*** Capture templates
+- =C-c c en= Innovation pipeline idea
+- =C-c c ee= Scope change / out-of-scope flag
+- =C-c c ev= Vendor evaluation (for new tools or partners)
+
+** New Client Onboarding Checklist
+
+When starting a new engagement, follow this sequence. The Emacs onboarding is now
+fully automated via =M-x org-fractional-cto-new-client= — no manual config editing needed.
+
+*** Step 1 — Emacs scaffold (60 seconds)
+
+In Emacs: =M-x org-fractional-cto-new-client=
+- Enter the client display name (e.g. "Acme Corp")
+- Enter the client slug (lowercase, no spaces, e.g. "acme")
+
+This automatically creates:
+- =roam/clients/acme/acme.org= with all standard sections (Actions, Delegations, Blockers, People, etc.)
+- =roam/clients/acme/standup.org= with stream-based standup template
+- =roam/clients/acme/CONTEXT.md= pre-populated with all section headers
+- Adds the client directory to =org-agenda-files= automatically
+
+Then: set this session's active client:
+=M-x org-fractional-cto-set-active-client= → select the slug → captures will auto-route without prompting.
+
+*** Step 2 — Fill CONTEXT.md
+- What the product is and what you're building
+- Domain vocabulary (terms the team uses)
+- Tech stack (as known at onboarding)
+- Key people — client side and internal leads
+- Active work streams and current priorities
+
+Load this at the start of every Claude Code session on that account.
+
+*** Step 3 — Capture key contacts
+- =C-c c ep= — Stakeholder profile for each client-side decision maker
+- =C-c c eP= — Team member note for each internal stream lead
+
+*** Step 4 — Tools (if doing implementation work)
+- [ ] =npx skills@latest add mattpocock/skills= in the client repo
+- [ ] Run =/setup-matt-pocock-skills= once per repo
+- [ ] =gstack= is global (=~/.claude/skills/gstack=)
+
+*** First week checklist
+- [ ] =org-fractional-cto-new-client= run; CONTEXT.md populated
+- [ ] Active client set: =M-x org-fractional-cto-set-active-client=
+- [ ] Agenda dashboard tested: =C-c A= → should open client dashboard
+- [ ] Capture tested: =C-c c ew= → should file to client's Actions section
+- [ ] =/grill-me= run before first client conversation
+- [ ] Stakeholders captured: =C-c c ep= for all known key contacts
+- [ ] Team members captured: =C-c c eP= for all stream leads
+- [ ] First internal sync scheduled (Monday cadence)
+- [ ] First client sync scheduled
+
+** Reference: All Capture Templates
+
+All engagement captures use the =e= prefix. File-based templates live in:
+=roam/templates/engagement/=. Active client must be set (=M-x org-fractional-cto-set-active-client=)
+or you will be prompted on each capture.
+
+*** Relationship & Communication
+| Full key | Template | Phase | Hat |
+|----------+----------+-------+-----|
+| =C-c c es= | Standup notes | 3 | Discovery |
+| =C-c c em= | Client meeting | 3 | Engagement Director |
+| =C-c c ei= | Internal sync | 3 | Engagement Director |
+| =C-c c ep= | Stakeholder profile | 0 | Engagement Director |
+| =C-c c ec= | Commitment captured | all | Engagement Director |
+| =C-c c eh= | Client health check | 3 | Engagement Director |
+| =C-c c eq= | QBR | 3 | Engagement Director |
+| =C-c c eM= | Metrics snapshot | 3 | Engagement Director |
+
+*** Action Tracking & Delegation
+| Full key | Template | When |
+|----------+----------+------|
+| =C-c c ew= | Action item (quick TODO) | Ad hoc task for yourself |
+| =C-c c eg= | Delegate action (WAITING) | Assigning a task to a team member |
+| =C-c c eb= | Blocker / escalation | When something is blocking delivery |
+| =C-c c eW= | Weekly review | Friday delegation + team pulse review |
+| =C-c c eP= | Person / team member note | Capacity, concerns, or wins to record |
+
+*** Risk & Delivery
+| Full key | Template | Phase | Hat |
+|----------+----------+-------+-----|
+| =C-c c er= | Risk item | all | Engagement Director |
+| =C-c c ee= | Scope change | all | Engagement Director |
+| =C-c c ef= | Post-mortem (incident) | all | all |
+| =C-c c eR= | Retrospective | each sprint | People Manager |
+
+*** Technical
+| Full key | Template | Phase | Hat |
+|----------+----------+-------+-----|
+| =C-c c ed= | Discovery session | 1 | Discovery |
+| =C-c c ek= | Tech spike | 1/2 | Fractional CTO |
+| =C-c c ea= | ADR | 2 | Fractional CTO |
+| =C-c c eD= | Quick decision | 2/3 | Fractional CTO |
+| =C-c c eA= | Architecture health review | 3 | Fractional CTO |
+| =C-c c ev= | Vendor evaluation | 2 | Fractional CTO |
+| =C-c c et= | Technical debt item | 1/2 | Fractional CTO |
+| =C-c c ex= | Security finding | 1/2 | Security Reviewer |
+| =C-c c en= | Innovation idea (single) | 4 | Fractional CTO |
+| =C-c c eI= | Innovation meeting (multi-idea) | 4 | Fractional CTO |

@@ -369,6 +369,15 @@ A typical cadence:
 - *Monthly*: client health check (=eh=); review the innovation pipeline (=en=).
 - *Quarterly*: QBR (=eq=); architecture health review (=eA=).
 
+This is the short version. The full methodology lives in the bundled guides:
+
+- [[file:doc/playbook.org][doc/playbook.org]] — the engagement phases (setup → discovery → architecture →
+  operating rhythm → growth), the hat model in depth, and decision frameworks
+  (build-vs-buy, ADR triggers, scope discipline).
+- [[file:doc/reference.org][doc/reference.org]] — per-capture guidance, the operating rhythm day-by-day, the
+  tag/keyword legend, AI-skill integration, and scenario guides ("I just had a
+  discovery session", "something went wrong in production", …).
+
 * License
 
 GPL-3.0-or-later. See [[file:LICENSE][LICENSE]].

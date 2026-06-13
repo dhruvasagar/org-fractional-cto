@@ -1,0 +1,818 @@
+:PROPERTIES:
+:ID:       PLAYBOOK-ENGAGEMENT-REFERENCE
+:END:
+#+title: Engagement Reference Guide
+#+date: [2026-06-10 Tue]
+#+STARTUP: overview
+#+OPTIONS: date:nil
+#+TODO: TODO NEXT IN-PROGRESS | DONE CANCELLED
+
+* Engagement Reference Guide
+:PROPERTIES:
+:CATEGORY: Playbook
+:END:
+
+A practical reference for running client engagements using the full tool stack:
+org-mode captures, org-roam, the Fractional CTO playbook, mattpocock/skills,
+and gstack. Read top-to-bottom once to understand the system; use as a lookup
+reference after that.
+
+All engagement captures use a single =e= prefix (=C-c c e<key>=) and route to the
+*active client*. Set it once per session with =M-x org-fractional-cto-set-active-client= and every
+capture files to that client automatically — no per-client prefix letters, no
+copy-pasted config. Switch clients mid-session by setting a different active client.
+
+The mechanics (captures, dashboard, onboarding) are provided by the
+=org-fractional-cto= package ([[file:../README.org][README]]). This guide is the *methodology* layer
+on top of it: when to use each capture, the operating rhythm, and the hats.
+
+** Quick Lookup — "I need to..."
+
+*** Capture something
+| I need to...                       | Key           | Files to                                   |
+|------------------------------------+---------------+--------------------------------------------|
+| Quick action / TODO                | =C-c c ew=    | <client>.org → Actions                     |
+| Delegate a task (WAITING)          | =C-c c eg=    | <client>.org → Delegations                 |
+| Flag a blocker / escalation        | =C-c c eb=    | <client>.org → Blockers                    |
+| Weekly review (delegation + pulse) | =C-c c eW=    | <client>.org → Weekly Reviews              |
+| Note on a team member              | =C-c c eP=    | <client>.org → People                      |
+| Capture a standup                  | =C-c c es=    | <client>.org → Standup Notes               |
+| Log a client meeting               | =C-c c em=    | <client>.org → Meeting Notes               |
+| Log an internal sync               | =C-c c ei=    | <client>.org → Internal Syncs              |
+| Record a commitment made           | =C-c c ec=    | <client>.org → Commitments                 |
+| Flag a risk                        | =C-c c er=    | <client>.org → Risks                       |
+| Start a discovery session          | =C-c c ed=    | <client>.org → Discovery Sessions          |
+| Tech spike / investigation         | =C-c c ek=    | <client>.org → Discovery Sessions          |
+| Add a stakeholder profile          | =C-c c ep=    | <client>.org → Stakeholder Profiles        |
+| Log an architecture decision       | =C-c c ea=    | <client>.org → Architecture Decisions      |
+| Quick decision log                 | =C-c c eD=    | <client>.org → Architecture Decisions      |
+| Record tech debt                   | =C-c c et=    | <client>.org → Technical Debt              |
+| Flag a security finding            | =C-c c ex=    | <client>.org → Security Findings           |
+| Evaluate a vendor / tool           | =C-c c ev=    | <client>.org → Vendor Evaluations          |
+| Run a QBR session                  | =C-c c eq=    | <client>.org → QBRs                        |
+| Monthly health check               | =C-c c eh=    | <client>.org → Health Checks               |
+| Metrics snapshot                   | =C-c c eM=    | <client>.org → Health Checks               |
+| Flag out-of-scope work             | =C-c c ee=    | <client>.org → Scope Changes               |
+| Document a production incident     | =C-c c ef=    | <client>.org → Post-Mortems                |
+| Sprint retrospective               | =C-c c eR=    | <client>.org → Retrospectives              |
+| Capture an innovation idea         | =C-c c en=    | <client>.org → Innovation Pipeline         |
+| Innovation meeting (multi-idea)    | =C-c c eI=    | <client>.org → Innovation Pipeline         |
+| Quarterly arch review              | =C-c c eA=    | <client>.org → Architecture Reviews        |
+| Scope change / SOW flag            | =C-c c ee=    | <client>.org → Scope Changes               |
+
+*** Look up / analyse
+| I need to...                               | Do this                                         |
+|--------------------------------------------+-------------------------------------------------|
+| Client dashboard (actions, delegations)    | =C-c a e= → select client                         |
+| Delegated items awaiting response          | =C-c a e= → "Delegated — Awaiting Response" block |
+| Blockers & escalations                     | =C-c a e= → "Blockers & Escalations" block        |
+| All open TODOs for this client             | =C-c a e= → "Open Actions" block                  |
+| Open commitments                           | =C-c a e= → "Commitments" block                   |
+| Active risks                               | =C-c a e= → "Active Risks" block                  |
+| Set active client (avoid repeated prompts) | =M-x org-fractional-cto-set-active-client=                      |
+| Clear active client                        | =M-x org-fractional-cto-clear-active-client=                    |
+| Browse by section (meetings, risks, etc.)  | =C-x C-f <client>.org= then navigate headings   |
+| Find a specific past note or doc           | =M-x org-roam-node-find= (fuzzy search)         |
+| Search text across all org files           | =C-c a s= (agenda search)                       |
+| All entries with a specific tag            | =C-c a m TAGNAME= (e.g. =C-c a m RISK=)         |
+| Challenge my own framing                   | =/grill-me= (mattpocock/skills)                 |
+| Structure a big decision                   | =/office-hours= (gstack)                        |
+| Security audit                             | =/cso= (gstack)                                 |
+| Run a sprint retrospective                 | =/retro= (gstack) + =C-c c eR=                  |
+| Onboard a new client                       | =M-x org-fractional-cto-new-client=                         |
+
+** Legend
+
+*** TODO keywords (client files)
+Client hubs declare: =#+TODO: TODO NEXT IN-PROGRESS WAITING | DONE CANCELLED=.
+
+| Keyword       | Meaning                                                   |
+|---------------+-----------------------------------------------------------|
+| =TODO=        | Open action you own                                       |
+| =NEXT=        | The next physical action (GTD-style)                      |
+| =IN-PROGRESS= | Actively being worked                                     |
+| =WAITING=     | *Delegated* — owned by someone else, you're tracking it   |
+| =DONE=        | Completed                                                 |
+| =CANCELLED=   | Dropped                                                   |
+
+=WAITING= is load-bearing: it separates "things I owe" from "things I'm owed,"
+and feeds the dashboard's *Delegated* block.
+
+*** Priorities
+| =[#A]= | Blocking / time-critical (blockers default here) |
+| =[#B]= | Important, not urgent                            |
+| =[#C]= | Nice to have / backlog                           |
+
+*** Type tags
+Every capture carries the client tag (e.g. =:ACME:=) plus a *type tag*. The
+dashboard and =C-c a m TAG= search on these.
+
+| Tag           | Section / capture            |
+|---------------+------------------------------|
+| =DELEGATED=   | Delegations (=eg=)           |
+| =BLOCKER=     | Blockers (=eb=)              |
+| =COMMITMENT=  | Commitments (=ec=)           |
+| =RISK=        | Risks (=er=)                 |
+| =REVIEW=      | Weekly Reviews (=eW=)        |
+| =PEOPLE=      | People (=eP=)                |
+| =MEETING=     | Meeting Notes (=em=)         |
+| =STANDUP=     | Standup Notes (=es=)         |
+| =INTERNAL=    | Internal Syncs (=ei=)        |
+| =DISCOVERY=   | Discovery / Tech spike (=ed=, =ek=) |
+| =STAKEHOLDER= | Stakeholder Profiles (=ep=)  |
+| =ADR=         | Architecture Decisions (=ea=, =eD=) |
+| =ARCHREVIEW=  | Architecture Reviews (=eA=)  |
+| =VENDOR=      | Vendor Evaluations (=ev=)    |
+| =TECHDEBT=    | Technical Debt (=et=)        |
+| =SECURITY=    | Security Findings (=ex=)     |
+| =HEALTH=      | Health Checks (=eh=, =eM=)   |
+| =QBR=         | QBRs (=eq=)                  |
+| =INNOVATION=  | Innovation Pipeline (=en=, =eI=) |
+| =SCOPE=       | Scope Changes (=ee=)         |
+| =POSTMORTEM=  | Post-Mortems (=ef=)          |
+| =RETRO=       | Retrospectives (=eR=)        |
+
+*** Key bindings
+| ~C-c c e<key>~ | Capture (see [[*Capture Templates — Complete Reference][capture reference]]) |
+| ~C-c a e~      | Active-client dashboard                       |
+| ~C-c a m TAG~  | Match a type tag across all clients           |
+| ~C-c f n~      | New client (onboard)                          |
+| ~C-c f s~      | Set active client                             |
+| ~C-c f d~      | Dashboard for active client                   |
+| ~C-c f w~      | Switch client + open dashboard                |
+
+** File Organization
+
+The package ships the templates and these guides; your engagements live in
+=org-fractional-cto-clients-directory= (default =<org-directory>/clients=).
+
+The package (shareable, read-only to you):
+
+#+begin_example
+org-fractional-cto/
+  org-fractional-cto.el          ← core: state, paths, keymap, setup
+  org-fractional-cto-capture.el  ← the `e' capture group
+  org-fractional-cto-agenda.el   ← the C-c a e dashboard
+  org-fractional-cto-scaffold.el ← new-client onboarding
+  templates/                     ← bundled capture templates (override-able)
+    client_meeting.org adr.org discovery.org delegation.org blocker.org
+    weekly_review.org retrospective.org standup.org ... etc.
+  doc/
+    playbook.org                 ← phases, hat model, decision frameworks
+    reference.org                ← this file
+  README.org                     ← install + manual + legend
+#+end_example
+
+Your engagements (yours, version-controlled separately):
+
+#+begin_example
+<clients-directory>/
+  acme/                ← created by M-x org-fractional-cto-new-client
+    acme.org           ← ★ OPERATIONAL HUB: all captures land here directly
+    standup.org        ← per-client standup template (tailor the streams)
+    CONTEXT.md         ← domain vocab, key people, stack (load in AI sessions)
+  globex/
+    globex.org
+    standup.org
+    CONTEXT.md
+#+end_example
+
+A non-client inbox (=refile.org= or your =org-default-notes-file=) still holds
+generic captures (=t=, =n=, =m=); engagement captures bypass it entirely.
+
+*** The capture flow
+
+Client captures go *directly* to the relevant section of =<client>.org= via
+=file+headline= — no inbox step, no refiling needed. Open =<client>.org= (or any
+client file) to see everything that has been captured for that account, organised
+by section.
+
+=refile.org= is still the inbox for *non-client* captures (generic todos, notes,
+meeting entries via the =t=, =n=, =m= keys). The discipline of clearing it still
+applies, but client work bypasses it entirely.
+
+*** The lookup flow
+
+1. *Agenda dashboard* — =C-c a e= opens the active client's dashboard: 7-day agenda,
+   delegated items awaiting response, blockers & escalations, open actions,
+   commitments with deadlines, active risks. This is the daily starting point.
+   (If no active client is set, it prompts you to pick one.)
+2. *Browse by section* — =C-x C-f <client>.org= then navigate headings (=C-c C-n/p=
+   to move between headings, =S-TAB= to collapse/expand). Each section contains
+   all captures of that type in reverse-chronological order.
+3. *Tag search* — =C-c a m TAGNAME= to find entries across all agenda files by tag
+   (e.g. =RISK=, =COMMITMENT=, =TECHDEBT=).
+4. *Full-text search* — =C-c a s= to search across all agenda files by keyword.
+5. *org-roam* — =M-x org-roam-node-find= for the longer-form reference docs
+   (role plan, system discovery).
+
+** Capture Templates — Complete Reference
+
+All engagement templates use the pattern: =C-c c e<key>=. Captures file *directly*
+to the relevant section of the active client's =<client>.org= (set the active
+client with =M-x org-fractional-cto-set-active-client= to avoid being prompted each time).
+Clocked entries start the org-clock automatically.
+
+*** Relationship & Communication Templates
+
+**** =es= — Standup Notes
+/Use:/ Attending any team standup. One capture per session you attend.
+/Clock:/ Yes — tracks time spent in standups.
+/Fields:/ Date (auto), client name.
+/Structure:/ Per-team sections (Shipped / Next / Blockers) + Actions/Escalations.
+/After capturing:/ Scan for any blocker that needs a risk entry (=er=) or
+commitment capture (=ec=). Refile to client's discovery or ops folder.
+
+**** =em= — Client Meeting
+/Use:/ Any call or meeting with the client — planning, status, ad hoc.
+/Clock:/ Yes.
+/Fields:/ Meeting title, client attendees, our attendees.
+/Structure:/ Agenda → Discussion → Decisions → Commitments (both sides) → Actions → Follow-up deadline.
+/After capturing:/ Immediately capture any commitments (=ec=). Send written
+summary to client within 2 hours. Never let a meeting end without a follow-up
+summary — this is how trust is built.
+
+**** =ei= — Internal Sync
+/Use:/ Weekly internal sync with team leads — always before client-facing comms.
+/Clock:/ Yes.
+/Fields:/ Date, client name.
+/Structure:/ Commitments vs. reality gap | Blockers to escalate | Risk updates |
+Client comms review | Actions.
+/Rule:/ Nothing surfaces to the client that hasn't passed through this sync first.
+
+**** =ep= — Stakeholder Profile
+/Use:/ First time you meet or learn about a significant client contact. One profile
+per person. Update it as the relationship develops.
+/Clock:/ Yes.
+/Fields:/ Full name, role, organisation.
+/Key sections:/ Their personal definition of success (not the project's) | Key
+priorities & concerns | Communication preferences | Relationship status |
+How to engage them effectively.
+/Why it matters:/ Stakeholder maps decay fast. Documenting what makes each person
+tick lets you tailor every communication.
+
+**** =ec= — Commitment Captured
+/Use:/ Any time a commitment is made — by you *or* by the client — in any meeting.
+Capture it immediately, while still in the session.
+/Clock:/ Yes.
+/Fields:/ Commitment description, due date (becomes a =DEADLINE=), owner.
+/After capturing:/ Refile to the commitment log in the client's document. Review
+all open commitments at each internal sync.
+
+**** =eh= — Client Health Check
+/Use:/ Monthly. Three pulse questions sent to the client (or discussed in a call).
+/Fields:/ Month, year.
+/Questions (built in):/ What's working well? What would you change? What would you
+love to see in the next 30 days?
+/After capturing:/ Act on one specific thing from their feedback before next month.
+The pattern of not acting on feedback is invisible until it's too late.
+
+**** =eq= — QBR (Quarterly Business Review)
+/Use:/ Quarterly formal checkpoint with client stakeholders.
+/Clock:/ Yes.
+/Fields:/ Quarter, client attendees, our attendees.
+/Structure:/ Deliverables table | Business impact | Technology roadmap review |
+Strategic recommendation | Next quarter priorities | Renewal/expansion | Decisions
+needed | Action items.
+/After capturing:/ Send written summary within 24 hours. The written summary is
+part of the ceremony — don't skip it.
+/Strategic recommendation:/ Always include one recommendation they didn't ask for.
+Frame it as business opportunity first, technology second. This is what separates
+a vendor from a strategic partner.
+
+*** Action Tracking & Delegation Templates
+
+**** =ew= — Action Item (quick TODO)
+/Use:/ A task you're taking on yourself. The fast path for ad-hoc work.
+/Clock:/ Yes.
+/Fields:/ Action description, due date (becomes a =DEADLINE=).
+/After capturing:/ Shows up in =C-c a e= → "Open Actions". Re-prioritise as needed.
+
+**** =eg= — Delegate Action (WAITING)
+/Use:/ Any time you hand a task to a team member. This is the core delegation tool.
+/Fields:/ Task, assignee (=ASSIGNED_TO= property), expected delivery (=DEADLINE=),
+your check-in date (=SCHEDULED=), success criteria.
+/Why WAITING:/ The entry is created in the =WAITING= state, not =TODO=. This separates
+"things I owe" from "things I'm owed" — they surface in the dedicated
+"Delegated — Awaiting Response" block of =C-c a e=.
+/After capturing:/ The =SCHEDULED= date is your follow-up trigger. If the check-in
+passes with no update, escalate. Review every WAITING item at the Friday weekly review.
+/Discipline:/ Delegation without a check-in date is hoping, not managing. Always set one.
+
+**** =eb= — Blocker / Escalation
+/Use:/ The moment something is blocking delivery and you can't clear it yourself.
+/Fields:/ What is blocked, what feature/stream it blocks (=BLOCKING=), who can remove
+it (=UNBLOCK_OWNER=), root cause, options, escalation path, resolve-by deadline.
+/Priority:/ Created as =[#A] TODO=. Blockers are always top priority — they compound.
+/After capturing:/ Surfaces in =C-c a e= → "Blockers & Escalations". If unresolved by
+the deadline, escalate via the named path (standup → internal sync → client).
+
+**** =eW= — Weekly Review
+/Use:/ Friday, 15 minutes, before the week closes. Your delegation and team pulse review.
+/Clock:/ Yes.
+/Fields:/ Week ending.
+/Structure:/ Shipped this week | What slipped and why | Delegation inbox check-in
+table | Blockers to escalate | Key decisions | Team pulse | Top 3 next week | Comms to send.
+/The discipline:/ This is where you reconcile every WAITING item against reality.
+Anyone who's gone quiet gets a direct ping — don't wait for the next standup.
+/After capturing:/ Each "change/action needed" becomes a TODO. Use =C-c a e= delegated
+block as the source of truth while filling the inbox table.
+
+**** =eP= — Person / Team Member Note
+/Use:/ Capturing something about a team member — capacity, a concern, a win, a
+development need. Builds the People section over time.
+/Fields:/ Name, role/stream, =STREAM= property.
+/Why it matters:/ As a fractional CTO you're managing people you didn't hire and
+don't see daily. Tracking capacity signals (who's overloaded, who's a single point
+of failure) is how you spot delivery risk before it becomes a missed deadline.
+/Maintain:/ The People section also holds the Team Roster and Stream → Lead map —
+keep those current as the team changes.
+
+*** Risk & Delivery Templates
+
+**** =er= — Risk Item
+/Use:/ Any new risk to the engagement or delivery — technical or otherwise.
+Capture immediately when identified; don't wait for the next sync.
+/Fields:/ Description, likelihood (High/Medium/Low), impact (High/Medium/Low), owner, mitigation.
+/After capturing:/ Add to the risk register in the master discovery doc. Review
+at every internal sync. A risk that sits in refile.org is not managed.
+
+**** =ee= — Scope Change / Out-of-Scope Flag
+/Use:/ Any time you identify work that is outside the current SOW, or the client
+asks for something that may be out of scope.
+/Fields:/ Description, who identified it, SOW status (out/in/grey area).
+/Rule:/ Never agree to out-of-scope work in a client meeting. Capture it here,
+bring it through the internal sync, then respond to the client with a clear framing.
+/After capturing:/ Internal sync review → commercial assessment → client response.
+
+**** =ef= — Post-Mortem / Incident
+/Use:/ Any production incident, delivery failure, or significant quality issue.
+/Fields:/ Incident title, date, severity, duration, what was affected.
+/Structure:/ What happened | Root cause | How we fixed it | Was client notified? |
+Prevention | Actions.
+/Timing:/ Capture within 24 hours. The detail fades quickly.
+/Client communication:/ "Here's what happened, here's what we did, here's what
+we're doing to prevent recurrence." In that order.
+
+**** =eR= — Retrospective
+/Use:/ End of each sprint or delivery cycle. Distinct from a post-mortem — a
+retro is *proactive and routine* (team process), a post-mortem is *reactive* (a
+failure). Run a retro whether or not anything went wrong.
+/Clock:/ Yes.
+/Fields:/ Sprint/period, facilitator, attendees.
+/Structure:/ Sprint goals vs. actuals (table) | What went well | What didn't go
+well | What we'll change (owned, time-boxed) | Team health signals | Action items.
+/Pair with:/ gstack =/retro= as the facilitation prompt before or during the session.
+/After capturing:/ Each "what we'll change" row becomes a TODO in the Actions section.
+/Discipline:/ Focus on the system, not the person. "What process let this happen?"
+not "who dropped this?" The retro is for improving how the team works, not assigning blame.
+
+*** Technical Templates
+
+**** =ed= — Discovery Session
+/Use:/ Structured conversation with any team lead to map their stream. One per stream.
+/Clock:/ Yes — these are significant sessions.
+/Fields:/ Team/role, client, attendees, focus area, stream name.
+/Structure:/ Team context | Active workstreams (table) | Tech stack (table) |
+Architecture & integrations | Pain points | Quality & testing | Deployment & ops |
+Tech debt (table) | Security observations | Innovation opportunities | Open questions |
+Follow-up actions.
+/Before the session:/ Run =/grill-me= (mattpocock/skills) to surface your assumptions.
+/After the session:/ Refile immediately. Update cross-cutting sections of the master
+discovery doc. Run a synthesis pass after every 2–3 sessions.
+
+**** =ea= — Architecture Decision Record (ADR)
+/Use:/ Any significant technology or architecture decision — things that are hard to
+reverse, affect multiple streams, or have long-term cost implications.
+/Clock:/ Yes.
+/Fields:/ Decision title, client, status (Proposed/Accepted/Deprecated/Superseded).
+/Structure:/ Context (the forcing situation) | Decision (what and by whom) |
+Alternatives considered | Trade-offs accepted | Consequences (positive/negative/risks) |
+Review date.
+/Rule:/ If you're spending more than 30 minutes deciding something, it warrants an ADR.
+A decision not documented is a decision that will be re-litigated.
+
+**** =eA= — Architecture Health Review
+/Use:/ Quarterly. A structured assessment of the full system's health.
+/Clock:/ Yes.
+/Fields:/ Quarter, year, client, your name, teams reviewed.
+/Structure:/ Scalability | Maintainability | Integration fragility | Dependency risk |
+Technical debt table | Technology roadmap review | Recommendations | How to present.
+/Framing for the client:/ "Transparency and forward planning" — never a problem list.
+The goal is to demonstrate that you're ahead of issues, not behind them.
+
+**** =ev= — Vendor / Tool Evaluation
+/Use:/ Assessing any new tool, platform, or technology vendor.
+/Clock:/ Yes.
+/Fields:/ Vendor name, client, category, evaluator.
+/Structure:/ Problem being solved | Recommendation (with rationale) | Alternatives |
+Assessment (solves the problem? build vs. buy? lock-in? data handling? 2-year TCO) |
+Decision deadline.
+/Decision framework:/ Commodity infrastructure → buy. Differentiating capability → build.
+Anything that touches customer PII → scrutinise the vendor's data handling terms first.
+
+**** =et= — Technical Debt Item
+/Use:/ Immediately when you identify tech debt — during discovery, code review,
+architecture sessions, or standups.
+/Fields:/ Description, area (Frontend/Backend/Infra/Integration/Data/Security),
+severity (Critical/High/Medium/Low), discovery context, impact if unaddressed.
+/After capturing:/ Add to the tech debt register in the master discovery doc.
+Prioritise at the next architecture session. Debt that isn't visible isn't managed.
+
+**** =ex= — Security Finding
+/Use:/ Any security or compliance observation — immediately when found.
+/Fields:/ Finding description, severity, area (PCI/GDPR/API/Auth/Data/Infra),
+current status (Open/Mitigated/Accepted), recommended action, owner.
+/Rule:/ Critical findings surface to the internal sync before end of day.
+High findings surface within 48 hours. Never downgrade severity to avoid a
+difficult conversation.
+
+**** =en= — Innovation Pipeline Idea
+/Use:/ Any time you spot something that could be done better, smarter, or that the
+client doesn't yet know is possible. Capture without filtering — evaluate later.
+/Fields:/ Title, category (AI/ML / Data / Platform / Integration / Music Tech / Other).
+/Structure:/ The opportunity (business framing first) | The technology | Why now /
+why this client | Rough effort | Next step.
+/Pipeline review:/ Monthly — select one idea to develop into a brief. Present the
+best one at each QBR as the "Strategic Recommendation."
+
+** Operating Rhythms — Day by Day
+
+*** Daily
+#+begin_example
+Morning (15 min)
+  └── Review refile.org inbox — refile or act on anything from yesterday
+  └── Check open commitments and today's deadlines in agenda (C-c a a)
+  └── Identify which hat today's sessions require
+
+During day
+  └── Attend standups → C-c c es (clock in)
+  └── Capture risks, debt, security findings immediately when spotted
+  └── Any client meeting → C-c c em + send summary within 2 hours
+
+End of day (10 min)
+  └── Refile today's captures from refile.org
+  └── Any commitment made today → C-c c ec (if not already done)
+  └── Anything that surfaced that needs to go to Monday's internal sync?
+#+end_example
+
+*** Weekly
+#+begin_example
+Monday (internal sync first — then nothing client-facing until done)
+  └── C-c c ei — internal sync
+  └── Review: commitments vs. reality gap, risk register, blockers
+  └── Decide: what goes to the client this week and how
+
+Wednesday / Thursday (client sync)
+  └── C-c c em — client meeting
+  └── Send written summary within 2 hours
+  └── Any commitments → C-c c ec immediately after
+
+Friday (weekly close — 20 min)
+  └── Clear refile.org inbox
+  └── Review open commitments — anything at risk of missing deadline?
+  └── One sentence in the discovery/ops doc Reflection log: what changed this week
+#+end_example
+
+*** Monthly
+#+begin_example
+First week
+  └── Client health check → C-c c eh
+  └── Review open risks — anything escalating or resolved?
+  └── Review innovation pipeline → pick one idea to develop into a brief
+
+Third week
+  └── Architecture review prep: review open ADRs, debt register, security findings
+  └── Update technology roadmap if anything shifted
+  └── Draft any discovery synthesis notes that have been accumulating
+#+end_example
+
+*** Quarterly
+#+begin_example
+End of quarter
+  └── Architecture health review → C-c c eA
+  └── QBR preparation: translate all delivery into business outcomes
+  └── Select strategic recommendation for the QBR (from innovation pipeline)
+  └── QBR session → C-c c eq
+  └── Send QBR written summary within 24 hours
+  └── Review: any scope expansion opportunity to progress next quarter?
+#+end_example
+
+** The Hat Model in Practice
+
+Switching hats mid-session dilutes both. When you sit down to work, know which
+hat you're wearing and stick to it for the duration of that block.
+
+*** Before any significant session
+
+Run one of these first — it takes 5 minutes and prevents hours of rework:
+
+| Session type                                  | Run first                | Why                                                                       |
+|-----------------------------------------------+--------------------------+---------------------------------------------------------------------------|
+| Discovery interview                           | =/grill-me=              | Surface what you're assuming; don't anchor the conversation to your frame |
+| Architecture decision                         | =/office-hours=          | Challenge your own framing before committing                              |
+| Client meeting (complex topic)                | =/grill-with-docs= + SOW | Verify you're solving the right problem                                   |
+| Starting implementation in an unfamiliar area | =/zoom-out=              | Map the system before touching it                                         |
+| Handoff between sessions                      | =/handoff=               | Compact the context so the next session starts fresh                      |
+| Security review                               | =/cso=                   | OWASP Top 10 + STRIDE, with false-positive filtering                      |
+
+*** Hat descriptions
+
+*Discovery hat*
+You are listening, not advising. Your job is to surface reality, not impose
+structure. Ask "what would break first if..." and "what's the thing nobody
+talks about but everyone knows is a problem?" Take the full discovery template
+notes. Don't jump to solutions in the session.
+
+*Fractional CTO hat*
+You are making or advising decisions. Use =/office-hours= to challenge your frame
+first. Document every significant decision as an ADR. The value is not the answer —
+it's the documented reasoning that lets the team build on it without re-litigating.
+
+*Engagement Director hat*
+You are managing the relationship. Speak business outcomes, not tech. Translate
+everything into: what did the client gain? What risk did we reduce? What opportunity
+does this create? Never bring a problem without a mitigation framing.
+
+*QA Auditor hat*
+Find the gaps the team has normalised. Ask specifically about: billing logic test
+coverage, auth flow integration tests, regression coverage before releases. Teams
+stop seeing their own coverage gaps after a while.
+
+*Security Reviewer hat*
+Assume breach, work backwards. What data would be exposed? What's the blast radius?
+Use =/cso= (gstack) for the systematic scan. Flag immediately — severity doesn't
+get negotiated.
+
+*DevOps hat*
+Optimise for recovery speed, not uptime. Questions: how fast can you detect an
+incident? How fast can you roll back? What's the MTTR? Infrastructure-as-code
+posture? Where are secrets stored?
+
+** Tools Reference
+
+*** org-capture (=C-c c=)
+
+The entry point for all structured note-taking. Engagement captures (=e= prefix)
+file *directly* to the relevant section of the active client's =<client>.org=
+— no refile step. Generic captures (=t=, =n=, =m=) still go to =refile.org=.
+
+Essential keybindings:
+| Key | Action |
+|-----+--------|
+| =C-c c= | Open capture menu |
+| =C-c c e= | Jump directly to client group |
+| =C-c C-c= | Confirm and file the capture |
+| =C-c C-k= | Abort the capture |
+| =C-c C-w= | Refile a heading (for refile.org inbox items) |
+| =C-x C-s= in capture | Save without closing |
+
+*** org-agenda (=C-c a=)
+
+Your operational dashboard. Key views:
+
+| Key | View |
+|-----+------|
+| =C-c a a= | Day/week agenda — deadlines, scheduled items (all files) |
+| =C-c a e= | ★ Active client dashboard — delegated, blockers, actions, commitments, risks, 7-day agenda |
+| =C-c a t= | All TODO items across all agenda files |
+| =C-c a m TAGNAME= | Match by tag — e.g. =RISK=, =COMMITMENT=, =DELEGATED=, =BLOCKER= |
+| =C-c a s= | Full-text search across all agenda files |
+
+=C-c a e= is a first-class Org agenda command (so it exports, filters with =/=,
+refreshes with =r=, etc.). It builds the dashboard dynamically for whichever
+client is active (or prompts you to pick one) — no per-client agenda config to
+maintain; new clients work the moment =org-fractional-cto-new-client= scaffolds
+them. Blocks, in order: 7-day agenda → Delegated (WAITING) → Blockers → Open
+Actions → Commitments → Active Risks. =C-c f w= switches client and opens it.
+
+*** org-clock
+
+All discovery sessions, meetings, and reviews are clocked (the templates include
+=:clock-in t=). This gives you automatic time tracking per engagement.
+
+| Key | Action |
+|-----+--------|
+| =C-c C-x C-i= | Clock in to current heading |
+| =C-c C-x C-o= | Clock out |
+| =C-c C-x C-r= | Insert clock report at point |
+| =C-c C-x C-d= | Show time spent on subtree |
+
+Monthly: =M-x org-clock-report= in the client's master doc to see time by stream.
+
+*** org-refile
+
+After capturing, refile entries from =refile.org= to their permanent home:
+
+| Key | Action |
+|-----+--------|
+| =C-c C-w= | Refile current heading |
+| =C-u C-c C-w= | Refile and jump to destination |
+| =C-u C-u C-c C-w= | Jump to last refile location |
+
+Type part of the destination heading name; org-refile searches across all agenda files
+up to 9 levels deep (configured in =init-org.el=).
+
+*** org-roam
+
+The long-form note graph. Discovery docs and role plans are org-roam nodes (they
+have =:ID:= properties and live in =roam/=).
+
+| Key (default / Doom) | Action |
+|---------------------+--------|
+| =M-x org-roam-node-find= | Find or create a roam node |
+| =M-x org-roam-node-insert= | Insert a link to another node |
+| =M-x org-roam-buffer-toggle= | Show backlinks panel |
+| =M-x org-roam-db-autosync-mode= | Enable auto-sync (run once) |
+
+After moving roam files: run =M-x org-roam-db-sync= to rebuild the database.
+
+*** How AI skills associate with an Org work item
+
+There is no automatic binding between an Org heading and a skill — the link is
+deliberate and manual, and that is the point. The flow is always:
+
+1. *Pick the work item in Org* — an ADR you're about to write (=ea=), a tech
+   spike (=ek=), a discovery session (=ed=), a security review (=ex=).
+2. *Open the client's code repo* in your AI tool (Claude Code, etc.) and load
+   its =CONTEXT.md= so the agent has the domain vocabulary.
+3. *Run the matching skill* in that repo's AI session (tables below).
+4. *Capture the outcome* back into Org with the relevant =e= key.
+
+So Org tells you /what/ and /why/; the skill helps you /do/ it; Org records the
+/outcome/. The skills live in your code repositories, never in =org-files=.
+
+*** mattpocock/skills
+
+Slash commands for focused, disciplined AI-assisted work.
+Install: =npx skills@latest add mattpocock/skills= in the project repo.
+Setup: run =/setup-matt-pocock-skills= once per repo.
+
+| Skill              | When to use                           | What it does                                                    |
+|--------------------+---------------------------------------+-----------------------------------------------------------------|
+| =/grill-me=        | Before any significant session        | Structured interview that surfaces misalignment and assumptions |
+| =/grill-with-docs= | Before working on a spec/SOW          | Anchors the grilling to a specific document                     |
+| =/zoom-out=        | When starting work in unfamiliar area | Maps the system before touching it                              |
+| =/tdd=             | Any implementation work               | Enforces red-green-refactor; no tests = no code                 |
+| =/diagnose=        | Debugging a problem                   | Systematic root-cause loop                                      |
+| =/handoff=         | Switching sessions or handing off     | Compacts context to a temp file; references artifacts by path   |
+| =/to-prd=          | Client has a rough idea               | Turns a conversation into a structured PRD                      |
+| =/to-issues=       | PRD exists                            | Breaks it into discrete trackable issues                        |
+| =/write-a-skill=   | New repeatable pattern identified     | Codifies the pattern into a reusable skill                      |
+
+The =CONTEXT.md= file (=roam/clients/<client>/CONTEXT.md=) is the domain glossary
+for a client. Load it at the start of every Claude Code session on that account.
+It stops you from re-explaining domain vocabulary every session.
+
+*** gstack (garrytan/gstack)
+
+A sprint-structured software factory. Install:
+=git clone https://github.com/garrytan/gstack ~/.claude/skills/gstack && ./setup=
+
+| Skill                   | When to use                           | What it does                                      |
+|-------------------------+---------------------------------------+---------------------------------------------------|
+| =/office-hours=         | Before committing to any direction    | Six forcing questions that challenge your framing |
+| =/autoplan=             | Starting a significant implementation | Chains CEO, engineering, and design reviews       |
+| =/plan-eng-review=      | Architecture or data flow decisions   | Engineering review with diagrams and edge cases   |
+| =/review=               | After any implementation              | Staff-engineer audit; auto-fixes obvious issues   |
+| =/cso=                  | Security posture reviews              | OWASP Top 10 + STRIDE threat model                |
+| =/qa=                   | Before any release                    | Real browser QA with regression test generation   |
+| =/retro=                | Weekly                                | Team retrospective prompt                         |
+| =/document-release=     | After deploy                          | Auto-updates all docs                             |
+| =/investigate=          | Debugging a complex issue             | Systematic root-cause analysis                    |
+| =/freeze= / =/unfreeze= | Working in sensitive areas            | Locks edits to a single directory                 |
+
+*The rule:* =/office-hours= before architecture. =/grill-me= before discovery.
+These are your calibration tools. The sessions where you feel least like you need
+them are often the sessions where you most do.
+
+** New Client Setup
+
+Client onboarding is fully automated. No manual editing of =init-org.el= needed.
+
+*** Step 1 — Run org-fractional-cto-new-client
+
+In Emacs: =M-x org-fractional-cto-new-client=
+1. Enter the client display name (e.g. "Acme Corp")
+2. Enter the client slug (lowercase, no spaces — e.g. "acme")
+
+This creates in one step:
+- =roam/clients/acme/acme.org= — operational hub with all standard sections
+- =roam/clients/acme/standup.org= — standup template with stream slots
+- =roam/clients/acme/CONTEXT.md= — context file opened immediately for editing
+- Registers the client in =org-agenda-files= automatically (no reload needed)
+
+*** Step 2 — Fill CONTEXT.md
+
+The file opens automatically after Step 1. Fill in:
+- What the product is and what you're building
+- Domain vocabulary (terms the team uses — stop re-explaining every session)
+- Tech stack as known at onboarding
+- Key people: client side and our internal stream leads
+- Active work streams and current priorities
+- Key documents and external references
+
+Load this at the start of every Claude Code session on that client's codebase.
+
+*** Step 3 — Set active client
+
+=M-x org-fractional-cto-set-active-client= → select the slug.
+
+From this point on, =C-c c e<key>= routes automatically to this client — no
+per-capture prompting. Switch between clients mid-session with =org-fractional-cto-set-active-client=.
+
+*** Step 4 — Capture key contacts
+
+- =C-c c ep= — Stakeholder profile for each client-side decision maker
+- =C-c c eP= — Team member note for each internal stream lead
+
+*** Step 5 — Tools (if doing implementation work)
+
+#+begin_src sh
+# In the client's codebase repo
+npx skills@latest add mattpocock/skills
+# /setup-matt-pocock-skills once per repo in Claude Code
+#+end_src
+
+gstack is global (=~/.claude/skills/gstack=) — no per-client install.
+
+*** First week checklist
+
+- [ ] =org-fractional-cto-new-client= run; =acme.org= and =CONTEXT.md= created
+- [ ] =CONTEXT.md= populated with domain vocab, people, and stack
+- [ ] Active client set: =M-x org-fractional-cto-set-active-client=
+- [ ] Agenda tested: =C-c a e= → should open client dashboard
+- [ ] Capture tested: =C-c c ew= → should file to =acme.org= Actions section
+- [ ] =/grill-me= run before first client conversation
+- [ ] Stakeholders captured: =C-c c ep= for all known client-side contacts
+- [ ] Team leads captured: =C-c c eP= for all stream leads
+- [ ] First internal sync scheduled (Monday cadence)
+- [ ] First client sync scheduled
+
+** Scenario Guides
+
+*** "I just had a discovery session"
+1. =C-c C-x C-o= — clock out of the session
+2. Immediately refile the capture: =C-c C-w= → client's discovery section
+3. Scan the session notes for:
+   - Risks → =er= for each
+   - Tech debt items → =et= for each
+   - Security observations → =ex= for each
+   - Innovation opportunities → =en= for each
+4. Open the master system discovery doc, update:
+   - Discovery Status table (tick the stream, add date)
+   - The relevant per-domain deep dive section
+5. If this was session 2 or 3: do a synthesis pass on cross-cutting sections
+   (tech debt aggregate, integration map, security table)
+
+*** "Something went wrong in production"
+1. =ef= — post-mortem capture, clock in immediately
+2. Fill in: what happened, severity, what is affected
+3. Assess: does this need client notification? (Critical/High severity: yes)
+4. If client notification needed: verbal first, written summary within 1 hour
+   - Frame: "here's what happened / here's what we did / here's what prevents recurrence"
+5. Internal: what process change prevents recurrence?
+6. After resolution: complete the post-mortem entry (root cause, prevention, actions)
+7. If it revealed a structural issue: =ex= (security) or =et= (tech debt)
+
+*** "Client asked for something that might be out of scope"
+1. In the meeting: "Let me come back to you on what that would look like" — never agree in the room
+2. =ee= — scope change capture immediately after the call
+3. Bring it to Monday's internal sync (=ei=)
+4. Internal assessment: in scope / out of scope / grey area? Commercial impact?
+5. Client response: frame as opportunity, not dispute
+   - "Here's what that would involve, here's what it would enable, here's how we'd approach it"
+
+*** "I want to pitch an innovation idea"
+1. =en= — capture the idea immediately, don't filter it yet
+2. Monthly pipeline review: shortlist to 1–2 ideas worth developing
+3. Develop into a brief: business opportunity → technology → why now / why this client → rough effort
+4. Run =/office-hours= (gstack) to stress-test the framing before presenting
+5. Present at the next QBR as "Strategic Recommendation"
+6. Frame: "here's what becomes possible if..." — never "here's what we could build"
+
+*** "I need to make an architecture decision"
+1. Run =/office-hours= (gstack) — challenge your own framing first
+2. =ea= — ADR capture, clock in
+3. Fill: Context (the forcing situation) → Alternatives considered → Trade-offs → Decision
+4. For any vendor/tool involved: =ev= vendor evaluation
+5. For security implications: =ex= security finding
+6. Mark the ADR status: Proposed → get relevant leads to review → Accepted
+7. Note review date — architecture decisions need scheduled re-evaluation
+
+*** "Preparing for a QBR"
+1. Three weeks before: run =/zoom-out= across the discovery doc — what's the narrative?
+2. Two weeks before: run =/office-hours= — what's the one strategic recommendation?
+3. One week before: draft QBR structure, translate all delivery into business outcomes
+   - Not "we shipped X" — "X now means the client can do Y, which reduces risk Z"
+4. Run =/grill-with-docs= on the QBR draft — where are you weak?
+5. QBR session: =eq= — clock in
+6. Within 24 hours: send written summary (non-negotiable)
+
+*** "Starting a new engagement for the first time"
+Follow the full [[*New Client Setup]] checklist above, then run Phase 0 of the
+[[file:playbook.org][Fractional CTO Playbook]].
+
+The single most important thing in the first week: run =/grill-me= (mattpocock/skills)
+before your first substantive client conversation. You will have assumptions you
+don't know you're making. Surface them before they cost you.
