@@ -1,0 +1,427 @@
+#+title: org-fractional-cto User Guide
+#+subtitle: A step-by-step walkthrough, from install to running an engagement
+#+options: toc:2 num:nil
+#+startup: overview
+
+This guide walks you through *every feature*, in the order you would actually
+meet them: install and verify, onboard a client, capture work, read the
+dashboard, look across clients, and tailor the system. It assumes you are
+comfortable in Emacs and Org (=M-x=, =C-c c= capture, the agenda dispatcher,
+editing your init file).
+
+It complements the other two documents rather than repeating them:
+
+- This *guide* is the hand-held tour — /how do I use the tool?/
+- [[file:playbook.org][playbook.org]] is the methodology — /how do I run the engagement?/
+- [[file:reference.org][reference.org]] is the lookup — /what does each capture and tag mean?/
+
+Work through it once, top to bottom, with Emacs open. Every step says what you
+should *see* so you can confirm it worked before moving on.
+
+* Before you start
+
+You need:
+
+- *Emacs 27.1+* and *Org 9.4+* (=M-x org-version=).
+- =org-capture= bound to a key. This guide assumes the conventional
+  ~C-c c~. If you have not bound it: ~(global-set-key (kbd "C-c c") #'org-capture)~.
+- =org-agenda= bound to ~C-c a~ (the Org default).
+- A directory to hold clients. The default is =<org-directory>/clients=; this
+  guide uses =~/org/clients=.
+
+Throughout, the example client is *Acme Corp* with the slug =acme=.
+
+* Step 1 — Install and verify
+
+** Install
+
+With =use-package= from a local clone:
+
+#+begin_src emacs-lisp
+(use-package org-fractional-cto
+  :load-path "~/src/org-fractional-cto"
+  :after org
+  :custom
+  (org-fractional-cto-clients-directory "~/org/clients")
+  (org-fractional-cto-author "Your Name")
+  :config
+  (org-fractional-cto-setup))
+#+end_src
+
+Or manually:
+
+#+begin_src emacs-lisp
+(add-to-list 'load-path "~/src/org-fractional-cto")
+(require 'org-fractional-cto)
+(setq org-fractional-cto-clients-directory "~/org/clients")
+(org-fractional-cto-setup)
+#+end_src
+
+=org-fractional-cto-setup= does three things: installs the =e= capture group,
+registers the dashboard agenda command, and adds your existing client
+directories to =org-agenda-files=. It is *idempotent* — safe to run again any
+time (e.g. after you edit =org-fractional-cto-dashboard-blocks=). Re-running
+refreshes the captures and the dashboard in place rather than duplicating them,
+so ~M-x org-fractional-cto-setup~ is the way to apply config changes without
+restarting Emacs.
+
+** Verify
+
+Three quick checks before you create anything:
+
+1. *Setup ran.* ~M-x org-fractional-cto-setup~ returns without error.
+2. *Dashboard is registered.* Press ~C-c a~. The dispatcher should list:
+   =E   Fractional CTO — client dashboard=. (Press =q= to dismiss.)
+3. *Captures are installed.* Press ~C-c c~. You should see
+   =e   Engagement (select client)= in the menu. (Press =C-g= to dismiss.)
+
+If all three pass, the package is live.
+
+* Step 2 — The two concepts you will lean on
+
+Before onboarding, understand the two ideas the whole workflow rests on.
+
+** The active client
+
+Almost everything is scoped to one client at a time. Instead of a key prefix
+per client, you set an *active client* once per session and every capture and
+the dashboard follow it.
+
+| Command                                      | Effect                                |
+|----------------------------------------------+---------------------------------------|
+| =M-x org-fractional-cto-set-active-client=   | Pick the client for this session      |
+| =M-x org-fractional-cto-clear-active-client= | Go back to being prompted per capture |
+| =M-x org-fractional-cto-switch-client=       | Set active *and* open its dashboard   |
+
+With an active client set, ~C-c c e ...~ and ~C-c a E~ never prompt. With none
+set, they prompt you to choose — nothing breaks, it is just one extra step.
+
+** The client hub
+
+Each client owns a directory with three files:
+
+#+begin_example
+~/org/clients/
+  acme/
+    acme.org      ← operational hub: one section per capture type
+    standup.org   ← per-client standup template (the es capture reads this)
+    CONTEXT.md    ← domain glossary, people, tech stack (load in AI sessions)
+#+end_example
+
+The hub's section headings, the capture targets, and the dashboard's queries
+are all generated from a single section list, so they agree by construction —
+you never wire a capture to a heading by hand.
+
+* Step 3 — Onboard your first client
+
+Run:
+
+: M-x org-fractional-cto-new-client
+
+You are asked for two things:
+
+1. *Client name (display)* — e.g. =Acme Corp=. Becomes the file =#+title=, the
+   top-level heading, and the agenda =:CATEGORY:=. (The =#+AUTHOR= line is set
+   separately from =org-fractional-cto-author=.)
+2. *Client slug* — e.g. =acme=. Lowercase, no spaces; it names the directory
+   and files, and is upper-cased into the Org tag (=acme= → =:ACME:=;
+   non-alphanumerics become =_=, so =acme-eu= → =:ACME_EU:=).
+
+The command then creates =acme/acme.org=, =acme/standup.org=, and
+=acme/CONTEXT.md=, adds the new directory to =org-agenda-files= immediately (no
+restart), and opens =CONTEXT.md= for you to fill in.
+
+** Walk the hub it generated
+
+Open =acme/acme.org=. At the top is a =#+TODO= line defining the workflow's
+states:
+
+#+begin_example
+#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED
+#+end_example
+
+(Note =INPROGRESS= has no hyphen — that is deliberate; see [[*Troubleshooting][Troubleshooting]].)
+
+Below the top-level =* Acme Corp Engagement :ACME:= heading is one =**= section
+per capture type — =Actions=, =Delegations=, =Blockers=, =People=, =Commitments=,
+=Risks=, =Meeting Notes=, …, =Retrospectives= — each pre-tagged with the client
+tag plus its type tag (e.g. =** Delegations :ACME:DELEGATED:=). You do not edit
+these by hand; captures file into them. Seeing the whole engagement in one
+outline is the point — fold with =overview=, expand the section you need.
+
+* Step 4 — Fill in CONTEXT.md
+
+=CONTEXT.md= is the human (and AI) brief for the engagement. It opens
+automatically after onboarding, pre-populated with section headers:
+
+- *What We're Building* — one paragraph on the product and the mandate.
+- *Domain Vocabulary* — the terms the team uses; the highest-leverage section.
+- *Tech Stack* — as known at onboarding.
+- *Key People* — client side and your side.
+- *Active Work Streams* and *Current Priorities*.
+
+Fill at least vocabulary, people, and priorities now; the rest accretes. If you
+do hands-on implementation with an AI agent, load this file at the start of each
+session so the agent speaks the client's language. It is plain Markdown so it
+travels into any tool.
+
+* Step 5 — Set the active client
+
+Back from =CONTEXT.md=:
+
+: M-x org-fractional-cto-set-active-client
+
+Choose =acme=. The echo area confirms =Active client: acme=. From here, every
+capture and the dashboard target Acme with no prompting.
+
+- =org-fractional-cto-clear-active-client= returns to per-capture prompting.
+- =org-fractional-cto-switch-client= sets a *different* client active and opens
+  its dashboard in one step — the fast path when you change context.
+
+The active client is per-session state; it resets when Emacs restarts. Set it
+once when you sit down to work on a client.
+
+* Step 6 — Your first capture, in detail
+
+Capture an action. Press ~C-c c e w~:
+
+1. ~C-c c~ opens org-capture; =e= selects the engagement group; =w= selects
+   *Action item*.
+2. You are prompted for the action text, then a deadline.
+3. Org files a =TODO= under Acme's =Actions= section, tagged =:ACME:=, stamped
+   with the creation time, and *clocks in* (the =ew= template sets =:clock-in=).
+4. Finish with ~C-c C-c~ to file it (which also clocks out), or ~C-c C-k~ to
+   abort.
+
+Open =acme.org= and confirm the new =TODO= sits under =** Actions=. That round
+trip — pick a key, answer the prompts, it lands in the right section already
+tagged — is the entire capture model. Two things make it work:
+
+- *Routing.* Each template targets a section heading by name in the active
+  client's hub. No inbox, no manual refiling.
+- *Two kinds of template.* Short captures (action, risk, commitment, …) are
+  inline; richer ones (discovery, ADR, QBR, …) are filled from a file in the
+  bundled =templates/= folder, which you can override (see [[*Step 11 — Make it yours][Step 11]]). The
+  *standup* (=es=) is special: it reads the client's own =standup.org= so you can
+  tailor the streams to the real team, falling back to the bundled template.
+
+* Step 7 — A tour of every capture, in working order
+
+All engagement captures live under ~C-c c e~. Here is the full set, grouped the
+way you use them. For each: the key, what it captures, the hub section it files
+into, and when to reach for it. (Field-by-field detail is in [[file:reference.org][reference.org]].)
+
+** Action tracking & delegation
+
+| Key  | Captures             | Files to       | Reach for it when…                          |
+|------+----------------------+----------------+---------------------------------------------|
+| =ew= | Action item (TODO)   | Actions        | A task lands on /your/ plate                 |
+| =eg= | Delegate (WAITING)   | Delegations    | You hand a task to someone — sets =WAITING= |
+| =eb= | Blocker / escalation | Blockers       | Something is blocking delivery               |
+| =eW= | Weekly review        | Weekly Reviews | Your Friday delegation + team pulse pass     |
+| =eP= | Person / team note   | People         | Capacity, a concern, or a win to record      |
+
+=eg= is the engine of the *Delegated* dashboard block: it files in the =WAITING=
+state, which is how the system separates "things I owe" from "things I am owed."
+
+** Relationship & communication
+
+| Key  | Captures            | Files to             | Reach for it when…                  |
+|------+---------------------+----------------------+-------------------------------------|
+| =es= | Standup             | Standup Notes        | Daily standup (reads =standup.org=) |
+| =em= | Client meeting      | Meeting Notes        | Any client-facing sync              |
+| =ei= | Internal sync       | Internal Syncs       | Your team's internal sync           |
+| =ec= | Commitment          | Commitments          | A promise is made (by you or them)  |
+| =ep= | Stakeholder profile | Stakeholder Profiles | Profiling a decision-maker          |
+| =eh= | Client health check | Health Checks        | Monthly pulse questions             |
+| =eM= | Metrics snapshot    | Health Checks        | Logging the week's funnel/metrics   |
+| =eq= | QBR                 | QBRs                 | Quarterly business review prep      |
+
+** Risk & delivery
+
+| Key  | Captures      | Files to       | Reach for it when…                       |
+|------+---------------+----------------+------------------------------------------|
+| =er= | Risk          | Risks          | A delivery or engagement risk appears    |
+| =ee= | Scope change  | Scope Changes  | Work surfaces outside the SOW            |
+| =ef= | Post-mortem   | Post-Mortems   | /Reactive/ — something failed             |
+| =eR= | Retrospective | Retrospectives | /Routine/ — every sprint, failure or not  |
+
+Keep =ef= and =eR= distinct: a post-mortem is written because something broke; a
+retrospective runs on cadence regardless.
+
+** Technical
+
+| Key  | Captures            | Files to               | Reach for it when…                |
+|------+---------------------+------------------------+-----------------------------------|
+| =ed= | Discovery session   | Discovery Sessions     | Interviewing a stream / mapping   |
+| =ek= | Tech spike          | Discovery Sessions     | A timeboxed technical exploration |
+| =ea= | ADR                 | Architecture Decisions | Recording a significant decision  |
+| =eD= | Quick decision      | Architecture Decisions | A lighter decision worth a record |
+| =eA= | Architecture review | Architecture Reviews   | A formal architecture health pass |
+| =ev= | Vendor evaluation   | Vendor Evaluations     | Assessing a tool or vendor        |
+| =et= | Technical debt item | Technical Debt         | You hear/see debt worth tracking  |
+| =ex= | Security finding    | Security Findings      | Any security or compliance signal |
+
+** Innovation
+
+| Key  | Captures           | Files to            | Reach for it when…              |
+|------+--------------------+---------------------+---------------------------------|
+| =en= | Innovation idea    | Innovation Pipeline | A single opportunity occurs     |
+| =eI= | Innovation meeting | Innovation Pipeline | A multi-idea ideation session   |
+
+By now you have met every capture. You do not need to memorise the table —
+~C-c c e~ shows the menu, and the mnemonic is roughly "first letter of the
+thing." The richer templates clock in automatically so your time tracking is a
+by-product of working.
+
+* Step 8 — Read your dashboard
+
+With =acme= active, press ~C-c a E~ (or ~M-x org-fractional-cto-dashboard~). You
+get a single per-client board with six blocks, in this order:
+
+1. *Next 7 days* — scheduled items and deadlines from the hub.
+2. *Delegated — awaiting response* — everything =WAITING=, deadline-sorted.
+   This is your "work I am owed" inbox; nothing should sit here a full week
+   without a check-in.
+3. *Blockers & escalations* — anything tagged =BLOCKER=.
+4. *Open actions* — your =TODO= / =NEXT= / =INPROGRESS= work, with blockers and
+   commitments filtered out so they are not double-listed.
+5. *Commitments* — promises made, by you or the client.
+6. *Active risks* — the risk register (the section container is skipped, so you
+   see the risks themselves, not the empty parent heading).
+
+Because the dashboard is a *real Org agenda command*, not a bespoke function, it
+inherits the dispatcher's powers: refresh with =r=, filter with =/=, narrow by
+tag, export, and it is sticky-agenda aware. It stays per-client by computing
+=org-agenda-files= from the active client *each time it runs* — which is why
+=switch-client= can flip the whole board to another client instantly.
+
+* Step 9 — Look across all clients
+
+The per-client dashboard is one view. For portfolio-wide questions, use the
+plain agenda dispatcher against the type tags every capture carries:
+
+| Keys             | Shows                                        |
+|------------------+----------------------------------------------|
+| ~C-c a m RISK~   | Every risk, across all clients               |
+| ~C-c a m DELEGATED~ | Everything you have delegated, anywhere   |
+| ~C-c a m BLOCKER~ | All blockers everywhere                     |
+| ~C-c a t~        | All TODOs across clients                     |
+
+The full tag legend (one tag per capture type) is in the README and
+[[file:reference.org][reference.org]]. The pattern: =C-c a m <TAG>= turns any capture type into a
+cross-client list.
+
+* Step 10 — The management commands
+
+Five commands run the lifecycle. They are available via =M-x= and also live in
+=org-fractional-cto-command-map= under the keys shown:
+
+| Map key | Command                                  | Action                         |
+|---------+------------------------------------------+--------------------------------|
+| =n=     | =org-fractional-cto-new-client=          | New client (onboard)           |
+| =s=     | =org-fractional-cto-set-active-client=   | Set active client              |
+| =k=     | =org-fractional-cto-clear-active-client= | Clear active client            |
+| =d=     | =org-fractional-cto-dashboard=           | Dashboard for active client    |
+| =w=     | =org-fractional-cto-switch-client=       | Switch client + open dashboard |
+
+The map is *not* bound to any prefix by default (=org-fractional-cto-keymap-prefix=
+is =nil=), because common prefixes like =C-c f= are already taken (Magit). Opt
+in by setting the prefix *before* =setup=:
+
+#+begin_src emacs-lisp
+(setq org-fractional-cto-keymap-prefix "C-c k")  ; then n/s/k/d/w under C-c k
+#+end_src
+
+* Step 11 — Make it yours
+
+Everything tunable lives in the =org-fractional-cto= customize group
+(~M-x customize-group RET org-fractional-cto~):
+
+| Variable                                | Default                   | Purpose                              |
+|-----------------------------------------+---------------------------+--------------------------------------|
+| =org-fractional-cto-clients-directory=  | =<org-directory>/clients= | Where engagements live               |
+| =org-fractional-cto-template-directory= | bundled =templates/=      | Capture template files               |
+| =org-fractional-cto-author=             | =user-full-name=          | =#+AUTHOR= in scaffolded files       |
+| =org-fractional-cto-agenda-key=         | ="E"                      | Dispatcher key for the dashboard     |
+| =org-fractional-cto-keymap-prefix=      | =nil=                     | Optional command-map prefix          |
+| =org-fractional-cto-dashboard-blocks=   | (6 blocks)                | The dashboard's agenda blocks        |
+
+Two customisations you are most likely to want:
+
+** Override a single template
+
+Copy the bundled =templates/= folder somewhere of your own, edit only the file
+you care about (say =adr.org=), and point the variable at your copy:
+
+#+begin_src emacs-lisp
+(setq org-fractional-cto-template-directory "~/org/ofc-templates")
+#+end_src
+
+** Reorder or extend the dashboard
+
+=org-fractional-cto-dashboard-blocks= is an ordinary list of Org agenda series
+entries. Drop a block, reorder them, or add your own — for example, a block for
+=NEXT= items first — then re-run ~M-x org-fractional-cto-setup~ to apply it (the
+install is idempotent, so this refreshes the command in place).
+
+* Step 12 — Wire in AI session skills (optional)
+
+If you also do hands-on implementation with an AI agent, two skill packs pair
+well with the workflow. They live in your *code* repositories, not here; the
+link between them and Org is the =CONTEXT.md= file plus the captured artifacts.
+The loop is: Org tells you /what/ and /why/ → the skill helps you /do/ it → you
+capture the /outcome/ back into Org. See the README's
+"Working with AI session skills" section for the per-capture skill mapping.
+
+* Step 13 — Settle into the rhythm
+
+You now know every moving part. The operating cadence ties them together:
+
+- *Daily* — attend standups (=es=), capture blockers (=eb=) as they surface.
+- *Weekly* — delegation + pulse review (=eW=); internal sync (=ei=) before any
+  client comms; client sync (=em=); sprint retro (=eR=). Clear the *Delegated*
+  block on the dashboard.
+- *Monthly* — client health check (=eh=); review the innovation pipeline (=en=).
+- *Quarterly* — QBR (=eq=); architecture health review (=eA=).
+
+The /why/ behind this cadence — the engagement phases, the "hat" model, and the
+decision frameworks — is the job of [[file:playbook.org][playbook.org]]. Read it next.
+
+* Troubleshooting
+
+- *Every capture prompts me for a client.* No active client is set. Run
+  =org-fractional-cto-set-active-client= (or =switch-client=). This is expected
+  behaviour, not a bug — it just means one extra keystroke per capture.
+
+- *An =INPROGRESS= task is missing from the dashboard's Open actions.* The
+  keyword must be exactly =INPROGRESS=, with *no hyphen*. Org's agenda match
+  language treats =-= as a boolean NOT, so a hyphenated keyword (=IN-PROGRESS=)
+  is parsed as "=IN= and not =PROGRESS=" and never matches. Scaffolded hubs use
+  the hyphen-free form; if you have an old hub, fix its =#+TODO= line and any
+  task states.
+
+- *The dashboard is empty or errors.* Confirm a client is active and that its
+  hub file exists. The dashboard scopes =org-agenda-files= to exactly the active
+  client's =<slug>.org=.
+
+- *A standup capture inserts literal =%^{...}= / =%U= text.* You are on an old
+  version where the standup was injected as a string. Update the package; the
+  standup is now read as a file template so its escapes expand normally.
+
+- *~C-c a E~ is not listed in the dispatcher.* =setup= has not run (or ran
+  before Org loaded). Ensure =org-fractional-cto-setup= runs =:after org=, then
+  re-run it — it is idempotent.
+
+- *I changed config but nothing updated.* Re-run ~M-x org-fractional-cto-setup~.
+  It refreshes captures and the dashboard in place; no restart needed.
+
+* Where to go next
+
+- [[file:playbook.org][playbook.org]] — the engagement methodology: phases, the hat model, and
+  decision frameworks (build-vs-buy, ADR triggers, scope discipline).
+- [[file:reference.org][reference.org]] — per-capture field guidance, the full tag/keyword legend, and
+  scenario guides ("I just had a discovery session", "something went wrong in
+  production", …).
+- [[file:../README.org][README.org]] — installation, the capture/tag reference tables, and AI-skill
+  integration.

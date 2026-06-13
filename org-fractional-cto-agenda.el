@@ -6,7 +6,7 @@
 ;;; Commentary:
 
 ;; The client dashboard is a first-class Org agenda custom command registered
-;; under `org-fractional-cto-agenda-key' (default "e", reached with `C-c a e').
+;; under `org-fractional-cto-agenda-key' (default "E", reached with `C-c a E').
 ;;
 ;; Being a real agenda command -- rather than a bespoke function calling
 ;; `org-agenda' -- means it inherits everything the dispatcher provides:
@@ -21,6 +21,7 @@
 ;;; Code:
 
 (require 'org-agenda)
+(require 'seq)
 
 (declare-function org-fractional-cto--select-client "org-fractional-cto")
 (declare-function org-fractional-cto-client-org-file "org-fractional-cto")
@@ -36,7 +37,7 @@
     (tags-todo "BLOCKER"
                ((org-agenda-overriding-header "Blockers & escalations")
                 (org-agenda-sorting-strategy '(priority-down deadline-up))))
-    (tags-todo "-BLOCKER-COMMITMENT/!TODO|NEXT|IN-PROGRESS"
+    (tags-todo "-BLOCKER-COMMITMENT/!TODO|NEXT|INPROGRESS"
                ((org-agenda-overriding-header "Open actions")
                 (org-agenda-sorting-strategy '(priority-down deadline-up))))
     (tags-todo "COMMITMENT"
@@ -62,7 +63,15 @@ command runs, which is what keeps the view per-client."
 
 ;;;###autoload
 (defun org-fractional-cto-agenda-install ()
-  "Register the client dashboard under `org-fractional-cto-agenda-key'."
+  "Register (or refresh) the client dashboard custom command.
+The command is bound to `org-fractional-cto-agenda-key'.
+Idempotent: any existing custom command bound to that key is removed first, so
+re-running picks up changes to `org-fractional-cto-dashboard-blocks' instead of
+leaving a stale command behind."
+  (setq org-agenda-custom-commands
+        (seq-remove (lambda (cmd)
+                      (equal (car-safe cmd) org-fractional-cto-agenda-key))
+                    org-agenda-custom-commands))
   (add-to-list
    'org-agenda-custom-commands
    `(,org-fractional-cto-agenda-key

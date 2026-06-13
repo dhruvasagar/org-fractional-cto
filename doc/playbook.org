@@ -102,7 +102,7 @@ update cross-cutting sections of the master discovery doc before memory fades.
 *** Per-session approach
 1. Run =/grill-me= or =/zoom-out= (mattpocock/skills) *before* the session to surface
    what you're assuming and what you don't know
-2. Use =C-c c d= (discovery template) to start a clocked session
+2. Use =C-c c ed= (discovery template) to start a clocked session
 3. During the session: listen for what they *don't* say as much as what they do
 4. After the session: refile the capture; update the master doc immediately
 5. After every 2–3 sessions: update cross-cutting sections (security, tech debt, integrations)
@@ -267,7 +267,7 @@ Expand the engagement scope and deepen the relationship through genuine strategi
 value — not sales pushes. The best expansions feel like the client's idea.
 
 *** Innovation pipeline approach
-1. Capture opportunities as you discover them (=C-c c n=) — never filter at capture time
+1. Capture opportunities as you discover them (=C-c c en=) — never filter at capture time
 2. Monthly: review the pipeline and select one to develop into a brief
 3. Brief format: business opportunity first, technology second, effort estimate third
 4. Present the best one at each QBR under "Strategic Recommendation"

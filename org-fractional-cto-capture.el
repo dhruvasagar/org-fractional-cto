@@ -13,6 +13,7 @@
 ;;; Code:
 
 (require 'org-capture)
+(require 'seq)
 
 (declare-function org-fractional-cto--select-client "org-fractional-cto")
 (declare-function org-fractional-cto-client-tag "org-fractional-cto")
@@ -34,21 +35,23 @@ can reference them via %(org-capture-get :ofc-client-tag)."
     (find-file file)
     (widen)
     (goto-char (point-min))
-    (unless (re-search-forward (concat "^\\*+ " (regexp-quote heading)) nil t)
+    (unless (re-search-forward
+             (concat "^\\*+ " (regexp-quote heading) "\\(?:[ \t]\\|$\\)") nil t)
       (goto-char (point-max))
       (insert (format "\n** %s\n" heading)))
     (end-of-line)))
 
-(defun org-fractional-cto--standup-template ()
-  "Return the active client's standup.org contents, or the bundled fallback."
+(defun org-fractional-cto--standup-file ()
+  "Return the active client's standup.org path, or the bundled fallback.
+Used as the file thunk for the standup capture so Org reads it as a template
+and expands its %-escapes.  Returning the file *contents* via a %(sexp) escape
+would leave any nested %^{...}, %U, %? in the standup inert (Org does not
+re-scan the result of a %(sexp) expansion)."
   (let* ((slug (org-capture-get :ofc-client-slug))
-         (file (and slug (org-fractional-cto-client-standup-file slug)))
-         (src  (if (and file (file-exists-p file))
-                   file
-                 (org-fractional-cto--template "standup.org"))))
-    (with-temp-buffer
-      (insert-file-contents src)
-      (buffer-string))))
+         (file (and slug (org-fractional-cto-client-standup-file slug))))
+    (if (and file (file-exists-p file))
+        file
+      (org-fractional-cto--template "standup.org"))))
 
 ;;;; Template helpers
 
@@ -96,7 +99,7 @@ can reference them via %(org-capture-get :ofc-client-tag)."
      :clock-in t :clock-resume t)
     ("es" "Standup" entry
      (function ,(org-fractional-cto--target "Standup Notes"))
-     "%(org-fractional-cto--standup-template)"
+     (file org-fractional-cto--standup-file)
      :clock-in t :clock-resume t)
     ("ec" "Commitment" entry
      (function ,(org-fractional-cto--target "Commitments"))
@@ -174,9 +177,17 @@ can reference them via %(org-capture-get :ofc-client-tag)."
 
 ;;;###autoload
 (defun org-fractional-cto-capture-install ()
-  "Add the `e' engagement capture group to `org-capture-templates'."
-  (dolist (template (org-fractional-cto-capture-templates))
-    (add-to-list 'org-capture-templates template t)))
+  "Add (or refresh) the `e' engagement capture group in `org-capture-templates'.
+Idempotent: any existing templates whose keys we own are removed first, so
+re-running after editing the templates updates them in place rather than
+leaving stale duplicates."
+  (let* ((templates (org-fractional-cto-capture-templates))
+         (keys (mapcar #'car templates)))
+    (setq org-capture-templates
+          (append
+           (seq-remove (lambda (entry) (member (car-safe entry) keys))
+                       org-capture-templates)
+           templates))))
 
 (provide 'org-fractional-cto-capture)
 

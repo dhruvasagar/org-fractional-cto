@@ -5,7 +5,7 @@
 #+date: [2026-06-10 Tue]
 #+STARTUP: overview
 #+OPTIONS: date:nil
-#+TODO: TODO NEXT IN-PROGRESS | DONE CANCELLED
+#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED
 
 * Engagement Reference Guide
 :PROPERTIES:
@@ -63,12 +63,12 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 *** Look up / analyse
 | I need to...                               | Do this                                         |
 |--------------------------------------------+-------------------------------------------------|
-| Client dashboard (actions, delegations)    | =C-c a e= → select client                         |
-| Delegated items awaiting response          | =C-c a e= → "Delegated — Awaiting Response" block |
-| Blockers & escalations                     | =C-c a e= → "Blockers & Escalations" block        |
-| All open TODOs for this client             | =C-c a e= → "Open Actions" block                  |
-| Open commitments                           | =C-c a e= → "Commitments" block                   |
-| Active risks                               | =C-c a e= → "Active Risks" block                  |
+| Client dashboard (actions, delegations)    | =C-c a E= → select client                         |
+| Delegated items awaiting response          | =C-c a E= → "Delegated — Awaiting Response" block |
+| Blockers & escalations                     | =C-c a E= → "Blockers & Escalations" block        |
+| All open TODOs for this client             | =C-c a E= → "Open Actions" block                  |
+| Open commitments                           | =C-c a E= → "Commitments" block                   |
+| Active risks                               | =C-c a E= → "Active Risks" block                  |
 | Set active client (avoid repeated prompts) | =M-x org-fractional-cto-set-active-client=                      |
 | Clear active client                        | =M-x org-fractional-cto-clear-active-client=                    |
 | Browse by section (meetings, risks, etc.)  | =C-x C-f <client>.org= then navigate headings   |
@@ -84,13 +84,13 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 ** Legend
 
 *** TODO keywords (client files)
-Client hubs declare: =#+TODO: TODO NEXT IN-PROGRESS WAITING | DONE CANCELLED=.
+Client hubs declare: =#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED=.
 
 | Keyword       | Meaning                                                   |
 |---------------+-----------------------------------------------------------|
 | =TODO=        | Open action you own                                       |
 | =NEXT=        | The next physical action (GTD-style)                      |
-| =IN-PROGRESS= | Actively being worked                                     |
+| =INPROGRESS=  | Actively being worked                                     |
 | =WAITING=     | *Delegated* — owned by someone else, you're tracking it   |
 | =DONE=        | Completed                                                 |
 | =CANCELLED=   | Dropped                                                   |
@@ -134,12 +134,16 @@ dashboard and =C-c a m TAG= search on these.
 
 *** Key bindings
 | ~C-c c e<key>~ | Capture (see [[*Capture Templates — Complete Reference][capture reference]]) |
-| ~C-c a e~      | Active-client dashboard                       |
+| ~C-c a E~      | Active-client dashboard                       |
 | ~C-c a m TAG~  | Match a type tag across all clients           |
-| ~C-c f n~      | New client (onboard)                          |
-| ~C-c f s~      | Set active client                             |
-| ~C-c f d~      | Dashboard for active client                   |
-| ~C-c f w~      | Switch client + open dashboard                |
+| =M-x org-fractional-cto-new-client=        | New client (onboard)            |
+| =M-x org-fractional-cto-set-active-client= | Set active client               |
+| =M-x org-fractional-cto-dashboard=         | Dashboard for active client     |
+| =M-x org-fractional-cto-switch-client=     | Switch client + open dashboard  |
+
+Management commands run via =M-x= by default (no global prefix is claimed).
+They also live in =org-fractional-cto-command-map= (keys =n s k d w=); set
+=org-fractional-cto-keymap-prefix= to bind it under a prefix of your choice.
 
 ** File Organization
 
@@ -152,7 +156,7 @@ The package (shareable, read-only to you):
 org-fractional-cto/
   org-fractional-cto.el          ← core: state, paths, keymap, setup
   org-fractional-cto-capture.el  ← the `e' capture group
-  org-fractional-cto-agenda.el   ← the C-c a e dashboard
+  org-fractional-cto-agenda.el   ← the C-c a E dashboard
   org-fractional-cto-scaffold.el ← new-client onboarding
   templates/                     ← bundled capture templates (override-able)
     client_meeting.org adr.org discovery.org delegation.org blocker.org
@@ -193,7 +197,7 @@ applies, but client work bypasses it entirely.
 
 *** The lookup flow
 
-1. *Agenda dashboard* — =C-c a e= opens the active client's dashboard: 7-day agenda,
+1. *Agenda dashboard* — =C-c a E= opens the active client's dashboard: 7-day agenda,
    delegated items awaiting response, blockers & escalations, open actions,
    commitments with deadlines, active risks. This is the daily starting point.
    (If no active client is set, it prompts you to pick one.)
@@ -286,7 +290,7 @@ a vendor from a strategic partner.
 /Use:/ A task you're taking on yourself. The fast path for ad-hoc work.
 /Clock:/ Yes.
 /Fields:/ Action description, due date (becomes a =DEADLINE=).
-/After capturing:/ Shows up in =C-c a e= → "Open Actions". Re-prioritise as needed.
+/After capturing:/ Shows up in =C-c a E= → "Open Actions". Re-prioritise as needed.
 
 **** =eg= — Delegate Action (WAITING)
 /Use:/ Any time you hand a task to a team member. This is the core delegation tool.
@@ -294,7 +298,7 @@ a vendor from a strategic partner.
 your check-in date (=SCHEDULED=), success criteria.
 /Why WAITING:/ The entry is created in the =WAITING= state, not =TODO=. This separates
 "things I owe" from "things I'm owed" — they surface in the dedicated
-"Delegated — Awaiting Response" block of =C-c a e=.
+"Delegated — Awaiting Response" block of =C-c a E=.
 /After capturing:/ The =SCHEDULED= date is your follow-up trigger. If the check-in
 passes with no update, escalate. Review every WAITING item at the Friday weekly review.
 /Discipline:/ Delegation without a check-in date is hoping, not managing. Always set one.
@@ -304,7 +308,7 @@ passes with no update, escalate. Review every WAITING item at the Friday weekly 
 /Fields:/ What is blocked, what feature/stream it blocks (=BLOCKING=), who can remove
 it (=UNBLOCK_OWNER=), root cause, options, escalation path, resolve-by deadline.
 /Priority:/ Created as =[#A] TODO=. Blockers are always top priority — they compound.
-/After capturing:/ Surfaces in =C-c a e= → "Blockers & Escalations". If unresolved by
+/After capturing:/ Surfaces in =C-c a E= → "Blockers & Escalations". If unresolved by
 the deadline, escalate via the named path (standup → internal sync → client).
 
 **** =eW= — Weekly Review
@@ -315,7 +319,7 @@ the deadline, escalate via the named path (standup → internal sync → client)
 table | Blockers to escalate | Key decisions | Team pulse | Top 3 next week | Comms to send.
 /The discipline:/ This is where you reconcile every WAITING item against reality.
 Anyone who's gone quiet gets a direct ping — don't wait for the next standup.
-/After capturing:/ Each "change/action needed" becomes a TODO. Use =C-c a e= delegated
+/After capturing:/ Each "change/action needed" becomes a TODO. Use =C-c a E= delegated
 block as the source of truth while filling the inbox table.
 
 **** =eP= — Person / Team Member Note
@@ -574,17 +578,18 @@ Your operational dashboard. Key views:
 | Key | View |
 |-----+------|
 | =C-c a a= | Day/week agenda — deadlines, scheduled items (all files) |
-| =C-c a e= | ★ Active client dashboard — delegated, blockers, actions, commitments, risks, 7-day agenda |
+| =C-c a E= | ★ Active client dashboard — delegated, blockers, actions, commitments, risks, 7-day agenda |
 | =C-c a t= | All TODO items across all agenda files |
 | =C-c a m TAGNAME= | Match by tag — e.g. =RISK=, =COMMITMENT=, =DELEGATED=, =BLOCKER= |
 | =C-c a s= | Full-text search across all agenda files |
 
-=C-c a e= is a first-class Org agenda command (so it exports, filters with =/=,
+=C-c a E= is a first-class Org agenda command (so it exports, filters with =/=,
 refreshes with =r=, etc.). It builds the dashboard dynamically for whichever
 client is active (or prompts you to pick one) — no per-client agenda config to
 maintain; new clients work the moment =org-fractional-cto-new-client= scaffolds
 them. Blocks, in order: 7-day agenda → Delegated (WAITING) → Blockers → Open
-Actions → Commitments → Active Risks. =C-c f w= switches client and opens it.
+Actions → Commitments → Active Risks. =M-x org-fractional-cto-switch-client=
+switches client and opens it.
 
 *** org-clock
 
@@ -741,7 +746,7 @@ gstack is global (=~/.claude/skills/gstack=) — no per-client install.
 - [ ] =org-fractional-cto-new-client= run; =acme.org= and =CONTEXT.md= created
 - [ ] =CONTEXT.md= populated with domain vocab, people, and stack
 - [ ] Active client set: =M-x org-fractional-cto-set-active-client=
-- [ ] Agenda tested: =C-c a e= → should open client dashboard
+- [ ] Agenda tested: =C-c a E= → should open client dashboard
 - [ ] Capture tested: =C-c c ew= → should file to =acme.org= Actions section
 - [ ] =/grill-me= run before first client conversation
 - [ ] Stakeholders captured: =C-c c ep= for all known client-side contacts

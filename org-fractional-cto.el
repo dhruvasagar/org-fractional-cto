@@ -23,7 +23,7 @@
 ;;                      kind of note -- discovery, ADRs, risks, commitments,
 ;;                      delegated tasks, blockers, retrospectives, QBRs, and
 ;;                      more -- directly into the active client's file.
-;;   3. Dashboard    -- a per-client agenda view (`C-c a e') surfacing delegated
+;;   3. Dashboard    -- a per-client agenda view (`C-c a E') surfacing delegated
 ;;                      work, blockers, open actions, commitments, and risks.
 ;;
 ;; The system is multi-client: set an "active client" once per session with
@@ -38,7 +38,7 @@
 ;;
 ;; Then:  M-x org-fractional-cto-new-client
 ;;        M-x org-fractional-cto-set-active-client
-;;        C-c c e w   (capture an action)   /   C-c a e   (open the dashboard)
+;;        C-c c e w   (capture an action)   /   C-c a E   (open the dashboard)
 ;;
 ;; See README.org for the full manual, the tag/keyword legend, and how to wire
 ;; in external AI session skills (mattpocock/skills, gstack).
@@ -83,14 +83,20 @@ path."
   :type 'string
   :group 'org-fractional-cto)
 
-(defcustom org-fractional-cto-agenda-key "e"
-  "Dispatcher key, under `C-c a', for the active-client dashboard."
+(defcustom org-fractional-cto-agenda-key "E"
+  "Dispatcher key, under `C-c a', for the active-client dashboard.
+Defaults to \"E\" (i.e. `C-c a E') because the agenda dispatcher already
+binds lowercase \"e\" to `org-store-agenda-views' (Export agenda views)."
   :type 'string
   :group 'org-fractional-cto)
 
-(defcustom org-fractional-cto-keymap-prefix "C-c f"
-  "Prefix key sequence for `org-fractional-cto-command-map'.
-Set to nil to install no prefix binding (you can bind the map yourself)."
+(defcustom org-fractional-cto-keymap-prefix nil
+  "Optional prefix key sequence for `org-fractional-cto-command-map'.
+Defaults to nil: the management commands (new client, set/clear active
+client, dashboard, switch client) are reached via `M-x' and no global key
+is claimed.  Common prefixes like `C-c f' are already taken (e.g. Magit's
+file dispatch), so opt in explicitly if you want one, or bind the map
+yourself."
   :type '(choice (key-sequence :tag "Prefix") (const :tag "None" nil))
   :group 'org-fractional-cto)
 
@@ -106,14 +112,15 @@ Set with `org-fractional-cto-set-active-client'.")
   (expand-file-name org-fractional-cto-clients-directory))
 
 (defun org-fractional-cto-clients ()
-  "Return the list of client slugs discovered on disk."
+  "Return the list of client slugs discovered on disk.
+Hidden entries (names beginning with a dot, e.g. \".git\" or \".DS_Store\") are
+skipped, matching `org-fractional-cto-agenda-files'."
   (let ((dir (org-fractional-cto--clients-dir)))
     (when (file-directory-p dir)
       (seq-filter
        (lambda (entry)
-         (and (not (member entry '("." "..")))
-              (file-directory-p (expand-file-name entry dir))))
-       (directory-files dir)))))
+         (file-directory-p (expand-file-name entry dir)))
+       (directory-files dir nil "\\`[^.]")))))
 
 (defun org-fractional-cto-client-org-file (slug)
   "Return the operational hub org file for client SLUG."

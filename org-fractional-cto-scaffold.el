@@ -18,6 +18,9 @@
 
 ;;; Code:
 
+(require 'org-agenda)
+(require 'subr-x)
+
 (declare-function org-fractional-cto-client-tag "org-fractional-cto")
 (declare-function org-fractional-cto-client-org-file "org-fractional-cto")
 (declare-function org-fractional-cto-client-standup-file "org-fractional-cto")
@@ -58,7 +61,7 @@
     (insert (format "#+title: %s\n" client-name))
     (insert (format "#+AUTHOR: %s\n" org-fractional-cto-author))
     (insert "#+STARTUP: overview\n")
-    (insert "#+TODO: TODO NEXT IN-PROGRESS WAITING | DONE CANCELLED\n")
+    (insert "#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED\n")
     (insert "#+OPTIONS: date:nil\n\n")
     (insert (format "* %s Engagement  :%s:\n" client-name tag))
     (insert (format ":PROPERTIES:\n:ID:       %s-OPS\n:CATEGORY: %s\n:END:\n\n"
@@ -100,7 +103,7 @@
       (insert "## Important Conventions\n\n")
       (insert (format "- Set active client: `M-x org-fractional-cto-set-active-client` -> \"%s\"\n" slug))
       (insert "- All captures use the `C-c c e` prefix\n")
-      (insert "- Dashboard: `C-c a e` (or `M-x org-fractional-cto-dashboard`)\n"))))
+      (insert "- Dashboard: `C-c a E` (or `M-x org-fractional-cto-dashboard`)\n"))))
 
 ;;;###autoload
 (defun org-fractional-cto-new-client (client-name slug)
@@ -113,6 +116,8 @@ CONTEXT.md, then opens CONTEXT.md for editing."
                              (replace-regexp-in-string
                               "[^a-z0-9]" "_" (downcase name)))))
      (list name slug)))
+  (when (string-empty-p (string-trim slug))
+    (user-error "Client slug must not be empty"))
   (let* ((tag     (org-fractional-cto-client-tag slug))
          (dir     (expand-file-name slug (org-fractional-cto--clients-dir)))
          (hub     (org-fractional-cto-client-org-file slug))

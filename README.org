@@ -22,7 +22,7 @@ Three moving parts, one workflow:
    discovery, ADRs, risks, commitments, delegated tasks, blockers,
    retrospectives, QBRs, innovation ideas — straight into the active client's
    file. No per-client key prefixes.
-3. *Dashboard* — a per-client agenda view (~C-c a e~) surfacing delegated work
+3. *Dashboard* — a per-client agenda view (~C-c a E~) surfacing delegated work
    awaiting response, blockers, open actions, commitments, and active risks.
 
 It is *multi-client by design*. Set an "active client" once per session and
@@ -32,7 +32,7 @@ every capture and the dashboard follow it. Switch clients with one command.
 
 - *One =e= prefix, not one prefix per client.* Adding a client never means
   editing capture config. The active-client variable does the routing.
-- *The dashboard is a real Org agenda command* (registered under ~C-c a e~), not
+- *The dashboard is a real Org agenda command* (registered under ~C-c a E~), not
   a bespoke function. It therefore inherits everything the agenda dispatcher
   gives you: it appears in the ~C-c a~ menu, it is exportable, filterable with
   =/=, refreshable with =r=, and sticky-agenda aware. It stays per-client by
@@ -68,9 +68,10 @@ Requires Emacs 27.1+ and Org 9.4+.
 (org-fractional-cto-setup)
 #+end_src
 
-=org-fractional-cto-setup= installs the captures, registers the dashboard,
-adds your client directories to =org-agenda-files=, and binds the command map
-(see [[*Key bindings & legend][Key bindings]]).
+=org-fractional-cto-setup= installs the captures, registers the dashboard, and
+adds your client directories to =org-agenda-files= (see [[*Key bindings & legend][Key bindings]]).  It binds
+the management command map only if you set =org-fractional-cto-keymap-prefix=
+(nil by default, so no global key is claimed).
 
 * Core concepts
 
@@ -78,13 +79,13 @@ adds your client directories to =org-agenda-files=, and binds the command map
 
 Most of the workflow is scoped to one client at a time.
 
-| Command                                  | Effect                                  |
-|------------------------------------------+-----------------------------------------|
-| =M-x org-fractional-cto-set-active-client= | Pick the client for this session        |
-| =M-x org-fractional-cto-clear-active-client= | Go back to being prompted per capture   |
-| =M-x org-fractional-cto-switch-client=     | Set active *and* open its dashboard     |
+| Command                                      | Effect                                |
+|----------------------------------------------+---------------------------------------|
+| =M-x org-fractional-cto-set-active-client=   | Pick the client for this session      |
+| =M-x org-fractional-cto-clear-active-client= | Go back to being prompted per capture |
+| =M-x org-fractional-cto-switch-client=       | Set active *and* open its dashboard   |
 
-With an active client set, ~C-c c e ...~ and ~C-c a e~ never prompt. With none
+With an active client set, ~C-c c e ...~ and ~C-c a E~ never prompt. With none
 set, they prompt you to choose — nothing breaks, it is just one extra step.
 
 ** The client hub
@@ -109,7 +110,10 @@ construction — they are generated from one section list.
 3. =M-x org-fractional-cto-set-active-client= → =acme=.
 4. Capture: ~C-c c e w~ (an action), ~C-c c e g~ (delegate a task), ~C-c c e d~
    (a discovery session)…
-5. Review: ~C-c a e~ opens the Acme dashboard.
+5. Review: ~C-c a E~ opens the Acme dashboard.
+
+New here and want the long way round? [[file:doc/guide.org][doc/guide.org]] is a step-by-step
+walkthrough of every feature, in order, with "what you should see" at each step.
 
 * Capture reference
 
@@ -117,62 +121,62 @@ All engagement captures are under ~C-c c e~. They file directly into the active
 client's hub.
 
 ** Action tracking & delegation
-| Key  | Captures            | Files to        |
-|------+---------------------+-----------------|
-| =ew= | Action item (TODO)  | Actions         |
-| =eg= | Delegate (WAITING)  | Delegations     |
+| Key  | Captures             | Files to       |
+|------+----------------------+----------------|
+| =ew= | Action item (TODO)   | Actions        |
+| =eg= | Delegate (WAITING)   | Delegations    |
 | =eb= | Blocker / escalation | Blockers       |
-| =eW= | Weekly review       | Weekly Reviews  |
-| =eP= | Person / team note  | People          |
+| =eW= | Weekly review        | Weekly Reviews |
+| =eP= | Person / team note   | People         |
 
 ** Relationship & communication
-| Key  | Captures            | Files to            |
-|------+---------------------+---------------------|
-| =es= | Standup             | Standup Notes       |
-| =em= | Client meeting      | Meeting Notes       |
-| =ei= | Internal sync       | Internal Syncs      |
-| =ec= | Commitment          | Commitments         |
+| Key  | Captures            | Files to             |
+|------+---------------------+----------------------|
+| =es= | Standup             | Standup Notes        |
+| =em= | Client meeting      | Meeting Notes        |
+| =ei= | Internal sync       | Internal Syncs       |
+| =ec= | Commitment          | Commitments          |
 | =ep= | Stakeholder profile | Stakeholder Profiles |
-| =eh= | Client health check | Health Checks       |
-| =eM= | Metrics snapshot    | Health Checks       |
-| =eq= | QBR                 | QBRs                |
+| =eh= | Client health check | Health Checks        |
+| =eM= | Metrics snapshot    | Health Checks        |
+| =eq= | QBR                 | QBRs                 |
 
 ** Risk & delivery
-| Key  | Captures            | Files to        |
-|------+---------------------+-----------------|
-| =er= | Risk                | Risks           |
-| =ee= | Scope change        | Scope Changes   |
-| =ef= | Post-mortem         | Post-Mortems    |
-| =eR= | Retrospective       | Retrospectives  |
+| Key  | Captures      | Files to       |
+|------+---------------+----------------|
+| =er= | Risk          | Risks          |
+| =ee= | Scope change  | Scope Changes  |
+| =ef= | Post-mortem   | Post-Mortems   |
+| =eR= | Retrospective | Retrospectives |
 
 A *post-mortem* (=ef=) is reactive — you write it because something failed. A
 *retrospective* (=eR=) is routine — you run it every sprint whether or not
 anything broke. Keep them separate.
 
 ** Technical
-| Key  | Captures              | Files to               |
-|------+-----------------------+------------------------|
-| =ed= | Discovery session     | Discovery Sessions     |
-| =ek= | Tech spike            | Discovery Sessions     |
-| =ea= | ADR                   | Architecture Decisions |
-| =eD= | Quick decision        | Architecture Decisions |
-| =eA= | Architecture review   | Architecture Reviews   |
-| =ev= | Vendor evaluation     | Vendor Evaluations     |
-| =et= | Technical debt item   | Technical Debt         |
-| =ex= | Security finding      | Security Findings      |
-| =en= | Innovation idea       | Innovation Pipeline    |
-| =eI= | Innovation meeting    | Innovation Pipeline    |
+| Key  | Captures            | Files to               |
+|------+---------------------+------------------------|
+| =ed= | Discovery session   | Discovery Sessions     |
+| =ek= | Tech spike          | Discovery Sessions     |
+| =ea= | ADR                 | Architecture Decisions |
+| =eD= | Quick decision      | Architecture Decisions |
+| =eA= | Architecture review | Architecture Reviews   |
+| =ev= | Vendor evaluation   | Vendor Evaluations     |
+| =et= | Technical debt item | Technical Debt         |
+| =ex= | Security finding    | Security Findings      |
+| =en= | Innovation idea     | Innovation Pipeline    |
+| =eI= | Innovation meeting  | Innovation Pipeline    |
 
 * The dashboard
 
-~C-c a e~ (or =M-x org-fractional-cto-dashboard=) opens the active client's
+~C-c a E~ (or =M-x org-fractional-cto-dashboard=) opens the active client's
 board. Blocks, in order:
 
 1. *Next 7 days* — scheduled items and deadlines.
 2. *Delegated — awaiting response* — everything in the =WAITING= state, sorted
    by deadline. This is "work I am owed."
 3. *Blockers & escalations* — anything tagged =BLOCKER=.
-4. *Open actions* — your =TODO=/=NEXT=/=IN-PROGRESS= work, with blockers and
+4. *Open actions* — your =TODO=/=NEXT=/=INPROGRESS= work, with blockers and
    commitments filtered out so they are not double-listed.
 5. *Commitments* — promises made, by you or the client.
 6. *Active risks* — the risk register (the section container is skipped, so you
@@ -189,21 +193,30 @@ their board in one step — the fast path for context switching.
 
 Under the agenda dispatcher (=C-c a=):
 
-| Key       | Action                                    |
-|-----------+-------------------------------------------|
-| ~C-c a e~ | Active-client dashboard                   |
-| ~C-c a t~ | All TODOs across clients                  |
+| Key           | Action                                 |
+|---------------+----------------------------------------|
+| ~C-c a E~     | Active-client dashboard                |
+| ~C-c a t~     | All TODOs across clients               |
 | ~C-c a m TAG~ | Match a tag across clients (see below) |
 
-Under the command prefix (=org-fractional-cto-keymap-prefix=, default =C-c f=):
+Management commands (run via =M-x=, or bind the map yourself — see below):
 
-| Key       | Action                                    |
-|-----------+-------------------------------------------|
-| ~C-c f n~ | New client (onboard)                      |
-| ~C-c f s~ | Set active client                         |
-| ~C-c f k~ | Clear active client                       |
-| ~C-c f d~ | Dashboard for active client               |
-| ~C-c f w~ | Switch client + open dashboard            |
+| Command                                  | Action                         |
+|------------------------------------------+--------------------------------|
+| =org-fractional-cto-new-client=          | New client (onboard)           |
+| =org-fractional-cto-set-active-client=   | Set active client              |
+| =org-fractional-cto-clear-active-client= | Clear active client            |
+| =org-fractional-cto-dashboard=           | Dashboard for active client    |
+| =org-fractional-cto-switch-client=       | Switch client + open dashboard |
+
+These also live in =org-fractional-cto-command-map= (keys =n s k d w=).  It is
+*not* bound to any prefix by default — =org-fractional-cto-keymap-prefix= is
+nil, since common prefixes like =C-c f= are already taken (e.g. Magit).  Opt in
+with, for example:
+
+#+begin_src emacs-lisp
+(setq org-fractional-cto-keymap-prefix "C-c k")  ; before org-fractional-cto-setup
+#+end_src
 
 Captures: ~C-c c e~ then the key from the [[*Capture reference][capture reference]].
 
@@ -212,17 +225,17 @@ Captures: ~C-c c e~ then the key from the [[*Capture reference][capture referenc
 Scaffolded client files declare:
 
 #+begin_example
-#+TODO: TODO NEXT IN-PROGRESS WAITING | DONE CANCELLED
+#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED
 #+end_example
 
-| Keyword       | Meaning in this workflow                                |
-|---------------+---------------------------------------------------------|
-| =TODO=        | Open action you own                                     |
-| =NEXT=        | The next physical action (GTD-style)                    |
-| =IN-PROGRESS= | Actively being worked                                   |
+| Keyword       | Meaning in this workflow                                 |
+|---------------+----------------------------------------------------------|
+| =TODO=        | Open action you own                                      |
+| =NEXT=        | The next physical action (GTD-style)                     |
+| =INPROGRESS=  | Actively being worked                                    |
 | =WAITING=     | *Delegated* — owned by someone else, you are tracking it |
-| =DONE=        | Completed                                               |
-| =CANCELLED=   | Dropped                                                 |
+| =DONE=        | Completed                                                |
+| =CANCELLED=   | Dropped                                                  |
 
 =WAITING= is load-bearing: it is what separates "things I owe" from "things I
 am owed," and it feeds the dashboard's *Delegated* block.
@@ -232,30 +245,30 @@ am owed," and it feeds the dashboard's *Delegated* block.
 Every capture is tagged with the client tag (e.g. =:ACME:=) plus a *type tag*.
 The type tags are what the dashboard and =C-c a m= search on:
 
-| Tag           | Section / capture           |
-|---------------+-----------------------------|
-| =DELEGATED=   | Delegations (=eg=)          |
-| =BLOCKER=     | Blockers (=eb=)             |
-| =COMMITMENT=  | Commitments (=ec=)          |
-| =RISK=        | Risks (=er=)                |
-| =REVIEW=      | Weekly Reviews (=eW=)       |
-| =PEOPLE=      | People (=eP=)               |
-| =MEETING=     | Meeting Notes (=em=)        |
-| =STANDUP=     | Standup Notes (=es=)        |
-| =INTERNAL=    | Internal Syncs (=ei=)       |
-| =DISCOVERY=   | Discovery Sessions (=ed=, =ek=) |
-| =STAKEHOLDER= | Stakeholder Profiles (=ep=) |
+| Tag           | Section / capture                   |
+|---------------+-------------------------------------|
+| =DELEGATED=   | Delegations (=eg=)                  |
+| =BLOCKER=     | Blockers (=eb=)                     |
+| =COMMITMENT=  | Commitments (=ec=)                  |
+| =RISK=        | Risks (=er=)                        |
+| =REVIEW=      | Weekly Reviews (=eW=)               |
+| =PEOPLE=      | People (=eP=)                       |
+| =MEETING=     | Meeting Notes (=em=)                |
+| =STANDUP=     | Standup Notes (=es=)                |
+| =INTERNAL=    | Internal Syncs (=ei=)               |
+| =DISCOVERY=   | Discovery Sessions (=ed=, =ek=)     |
+| =STAKEHOLDER= | Stakeholder Profiles (=ep=)         |
 | =ADR=         | Architecture Decisions (=ea=, =eD=) |
-| =ARCHREVIEW=  | Architecture Reviews (=eA=) |
-| =VENDOR=      | Vendor Evaluations (=ev=)   |
-| =TECHDEBT=    | Technical Debt (=et=)       |
-| =SECURITY=    | Security Findings (=ex=)    |
-| =HEALTH=      | Health Checks (=eh=, =eM=)  |
-| =QBR=         | QBRs (=eq=)                 |
-| =INNOVATION=  | Innovation Pipeline (=en=, =eI=) |
-| =SCOPE=       | Scope Changes (=ee=)        |
-| =POSTMORTEM=  | Post-Mortems (=ef=)         |
-| =RETRO=       | Retrospectives (=eR=)       |
+| =ARCHREVIEW=  | Architecture Reviews (=eA=)         |
+| =VENDOR=      | Vendor Evaluations (=ev=)           |
+| =TECHDEBT=    | Technical Debt (=et=)               |
+| =SECURITY=    | Security Findings (=ex=)            |
+| =HEALTH=      | Health Checks (=eh=, =eM=)          |
+| =QBR=         | QBRs (=eq=)                         |
+| =INNOVATION=  | Innovation Pipeline (=en=, =eI=)    |
+| =SCOPE=       | Scope Changes (=ee=)                |
+| =POSTMORTEM=  | Post-Mortems (=ef=)                 |
+| =RETRO=       | Retrospectives (=eR=)               |
 
 Example lookups: ~C-c a m RISK~ (all risks across clients), ~C-c a m DELEGATED~
 (everything you have delegated anywhere).
@@ -264,16 +277,16 @@ Example lookups: ~C-c a m RISK~ (all risks across clients), ~C-c a m DELEGATED~
 
 Standard Org priorities apply to actionable items:
 
-| Priority | Use                                          |
-|----------+----------------------------------------------|
+| Priority | Use                                               |
+|----------+---------------------------------------------------|
 | =[#A]=   | Blocking or time-critical (blockers default here) |
-| =[#B]=   | Important, not urgent                        |
-| =[#C]=   | Nice to have / backlog                       |
+| =[#B]=   | Important, not urgent                             |
+| =[#C]=   | Nice to have / backlog                            |
 
 * New client onboarding
 
-=M-x org-fractional-cto-new-client= (or ~C-c f n~) asks for a display name and a
-slug, then creates:
+=M-x org-fractional-cto-new-client= asks for a display name and a slug, then
+creates:
 
 - =<slug>/<slug>.org= — the hub, with every section pre-created and tagged.
 - =<slug>/standup.org= — a standup template you can tailor (rename the streams
@@ -285,14 +298,14 @@ The new client is added to =org-agenda-files= immediately — no restart.
 
 * Customisation
 
-| Variable                                  | Default                          | Purpose                                   |
-|-------------------------------------------+----------------------------------+-------------------------------------------|
-| =org-fractional-cto-clients-directory=    | =<org-directory>/clients=        | Where client engagements live             |
-| =org-fractional-cto-template-directory=   | bundled =templates/=             | Capture templates (override to customise) |
-| =org-fractional-cto-author=               | =user-full-name=                 | =#+AUTHOR= in scaffolded files            |
-| =org-fractional-cto-agenda-key=           | ="e"                             | Dispatcher key for the dashboard          |
-| =org-fractional-cto-keymap-prefix=        | ="C-c f"                         | Command-map prefix (nil to disable)       |
-| =org-fractional-cto-dashboard-blocks=     | (6 blocks)                       | The dashboard's agenda blocks             |
+| Variable                                | Default                   | Purpose                                        |
+|-----------------------------------------+---------------------------+------------------------------------------------|
+| =org-fractional-cto-clients-directory=  | =<org-directory>/clients= | Where client engagements live                  |
+| =org-fractional-cto-template-directory= | bundled =templates/=      | Capture templates (override to customise)      |
+| =org-fractional-cto-author=             | =user-full-name=          | =#+AUTHOR= in scaffolded files                 |
+| =org-fractional-cto-agenda-key=         | ="E"                      | Dispatcher key for the dashboard (=C-c a E=)   |
+| =org-fractional-cto-keymap-prefix=      | =nil=                     | Optional command-map prefix (unset by default) |
+| =org-fractional-cto-dashboard-blocks=   | (6 blocks)                | The dashboard's agenda blocks                  |
 
 To customise a single template, copy the bundled =templates/= folder somewhere,
 edit the file you care about, and point =org-fractional-cto-template-directory=
@@ -325,24 +338,24 @@ records the /outcome/.
 Install in the client repo: =npx skills@latest add mattpocock/skills=, then run
 =/setup-matt-pocock-skills= once.
 
-| Before this capture | Run this skill   | Why                                       |
-|---------------------+------------------+-------------------------------------------|
-| Discovery (=ed=)    | =/grill-me=      | Surface your assumptions before you anchor the interview |
-| Discovery on a doc  | =/grill-with-docs= | Same, anchored to an SOW/PRD            |
-| Any unfamiliar area | =/zoom-out=      | Map the system before touching it         |
-| Session handoff     | =/handoff=       | Compact context so the next session starts fresh |
+| Before this capture | Run this skill     | Why                                                      |
+|---------------------+--------------------+----------------------------------------------------------|
+| Discovery (=ed=)    | =/grill-me=        | Surface your assumptions before you anchor the interview |
+| Discovery on a doc  | =/grill-with-docs= | Same, anchored to an SOW/PRD                             |
+| Any unfamiliar area | =/zoom-out=        | Map the system before touching it                        |
+| Session handoff     | =/handoff=         | Compact context so the next session starts fresh         |
 
 ** [[https://github.com/garrytan/gstack][gstack]] — structure during execution
 
 Install globally: =git clone https://github.com/garrytan/gstack ~/.claude/skills/gstack && ./setup=.
 
-| Before / during this capture | Run this skill | Why                                     |
-|------------------------------+----------------+-----------------------------------------|
-| ADR / Quick decision (=ea=, =eD=) | =/office-hours= | Six forcing questions to challenge your framing |
-| Architecture review (=eA=)   | =/plan-eng-review= | Engineering review with diagrams      |
-| Security finding (=ex=)      | =/cso=          | OWASP Top 10 + STRIDE threat model      |
-| Retrospective (=eR=)         | =/retro=        | Facilitation prompt for the sprint retro |
-| After any implementation     | =/review=       | Staff-engineer audit                    |
+| Before / during this capture      | Run this skill     | Why                                             |
+|-----------------------------------+--------------------+-------------------------------------------------|
+| ADR / Quick decision (=ea=, =eD=) | =/office-hours=    | Six forcing questions to challenge your framing |
+| Architecture review (=eA=)        | =/plan-eng-review= | Engineering review with diagrams                |
+| Security finding (=ex=)           | =/cso=             | OWASP Top 10 + STRIDE threat model              |
+| Retrospective (=eR=)              | =/retro=           | Facilitation prompt for the sprint retro        |
+| After any implementation          | =/review=          | Staff-engineer audit                            |
 
 *Rule of thumb:* run =/office-hours= (gstack) or =/grill-me= (mattpocock) at the
 /start/ of any non-trivial session. The sessions where you feel you least need
@@ -353,13 +366,13 @@ them are usually the ones where you most do.
 The package encodes a role that operates across several modes ("hats"). The
 discipline is not to switch hats mid-session.
 
-| Hat                 | When                              | Captures           |
-|---------------------+-----------------------------------+--------------------|
-| Engagement Director | Client calls, QBRs, scope         | =em ec eq eh ee=   |
-| Discovery           | Stream interviews, system mapping | =ed ek=            |
-| Fractional CTO      | ADRs, roadmap, build-vs-buy       | =ea eD eA ev=      |
+| Hat                 | When                              | Captures            |
+|---------------------+-----------------------------------+---------------------|
+| Engagement Director | Client calls, QBRs, scope         | =em ec eq eh ee=    |
+| Discovery           | Stream interviews, system mapping | =ed ek=             |
+| Fractional CTO      | ADRs, roadmap, build-vs-buy       | =ea eD eA ev=       |
 | People Manager      | Delegation, standups, retros      | =eg eb eW eP es eR= |
-| QA / Security       | Coverage, compliance posture      | =ex et=            |
+| QA / Security       | Coverage, compliance posture      | =ex et=             |
 
 A typical cadence:
 
@@ -369,8 +382,11 @@ A typical cadence:
 - *Monthly*: client health check (=eh=); review the innovation pipeline (=en=).
 - *Quarterly*: QBR (=eq=); architecture health review (=eA=).
 
-This is the short version. The full methodology lives in the bundled guides:
+This is the short version. Three bundled guides go deeper:
 
+- [[file:doc/guide.org][doc/guide.org]] — the step-by-step *user guide*: install and verify, onboard a
+  client, tour every capture, read the dashboard, and tailor the system, in the
+  order you meet them. Start here if you want a walkthrough rather than a lookup.
 - [[file:doc/playbook.org][doc/playbook.org]] — the engagement phases (setup → discovery → architecture →
   operating rhythm → growth), the hat model in depth, and decision frameworks
   (build-vs-buy, ADR triggers, scope discipline).
