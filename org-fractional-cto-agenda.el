@@ -1,4 +1,4 @@
-;;; org-fractional-cto-agenda.el --- Per-client dashboard -*- lexical-binding: t; -*-
+;;; org-fractional-cto-agenda.el --- Global client dashboard -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2026 Dhruva Sagar
 ;; SPDX-License-Identifier: GPL-3.0-or-later
@@ -13,19 +13,20 @@
 ;; appears in the `C-c a' menu, exportable, filterable with `/', refreshable
 ;; with `r', sticky-agenda aware, and so on.
 ;;
-;; It stays per-client by computing `org-agenda-files' at run time from the
-;; active client (prompting if none is set): the block general-settings form
-;; `(org-agenda-files (org-fractional-cto--dashboard-files))' is evaluated each
-;; time the command runs.
+;; The dashboard spans ALL clients via `org-fractional-cto-agenda-files'.
+;; When an active client is set, `org-agenda-tag-filter-preset' is seeded with
+;; the client's tag (derived from its #+filetags) so the view opens pre-focused
+;; on that client.  The CATEGORY column shows which client each entry belongs to.
+;; Use the native agenda filter (`/') to widen, refocus, or clear the filter.
 
 ;;; Code:
 
 (require 'org-agenda)
 (require 'seq)
 
-(declare-function org-fractional-cto--select-client "org-fractional-cto")
-(declare-function org-fractional-cto-client-org-file "org-fractional-cto")
 (declare-function org-fractional-cto-agenda-files "org-fractional-cto")
+(declare-function org-fractional-cto-client-tag "org-fractional-cto")
+(defvar org-fractional-cto-active-client)
 (defvar org-fractional-cto-agenda-key)
 (defvar org-fractional-cto-pipeline-key)
 (defvar org-fractional-cto-pipeline-stages)
@@ -72,19 +73,20 @@
            ;; Show only SCOPE CHANGE entries, not the section container.
            (org-agenda-skip-function
             '(org-agenda-skip-entry-if 'notregexp "SCOPE CHANGE:")))))
-  "Agenda blocks composing the per-client dashboard.
+  "Agenda blocks composing the global Fractional CTO dashboard.
 A list of Org agenda series entries (see `org-agenda-custom-commands').  Each
-block runs against the active client's file only; reorder, drop, or extend as
-you like."
+block runs against all client files; when an active client is set the view opens
+pre-filtered to that client.  Reorder, drop, or extend as you like."
   :type '(repeat sexp)
   :group 'org-fractional-cto)
 
-(defun org-fractional-cto--dashboard-files ()
-  "Return the active client's org file as a one-element list.
-Prompts for a client when none is active.  Evaluated each time the dashboard
-command runs, which is what keeps the view per-client."
-  (list (org-fractional-cto-client-org-file
-         (org-fractional-cto--select-client))))
+(defun org-fractional-cto--active-client-filter ()
+  "Return an `org-agenda-tag-filter-preset' focusing the active client, or nil.
+With an active client the dashboard opens filtered to it; with none it opens
+global.  Widen, refocus, or clear with the native agenda filter (\\[org-agenda-filter])."
+  (when org-fractional-cto-active-client
+    (list (concat "+" (org-fractional-cto-client-tag
+                       org-fractional-cto-active-client)))))
 
 ;;;###autoload
 (defun org-fractional-cto-agenda-install ()
@@ -92,7 +94,10 @@ command runs, which is what keeps the view per-client."
 The command is bound to `org-fractional-cto-agenda-key'.
 Idempotent: any existing custom command bound to that key is removed first, so
 re-running picks up changes to `org-fractional-cto-dashboard-blocks' instead of
-leaving a stale command behind."
+leaving a stale command behind.
+The command spans all client files and, when an active client is set, opens
+pre-filtered to it via `org-agenda-tag-filter-preset'; clear or change the
+focus with the native agenda filter."
   (setq org-agenda-custom-commands
         (seq-remove (lambda (cmd)
                       (equal (car-safe cmd) org-fractional-cto-agenda-key))
@@ -102,7 +107,8 @@ leaving a stale command behind."
    `(,org-fractional-cto-agenda-key
      "Fractional CTO — client dashboard"
      ,org-fractional-cto-dashboard-blocks
-     ((org-agenda-files (org-fractional-cto--dashboard-files))))))
+     ((org-agenda-files (org-fractional-cto-agenda-files))
+      (org-agenda-tag-filter-preset (org-fractional-cto--active-client-filter))))))
 
 (defun org-fractional-cto--pipeline-skip ()
   "Agenda skip function keeping only level-1 engagement headings.

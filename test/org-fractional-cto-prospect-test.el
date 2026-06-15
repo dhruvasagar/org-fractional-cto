@@ -414,6 +414,28 @@ scaffold, so their hubs agree on every heading once slug and stage are removed."
         (goto-char (point-min))
         (should-not (re-search-forward "ofc-client-tag" nil t))))))
 
+(ert-deftest ofc-active-client-filter-preset ()
+  "The focus filter is +TAG with an active client, nil without."
+  (let ((org-fractional-cto-active-client "acme"))
+    (should (equal (org-fractional-cto--active-client-filter) '("+ACME"))))
+  (let ((org-fractional-cto-active-client nil))
+    (should (null (org-fractional-cto--active-client-filter)))))
+
+(ert-deftest ofc-dashboard-is-global-with-focus-preset ()
+  "The dashboard command spans all clients and seeds a tag-filter preset."
+  (let ((org-agenda-custom-commands nil)
+        (org-fractional-cto-clients-directory (make-temp-file "ofc-dash" t)))
+    (unwind-protect
+        (progn
+          (org-fractional-cto-agenda-install)
+          (let* ((cmd (assoc org-fractional-cto-agenda-key org-agenda-custom-commands))
+                 (settings (nth 3 cmd)))
+            (should (equal (cadr (assq 'org-agenda-files settings))
+                           '(org-fractional-cto-agenda-files)))
+            (should (equal (cadr (assq 'org-agenda-tag-filter-preset settings))
+                           '(org-fractional-cto--active-client-filter)))))
+      (delete-directory org-fractional-cto-clients-directory t))))
+
 (provide 'org-fractional-cto-prospect-test)
 
 ;;; org-fractional-cto-prospect-test.el ends here
