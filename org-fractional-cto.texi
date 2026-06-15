@@ -45,6 +45,7 @@ Guide
 * Step 1 — Install and verify::
 * Step 2 — The two concepts you will lean on::
 * Step 3 — Onboard your first client::
+* Step 3b — Capture a prospect (pre-sales)::
 * Step 4 — Fill in CONTEXT.md: Step 4 — Fill in CONTEXTmd. 
 * Step 5 — Set the active client::
 * Step 6 — Your first capture, in detail: Step 6 — Your first capture in detail. 
@@ -92,6 +93,7 @@ Step 11 — Make it yours
 Playbook
 
 * The Hat Model::
+* Phase −1 — Pre-Sales / Pipeline::
 * Phase 0 — Engagement Setup::
 * Phase 1 — Discovery::
 * Phase 2 — Architecture Assessment::
@@ -181,6 +183,7 @@ Quick Lookup — "I need to@dots{}"
 Legend
 
 * keywords (client files)::
+* Engagement stages (tag on the engagement heading)::
 * Priorities::
 * Type tags::
 * Key bindings::
@@ -306,6 +309,7 @@ should @strong{see} so you can confirm it worked before moving on.
 * Step 1 — Install and verify::
 * Step 2 — The two concepts you will lean on::
 * Step 3 — Onboard your first client::
+* Step 3b — Capture a prospect (pre-sales)::
 * Step 4 — Fill in CONTEXT.md: Step 4 — Fill in CONTEXTmd. 
 * Step 5 — Set the active client::
 * Step 6 — Your first capture, in detail: Step 6 — Your first capture in detail. 
@@ -496,6 +500,44 @@ per capture type — @samp{Actions}, @samp{Delegations}, @samp{Blockers}, @samp{
 tag plus its type tag (e.g. @samp{** Delegations :ACME:DELEGATED:}). You do not edit
 these by hand; captures file into them. Seeing the whole engagement in one
 outline is the point — fold with @samp{overview}, expand the section you need.
+
+@node Step 3b — Capture a prospect (pre-sales)
+@section Step 3b — Capture a prospect (pre-sales)
+
+A prospect is just a client at an earlier stage. Before an engagement is won you
+still want to capture calls, do research, and track follow-ups — and the
+dashboard already does that. Onboard a prospect with:
+
+@example
+M-x org-fractional-cto-new-prospect
+@end example
+
+
+It scaffolds the same hub as a client but stamps the engagement heading with the
+@samp{LEAD} stage tag, sets the prospect active, and opens the @strong{pre-sales call}
+capture (@samp{el}) so you record the conversation immediately. From there:
+
+@itemize
+@item
+@samp{C-c c el} — capture each pre-sales call (the ask, pain, signals, next step).
+@item
+@samp{C-c c eo} — log research findings as you learn about the company, market, and
+tech. Fold the durable facts into @samp{CONTEXT.md}.
+@item
+@samp{C-c c eF} — record a fit / qualification verdict (Pursue / Hold / Pass).
+@item
+@samp{C-c c ew} / @samp{eg} / @samp{eb} — ordinary actions, delegations, and blockers work
+here too, so your pre-sales follow-ups land on the dashboard like any work.
+@end itemize
+
+As the prospect advances, move the stage with @samp{M-x org-fractional-cto-set-stage}
+(@samp{LEAD} → @samp{QUALIFIED} → @samp{ACTIVE} when you win, or @samp{LOST}). Across all clients,
+@samp{C-c a P} shows the whole pipeline — every @samp{LEAD} / @samp{QUALIFIED} engagement, one
+line each.
+
+If you have hubs created before stages existed, run @samp{M-x
+org-fractional-cto-upgrade-hub} on each to add the new sections and an @samp{ACTIVE}
+stage tag.
 
 @node Step 4 — Fill in CONTEXTmd
 @section Step 4 — Fill in CONTEXT.md
@@ -1045,6 +1087,7 @@ The playbook operates across five phases. Each phase has a dominant @strong{hat}
 
 @menu
 * The Hat Model::
+* Phase −1 — Pre-Sales / Pipeline::
 * Phase 0 — Engagement Setup::
 * Phase 1 — Discovery::
 * Phase 2 — Architecture Assessment::
@@ -1126,6 +1169,34 @@ in both directions.
 @strong{Rule:} Run @samp{/office-hours} (gstack) or @samp{/grill-me} (mattpocock) at the @strong{start} of any
 non-trivial session. These are your calibration tools. Skip them when you feel rushed.
 That's exactly when you need them most.
+
+@node Phase −1 — Pre-Sales / Pipeline
+@section Phase −1 — Pre-Sales / Pipeline
+
+@emph{Before the engagement exists. Hat: Trusted Advisor (selling by helping).}
+
+You meet a prospect with almost no information. The goal is to capture
+everything you hear, research to fill the gaps, and decide whether to pursue —
+without yet committing to the deep, team-by-team discovery of Phase 1.
+
+@itemize
+@item
+@samp{M-x org-fractional-cto-new-prospect} — create the prospect at @samp{LEAD} stage.
+@item
+@samp{C-c c el} — capture each pre-sales call: the ask in their words, pain
+points, budget/timing signals, decision-makers, and the next step.
+@item
+@samp{C-c c eo} — log research findings (company, market, competitors, tech hints,
+funding, people). Promote durable facts into @samp{CONTEXT.md}.
+@item
+@samp{C-c c eF} — a fit/qualification scorecard ending in a verdict: Pursue, Hold,
+or Pass. On Pursue, note what to validate in the first deep discovery (@samp{ed}).
+@end itemize
+
+Advance the stage as conviction grows (@samp{M-x org-fractional-cto-set-stage}:
+@samp{LEAD} → @samp{QUALIFIED}), and @samp{C-c a P} is your funnel board across all prospects.
+When you win, @samp{set-stage} → @samp{ACTIVE} and proceed to Phase 0 — the hub, its
+history, and every captured artifact carry straight over.
 
 @node Phase 0 — Engagement Setup
 @section Phase 0 — Engagement Setup
@@ -1949,6 +2020,15 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 @item Quick action / TODO
 @tab @samp{C-c c ew}
 @tab <client>.org → Actions
+@item Pre-sales call / lead intake
+@tab @samp{C-c c el}
+@tab <client>.org → Pre-Sales Notes
+@item Research note
+@tab @samp{C-c c eo}
+@tab <client>.org → Research
+@item Fit / qualification
+@tab @samp{C-c c eF}
+@tab <client>.org → Qualification
 @item Delegate a task (WAITING)
 @tab @samp{C-c c eg}
 @tab <client>.org → Delegations
@@ -2042,6 +2122,10 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 @tab @samp{M-x org-fractional-cto-delegate-at-point}
 @item Raise a blocker against it
 @tab @samp{M-x org-fractional-cto-block-at-point}
+@item Create a new prospect (LEAD)
+@tab @samp{M-x org-fractional-cto-new-prospect}
+@item Set the engagement stage
+@tab @samp{M-x org-fractional-cto-set-stage}
 @end multitable
 
 @node Look up / analyse
@@ -2066,6 +2150,8 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 @tab @samp{M-x org-fractional-cto-set-active-client}
 @item Clear active client
 @tab @samp{M-x org-fractional-cto-clear-active-client}
+@item Prospect pipeline (all leads)
+@tab @samp{C-c a P} (or @samp{M-x org-fractional-cto-pipeline})
 @item Browse by section (meetings, risks, etc.)
 @tab @samp{C-x C-f <client>.org} then navigate headings
 @item Find a specific past note or doc
@@ -2091,6 +2177,7 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 
 @menu
 * keywords (client files)::
+* Engagement stages (tag on the engagement heading)::
 * Priorities::
 * Type tags::
 * Key bindings::
@@ -2121,6 +2208,30 @@ Client hubs declare: @samp{#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED
 @samp{WAITING} is load-bearing: it separates "things I owe" from "things I'm owed,"
 and feeds the dashboard's @strong{Delegated} block.
 
+@node Engagement stages (tag on the engagement heading)
+@subsection Engagement stages (tag on the engagement heading)
+
+One stage tag sits on the top @samp{* … Engagement} heading and is inherited by the
+whole tree. Switch it with @samp{M-x org-fractional-cto-set-stage}.
+
+@multitable {aaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Stage
+@tab Meaning
+@item @samp{LEAD}
+@tab Captured from a pre-sales call; raw
+@item @samp{QUALIFIED}
+@tab Researched and worth pursuing (pre-contract)
+@item @samp{ACTIVE}
+@tab Won / engaged — the default for new-client
+@item @samp{LOST}
+@tab Did not convert
+@item @samp{DORMANT}
+@tab Paused / on hold
+@end multitable
+
+The pipeline view (@samp{C-c a P}) lists every @samp{LEAD=/=QUALIFIED} engagement across
+all clients, one line per prospect.
+
 @node Priorities
 @subsection Priorities
 
@@ -2139,7 +2250,7 @@ and feeds the dashboard's @strong{Delegated} block.
 Every capture carries the client tag (e.g. @samp{:ACME:}) plus a @strong{type tag}. The
 dashboard and @samp{C-c a m TAG} search on these.
 
-@multitable {aaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@multitable {aaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
 @headitem Tag
 @tab Section / capture
 @item @samp{DELEGATED}
@@ -2186,6 +2297,12 @@ dashboard and @samp{C-c a m TAG} search on these.
 @tab Post-Mortems (@samp{ef})
 @item @samp{RETRO}
 @tab Retrospectives (@samp{eR})
+@item @samp{PRESALES}
+@tab Pre-Sales Notes (@samp{el})
+@item @samp{RESEARCH}
+@tab Research (@samp{eo})
+@item @samp{QUALIFICATION}
+@tab Qualification (@samp{eF})
 @end multitable
 
 @node Key bindings
@@ -2206,6 +2323,14 @@ dashboard and @samp{C-c a m TAG} search on these.
 @tab Dashboard for active client
 @item @samp{M-x org-fractional-cto-switch-client}
 @tab Switch client + open dashboard
+@item @samp{M-x org-fractional-cto-new-prospect}
+@tab New prospect (LEAD stage)
+@item @samp{M-x org-fractional-cto-set-stage}
+@tab Set engagement stage
+@item @samp{M-x org-fractional-cto-upgrade-hub}
+@tab Upgrade an old hub in place
+@item @samp{C-c a P}
+@tab Prospect pipeline (all leads)
 @item @samp{M-x org-fractional-cto-delegate-at-point}
 @tab Delegate the heading at point
 @item @samp{M-x org-fractional-cto-block-at-point}
@@ -2213,7 +2338,7 @@ dashboard and @samp{C-c a m TAG} search on these.
 @end multitable
 
 Management commands run via @samp{M-x} by default (no global prefix is claimed).
-They also live in @samp{org-fractional-cto-command-map} (keys @samp{n s k d w g b h}); set
+They also live in @samp{org-fractional-cto-command-map} (keys @samp{n s k d w p S g b h}); set
 @samp{org-fractional-cto-keymap-prefix} to bind it under a prefix of your choice.
 @samp{g} and @samp{b} act on the Org heading at point; the rest are session-level.
 
