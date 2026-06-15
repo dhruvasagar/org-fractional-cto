@@ -63,6 +63,18 @@
     (should-error (org-fractional-cto--scaffold "Acme Corp" "acme" "BOGUS")
                   :type 'user-error)))
 
+(ert-deftest ofc-new-prospect-engagement-is-lead ()
+  (ofc-prospect-test-with-clients-dir
+    (org-fractional-cto-new-prospect "Beta Co" "beta")
+    (should (equal org-fractional-cto-active-client "beta"))
+    (find-file (org-fractional-cto-client-org-file "beta"))
+    (goto-char (point-min))
+    (org-mode)
+    (should (re-search-forward "^\\* Beta Co Engagement" nil t))
+    (org-back-to-heading t)
+    (should (member "LEAD" (org-get-tags nil t)))
+    (should (member "BETA" (org-get-tags nil t)))))
+
 (provide 'org-fractional-cto-prospect-test)
 
 ;;; org-fractional-cto-prospect-test.el ends here

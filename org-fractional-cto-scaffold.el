@@ -159,6 +159,19 @@ CONTEXT.md, then opens CONTEXT.md for editing."
   (message "Engagement '%s' created.  Fill in CONTEXT.md, then M-x org-fractional-cto-set-active-client."
            client-name))
 
+;;;###autoload
+(defun org-fractional-cto-new-prospect (client-name slug)
+  "Scaffold a new LEAD-stage prospect for CLIENT-NAME under SLUG.
+Identical to `org-fractional-cto-new-client' but starts at the LEAD stage,
+sets the prospect active, and (called interactively) opens the pre-sales call
+capture so the first conversation is recorded immediately."
+  (interactive (org-fractional-cto--read-name-and-slug))
+  (org-fractional-cto--scaffold client-name slug org-fractional-cto-lead-stage)
+  (org-fractional-cto-set-active-client slug)
+  (if (called-interactively-p 'any)
+      (org-capture nil "el")
+    slug))
+
 (provide 'org-fractional-cto-scaffold)
 
 ;;; org-fractional-cto-scaffold.el ends here
