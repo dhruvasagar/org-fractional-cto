@@ -47,6 +47,17 @@
     (org-back-to-heading t)
     (org-get-heading t t t t)))
 
+(defun org-fractional-cto--context-heading-title ()
+  "Return the heading title for the current context, or nil if unavailable.
+In an agenda buffer, read it from the entry the current line points to; in an
+Org buffer, read the heading at point.  Returns nil rather than signalling when
+point is not on a usable heading, so it is safe as an `interactive' default."
+  (ignore-errors
+    (if (derived-mode-p 'org-agenda-mode)
+        (org-agenda-with-point-at-orig-entry nil
+          (org-fractional-cto--heading-title))
+      (org-fractional-cto--heading-title))))
+
 (defun org-fractional-cto--inactive-timestamp ()
   "Return the current time as an inactive Org timestamp string."
   (format-time-string "[%Y-%m-%d %a %H:%M]"))
@@ -152,7 +163,7 @@ action itself.
 WHAT describes what is blocked; OWNER (optional) is who can clear it; RESOLVE-BY
 \(optional) is a date string set as the blocker's DEADLINE."
   (interactive
-   (list (read-string "What is blocked? " (org-fractional-cto--heading-title))
+   (list (read-string "What is blocked? " (org-fractional-cto--context-heading-title))
          (read-string "Who can remove this blocker? ")
          (when (y-or-n-p "Set a resolve-by deadline? ")
            (org-read-date nil nil nil "Resolve by"))))

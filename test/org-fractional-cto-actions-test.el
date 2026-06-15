@@ -181,6 +181,65 @@
           (kill-buffer b)))
       (delete-directory dir t))))
 
+(ert-deftest ofc-context-heading-title-from-agenda ()
+  "The context heading-title helper reads the entry from an agenda line."
+  (let* ((dir (make-temp-file "ofc-cht" t))
+         (file (expand-file-name "acme.org" dir))
+         (org-agenda-files (list file)))
+    (unwind-protect
+        (progn
+          (with-temp-file file
+            (insert "#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED\n")
+            (insert "#+filetags: :ACME:\n\n")
+            (insert "* TODO Ship the thing\n"))
+          (org-todo-list)
+          (set-buffer org-agenda-buffer-name)
+          (goto-char (point-min))
+          (should (re-search-forward "Ship the thing" nil t))
+          (beginning-of-line)
+          (should (equal (org-fractional-cto--context-heading-title)
+                         "Ship the thing")))
+      (when (get-buffer org-agenda-buffer-name)
+        (kill-buffer org-agenda-buffer-name))
+      (dolist (b (buffer-list))
+        (when (and (buffer-file-name b)
+                   (string-prefix-p (file-truename dir)
+                                    (file-truename (buffer-file-name b))))
+          (with-current-buffer b (set-buffer-modified-p nil))
+          (kill-buffer b)))
+      (delete-directory dir t))))
+
+(ert-deftest ofc-block-at-point-from-agenda ()
+  "Blocking from an agenda line files a BLOCKER into the source hub."
+  (let* ((dir (make-temp-file "ofc-blkag" t))
+         (file (expand-file-name "acme.org" dir))
+         (org-agenda-files (list file)))
+    (unwind-protect
+        (progn
+          (with-temp-file file
+            (insert "#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED\n")
+            (insert "#+filetags: :ACME:\n\n")
+            (insert "* TODO Ship the thing\n")
+            (insert "** Blockers  :BLOCKER:\n"))
+          (org-todo-list)
+          (set-buffer org-agenda-buffer-name)
+          (goto-char (point-min))
+          (should (re-search-forward "Ship the thing" nil t))
+          (beginning-of-line)
+          (org-fractional-cto-block-at-point "Payments API down" "Dave" nil)
+          (with-current-buffer (find-file-noselect file)
+            (goto-char (point-min))
+            (should (re-search-forward "BLOCKER: Payments API down" nil t))))
+      (when (get-buffer org-agenda-buffer-name)
+        (kill-buffer org-agenda-buffer-name))
+      (dolist (b (buffer-list))
+        (when (and (buffer-file-name b)
+                   (string-prefix-p (file-truename dir)
+                                    (file-truename (buffer-file-name b))))
+          (with-current-buffer b (set-buffer-modified-p nil))
+          (kill-buffer b)))
+      (delete-directory dir t))))
+
 (provide 'org-fractional-cto-actions-test)
 
 ;;; org-fractional-cto-actions-test.el ends here
