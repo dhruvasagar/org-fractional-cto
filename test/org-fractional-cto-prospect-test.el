@@ -75,6 +75,26 @@
     (should (member "LEAD" (org-get-tags nil t)))
     (should (member "BETA" (org-get-tags nil t)))))
 
+(ert-deftest ofc-set-stage-replaces-stage-tag ()
+  (ofc-prospect-test-with-clients-dir
+    (org-fractional-cto-new-client "Acme Corp" "acme")
+    (setq org-fractional-cto-active-client "acme")
+    (org-fractional-cto-set-stage "QUALIFIED")
+    (find-file (org-fractional-cto-client-org-file "acme"))
+    (goto-char (point-min))
+    (org-mode)
+    (re-search-forward "^\\* Acme Corp Engagement")
+    (org-back-to-heading t)
+    (should (member "QUALIFIED" (org-get-tags nil t)))
+    (should-not (member "ACTIVE" (org-get-tags nil t)))
+    (should (member "ACME" (org-get-tags nil t)))))
+
+(ert-deftest ofc-set-stage-rejects-unknown ()
+  (ofc-prospect-test-with-clients-dir
+    (org-fractional-cto-new-client "Acme Corp" "acme")
+    (setq org-fractional-cto-active-client "acme")
+    (should-error (org-fractional-cto-set-stage "BOGUS") :type 'user-error)))
+
 (provide 'org-fractional-cto-prospect-test)
 
 ;;; org-fractional-cto-prospect-test.el ends here

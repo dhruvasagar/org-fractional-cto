@@ -213,6 +213,7 @@ picked up automatically."
 (require 'org-fractional-cto-capture)
 (require 'org-fractional-cto-agenda)
 (require 'org-fractional-cto-scaffold)
+(require 'org-fractional-cto-stage)
 (require 'org-fractional-cto-actions)
 (require 'org-fractional-cto-doc)
 
