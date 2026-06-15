@@ -41,17 +41,27 @@ can reference them via %(org-capture-get :ofc-client-tag)."
       (insert (format "\n** %s\n" heading)))
     (end-of-line)))
 
-(defun org-fractional-cto--standup-file ()
-  "Return the active client's standup.org path, or the bundled fallback.
-Used as the file thunk for the standup capture so Org reads it as a template
-and expands its %-escapes.  Returning the file *contents* via a %(sexp) escape
-would leave any nested %^{...}, %U, %? in the standup inert (Org does not
-re-scan the result of a %(sexp) expansion)."
+(defun org-fractional-cto--file-contents (path)
+  "Return the contents of PATH as a string, for use as a capture template.
+A capture entry's template must be a literal string, a (file \"literal-path\")
+form, or a (function FN) form -- there is no (file FN) form.  We therefore read
+the file ourselves and hand Org the text via a (function ...) template, which
+Org re-scans so the standup's %^{...}, %U and %? escapes expand normally."
+  (with-temp-buffer
+    (insert-file-contents path)
+    (buffer-string)))
+
+(defun org-fractional-cto--standup-template ()
+  "Return the active client's standup.org contents, or the bundled fallback.
+Used as a (function ...) capture template so Org re-scans and expands the
+%-escapes in the returned text -- unlike a %(sexp) escape, whose result Org
+would insert verbatim, leaving any nested %^{...}, %U or %? inert."
   (let* ((slug (org-capture-get :ofc-client-slug))
          (file (and slug (org-fractional-cto-client-standup-file slug))))
-    (if (and file (file-exists-p file))
-        file
-      (org-fractional-cto--template "standup.org"))))
+    (org-fractional-cto--file-contents
+     (if (and file (file-exists-p file))
+         file
+       (org-fractional-cto--template "standup.org")))))
 
 ;;;; Template helpers
 
@@ -60,8 +70,11 @@ re-scan the result of a %(sexp) expansion)."
   (lambda () (org-fractional-cto--capture-to-heading heading)))
 
 (defun org-fractional-cto--file (filename)
-  "Return a capture template-file thunk resolving to FILENAME."
-  (lambda () (org-fractional-cto--template filename)))
+  "Return a capture-template thunk yielding the contents of bundled FILENAME.
+Use it in the (function ...) template position; the contents are read at
+capture time so Org expands the file's %-escapes."
+  (lambda () (org-fractional-cto--file-contents
+              (org-fractional-cto--template filename))))
 
 ;;;; The templates
 
@@ -76,13 +89,13 @@ re-scan the result of a %(sexp) expansion)."
      :clock-in t :clock-resume t)
     ("eg" "Delegate action (WAITING)" entry
      (function ,(org-fractional-cto--target "Delegations"))
-     (file ,(org-fractional-cto--file "delegation.org")))
+     (function ,(org-fractional-cto--file "delegation.org")))
     ("eb" "Blocker / escalation" entry
      (function ,(org-fractional-cto--target "Blockers"))
-     (file ,(org-fractional-cto--file "blocker.org")))
+     (function ,(org-fractional-cto--file "blocker.org")))
     ("eW" "Weekly review" entry
      (function ,(org-fractional-cto--target "Weekly Reviews"))
-     (file ,(org-fractional-cto--file "weekly_review.org"))
+     (function ,(org-fractional-cto--file "weekly_review.org"))
      :clock-in t :clock-resume t)
     ("eP" "Person / team member note" entry
      (function ,(org-fractional-cto--target "People"))
@@ -91,15 +104,15 @@ re-scan the result of a %(sexp) expansion)."
     ;; -- Relationship & communication -------------------------------------
     ("em" "Client meeting" entry
      (function ,(org-fractional-cto--target "Meeting Notes"))
-     (file ,(org-fractional-cto--file "client_meeting.org"))
+     (function ,(org-fractional-cto--file "client_meeting.org"))
      :clock-in t :clock-resume t)
     ("ei" "Internal sync" entry
      (function ,(org-fractional-cto--target "Internal Syncs"))
-     (file ,(org-fractional-cto--file "internal_sync.org"))
+     (function ,(org-fractional-cto--file "internal_sync.org"))
      :clock-in t :clock-resume t)
     ("es" "Standup" entry
      (function ,(org-fractional-cto--target "Standup Notes"))
-     (file org-fractional-cto--standup-file)
+     (function org-fractional-cto--standup-template)
      :clock-in t :clock-resume t)
     ("ec" "Commitment" entry
      (function ,(org-fractional-cto--target "Commitments"))
@@ -107,7 +120,7 @@ re-scan the result of a %(sexp) expansion)."
      :clock-in t :clock-resume t)
     ("ep" "Stakeholder profile" entry
      (function ,(org-fractional-cto--target "Stakeholder Profiles"))
-     (file ,(org-fractional-cto--file "stakeholder.org"))
+     (function ,(org-fractional-cto--file "stakeholder.org"))
      :clock-in t :clock-resume t)
     ("eh" "Client health check" entry
      (function ,(org-fractional-cto--target "Health Checks"))
@@ -117,7 +130,7 @@ re-scan the result of a %(sexp) expansion)."
      "* METRICS %^{Date|%<%Y-%m-%d>} :%(org-capture-get :ofc-client-tag):METRICS:\n%U\n\n** Funnel\n| Metric | Value | vs. Last Week | Notes |\n|--------+-------+---------------+-------|\n|        |       |               |       |\n\n** Observations\n%?\n\n** Actions Triggered\n- [ ]\n")
     ("eq" "QBR" entry
      (function ,(org-fractional-cto--target "QBRs"))
-     (file ,(org-fractional-cto--file "qbr.org"))
+     (function ,(org-fractional-cto--file "qbr.org"))
      :clock-in t :clock-resume t)
 
     ;; -- Risk & delivery --------------------------------------------------
@@ -132,32 +145,32 @@ re-scan the result of a %(sexp) expansion)."
      "* POST-MORTEM: %^{Incident title} :%(org-capture-get :ofc-client-tag):POSTMORTEM:\n%U\nDate: %^{Incident date}\nSeverity: %^{Severity|Critical|High|Medium|Low}\nAffected: %^{What was affected}\n\n** What Happened\n%?\n\n** Root Cause\n\n** How We Fixed It\n\n** Prevention\n- [ ]\n")
     ("eR" "Retrospective" entry
      (function ,(org-fractional-cto--target "Retrospectives"))
-     (file ,(org-fractional-cto--file "retrospective.org"))
+     (function ,(org-fractional-cto--file "retrospective.org"))
      :clock-in t :clock-resume t)
 
     ;; -- Technical --------------------------------------------------------
     ("ed" "Discovery session" entry
      (function ,(org-fractional-cto--target "Discovery Sessions"))
-     (file ,(org-fractional-cto--file "discovery.org"))
+     (function ,(org-fractional-cto--file "discovery.org"))
      :clock-in t :clock-resume t)
     ("ek" "Tech spike" entry
      (function ,(org-fractional-cto--target "Discovery Sessions"))
-     (file ,(org-fractional-cto--file "tech_spike.org"))
+     (function ,(org-fractional-cto--file "tech_spike.org"))
      :clock-in t :clock-resume t)
     ("ea" "ADR" entry
      (function ,(org-fractional-cto--target "Architecture Decisions"))
-     (file ,(org-fractional-cto--file "adr.org"))
+     (function ,(org-fractional-cto--file "adr.org"))
      :clock-in t :clock-resume t)
     ("eD" "Quick decision" entry
      (function ,(org-fractional-cto--target "Architecture Decisions"))
      "* DECISION: %^{Decision} :%(org-capture-get :ofc-client-tag):DECISION:\n%U\nMade by: %^{Who}\nContext: %^{What prompted this}\n\n** Decision\n%?\n\n** Rationale\n\n** Alternatives Rejected\n\n** Revisit if\n")
     ("eA" "Architecture review" entry
      (function ,(org-fractional-cto--target "Architecture Reviews"))
-     (file ,(org-fractional-cto--file "arch_review.org"))
+     (function ,(org-fractional-cto--file "arch_review.org"))
      :clock-in t :clock-resume t)
     ("ev" "Vendor eval" entry
      (function ,(org-fractional-cto--target "Vendor Evaluations"))
-     (file ,(org-fractional-cto--file "vendor_eval.org"))
+     (function ,(org-fractional-cto--file "vendor_eval.org"))
      :clock-in t :clock-resume t)
     ("et" "Tech debt item" entry
      (function ,(org-fractional-cto--target "Technical Debt"))
@@ -172,7 +185,7 @@ re-scan the result of a %(sexp) expansion)."
      "* INNOVATION IDEA: %^{Title} :%(org-capture-get :ofc-client-tag):INNOVATION:\n%U\nCategory: %^{Category|AI/ML|Data|Platform|Integration|Other}\n\n** The Opportunity\n%?\n\n** The Technology\n\n** Why Now / Why This Client\n\n** Rough Effort\n\n** Next Step\n")
     ("eI" "Innovation meeting" entry
      (function ,(org-fractional-cto--target "Innovation Pipeline"))
-     (file ,(org-fractional-cto--file "innovation_meeting.org"))
+     (function ,(org-fractional-cto--file "innovation_meeting.org"))
      :clock-in t :clock-resume t)))
 
 ;;;###autoload
