@@ -183,6 +183,32 @@
           (should (assoc org-fractional-cto-agenda-key org-agenda-custom-commands)))
       (delete-directory org-fractional-cto-clients-directory t))))
 
+(defun ofc-test-hub-skeleton (slug client-tag)
+  "Return SLUG's hub heading lines with CLIENT-TAG and stage tags stripped.
+Normalizing those away lets two hubs that differ only in slug and stage be
+compared for structural equality."
+  (with-temp-buffer
+    (insert-file-contents (org-fractional-cto-client-org-file slug))
+    (goto-char (point-min))
+    (let (heads)
+      (while (re-search-forward "^\\*+ .*$" nil t)
+        (let ((line (match-string 0)))
+          (setq line (replace-regexp-in-string (concat client-tag ":") "" line))
+          (dolist (s org-fractional-cto-stages)
+            (setq line (replace-regexp-in-string (concat s ":") "" line)))
+          (push line heads)))
+      (nreverse heads))))
+
+(ert-deftest ofc-prospect-hub-structure-matches-client ()
+  "A prospect hub is structurally identical to a client hub but for the stage.
+This is the architectural keystone: new-prospect and new-client share one
+scaffold, so their hubs agree on every heading once slug and stage are removed."
+  (ofc-prospect-test-with-clients-dir
+    (org-fractional-cto-new-client "Acme Corp" "acme")
+    (org-fractional-cto-new-prospect "Acme Corp" "acme2")
+    (should (equal (ofc-test-hub-skeleton "acme" "ACME")
+                   (ofc-test-hub-skeleton "acme2" "ACME2")))))
+
 (provide 'org-fractional-cto-prospect-test)
 
 ;;; org-fractional-cto-prospect-test.el ends here
