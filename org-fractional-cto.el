@@ -127,6 +127,13 @@ Exactly one is present at a time; `org-fractional-cto-set-stage' switches it."
   :type 'string
   :group 'org-fractional-cto)
 
+(defcustom org-fractional-cto-set-tag-inheritance t
+  "When non-nil, `org-fractional-cto-setup' enables agenda tag inheritance.
+Filetag-based client focus on the dashboard relies on inherited tags being
+visible to the agenda filter.  Set to nil to manage tag inheritance yourself."
+  :type 'boolean
+  :group 'org-fractional-cto)
+
 (defcustom org-fractional-cto-todo-keywords
   '((sequence "TODO" "NEXT" "INPROGRESS" "WAITING" "|" "DONE" "CANCELLED"))
   "TODO keyword sequences the workflow relies on.
@@ -319,12 +326,19 @@ into `org-todo-keyword-faces'.  Idempotent."
     (unless (assoc (car face) org-todo-keyword-faces)
       (add-to-list 'org-todo-keyword-faces face))))
 
+(defun org-fractional-cto--install-tag-inheritance ()
+  "Enable agenda tag inheritance when `org-fractional-cto-set-tag-inheritance'.
+Makes the inherited client filetag filterable in the dashboard."
+  (when org-fractional-cto-set-tag-inheritance
+    (setq org-agenda-use-tag-inheritance t)))
+
 ;;;###autoload
 (defun org-fractional-cto-setup ()
   "Install captures, the dashboard agenda command, and key bindings.
 Call once from your init file, after Org is available."
   (interactive)
   (org-fractional-cto--install-todo-keywords)
+  (org-fractional-cto--install-tag-inheritance)
   (org-fractional-cto-capture-install)
   (org-fractional-cto-agenda-install)
   (org-fractional-cto-pipeline-install)

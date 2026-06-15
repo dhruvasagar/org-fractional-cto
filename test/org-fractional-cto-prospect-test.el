@@ -436,6 +436,13 @@ scaffold, so their hubs agree on every heading once slug and stage are removed."
                            '(org-fractional-cto--active-client-filter)))))
       (delete-directory org-fractional-cto-clients-directory t))))
 
+(ert-deftest ofc-install-tag-inheritance-enables ()
+  "Setup turns on agenda tag inheritance so filetag focus works."
+  (let ((org-agenda-use-tag-inheritance nil)
+        (org-fractional-cto-set-tag-inheritance t))
+    (org-fractional-cto--install-tag-inheritance)
+    (should (eq org-agenda-use-tag-inheritance t))))
+
 (provide 'org-fractional-cto-prospect-test)
 
 ;;; org-fractional-cto-prospect-test.el ends here
