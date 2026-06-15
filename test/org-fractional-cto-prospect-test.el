@@ -276,6 +276,26 @@ scaffold, so their hubs agree on every heading once slug and stage are removed."
         (should (string-match-p
                  "Status: %\\^{Status|Open|Mitigated|Resolved|Accepted}" body))))))
 
+(ert-deftest ofc-client-name-reads-title ()
+  "client-name returns the hub's #+title."
+  (ofc-prospect-test-with-clients-dir
+    (org-fractional-cto-new-client "Acme Corp" "acme")
+    (should (equal (org-fractional-cto-client-name "acme") "Acme Corp"))))
+
+(ert-deftest ofc-client-name-falls-back-to-slug ()
+  "client-name returns the slug when no hub/title exists."
+  (ofc-prospect-test-with-clients-dir
+    (should (equal (org-fractional-cto-client-name "ghost") "ghost"))))
+
+(ert-deftest ofc-client-name-handles-case-and-whitespace ()
+  "client-name matches #+TITLE case-insensitively and trims whitespace."
+  (ofc-prospect-test-with-clients-dir
+    (let* ((file (org-fractional-cto-client-org-file "pad")))
+      (make-directory (file-name-directory file) t)
+      (with-temp-file file
+        (insert "#+TITLE:   Padded Name   \n\n* Pad Engagement\n"))
+      (should (equal (org-fractional-cto-client-name "pad") "Padded Name")))))
+
 (provide 'org-fractional-cto-prospect-test)
 
 ;;; org-fractional-cto-prospect-test.el ends here

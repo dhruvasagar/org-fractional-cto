@@ -20,18 +20,21 @@
 (declare-function org-fractional-cto-client-org-file "org-fractional-cto")
 (declare-function org-fractional-cto-client-standup-file "org-fractional-cto")
 (declare-function org-fractional-cto--template "org-fractional-cto")
+(declare-function org-fractional-cto-client-name "org-fractional-cto")
 
 ;;;; Capture-time helpers
 
 (defun org-fractional-cto--capture-to-heading (heading)
   "Visit HEADING in the selected client's org file, ready for capture.
-Stores :ofc-client-slug and :ofc-client-tag in the capture plist so templates
-can reference them via %(org-capture-get :ofc-client-tag)."
+Stores :ofc-client-slug, :ofc-client-tag, and :ofc-client-name in the capture
+plist so templates can reference them via %(org-capture-get :ofc-client-tag) or
+%(org-capture-get :ofc-client-name)."
   (let* ((slug (org-fractional-cto--select-client))
          (tag  (org-fractional-cto-client-tag slug))
          (file (org-fractional-cto-client-org-file slug)))
     (org-capture-put :ofc-client-slug slug)
     (org-capture-put :ofc-client-tag  tag)
+    (org-capture-put :ofc-client-name (org-fractional-cto-client-name slug))
     (find-file file)
     (widen)
     (goto-char (point-min))

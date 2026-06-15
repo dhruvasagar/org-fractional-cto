@@ -188,6 +188,20 @@ skipped, matching `org-fractional-cto-agenda-files'."
   (expand-file-name (format "%s/CONTEXT.md" slug)
                     (org-fractional-cto--clients-dir)))
 
+(defun org-fractional-cto-client-name (slug)
+  "Return the display name for client SLUG.
+Read from the hub file's \"#+title:\" keyword; fall back to SLUG when the file
+is missing or carries no title."
+  (let ((file (org-fractional-cto-client-org-file slug)))
+    (or (and (file-readable-p file)
+             (with-temp-buffer
+               (insert-file-contents file)
+               (goto-char (point-min))
+               (let ((case-fold-search t))
+                 (when (re-search-forward "^#\\+title:[ \t]*\\(.+\\)$" nil t)
+                   (string-trim (match-string 1))))))
+        slug)))
+
 (defun org-fractional-cto-client-tag (slug)
   "Derive a valid Org tag from SLUG.
 For example \"acme-corp\" becomes \"ACME_CORP\" (Org tags may not contain
