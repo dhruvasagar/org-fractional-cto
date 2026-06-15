@@ -55,8 +55,7 @@
     (org-mode)
     (should (re-search-forward "^\\* Acme Corp Engagement" nil t))
     (org-back-to-heading t)
-    (should (member "ACTIVE" (org-get-tags nil t)))
-    (should (member "ACME" (org-get-tags nil t)))))
+    (should (member "ACTIVE" (org-get-tags nil t)))))
 
 (ert-deftest ofc-scaffold-rejects-unknown-stage ()
   (ofc-prospect-test-with-clients-dir
@@ -73,7 +72,10 @@
     (should (re-search-forward "^\\* Beta Co Engagement" nil t))
     (org-back-to-heading t)
     (should (member "LEAD" (org-get-tags nil t)))
-    (should (member "BETA" (org-get-tags nil t)))))
+    (with-temp-buffer
+      (insert-file-contents (org-fractional-cto-client-org-file "beta"))
+      (goto-char (point-min))
+      (should (re-search-forward "^#\\+filetags:[ \t]+:BETA:" nil t)))))
 
 (ert-deftest ofc-set-stage-replaces-stage-tag ()
   (ofc-prospect-test-with-clients-dir
@@ -87,7 +89,10 @@
     (org-back-to-heading t)
     (should (member "QUALIFIED" (org-get-tags nil t)))
     (should-not (member "ACTIVE" (org-get-tags nil t)))
-    (should (member "ACME" (org-get-tags nil t)))))
+    (with-temp-buffer
+      (insert-file-contents (org-fractional-cto-client-org-file "acme"))
+      (goto-char (point-min))
+      (should (re-search-forward "^#\\+filetags:[ \t]+:ACME:" nil t)))))
 
 (ert-deftest ofc-set-stage-rejects-unknown ()
   (ofc-prospect-test-with-clients-dir
@@ -295,6 +300,28 @@ scaffold, so their hubs agree on every heading once slug and stage are removed."
       (with-temp-file file
         (insert "#+TITLE:   Padded Name   \n\n* Pad Engagement\n"))
       (should (equal (org-fractional-cto-client-name "pad") "Padded Name")))))
+
+(ert-deftest ofc-hub-has-filetags ()
+  "A scaffolded hub declares the client tag as a filetag."
+  (ofc-prospect-test-with-clients-dir
+    (org-fractional-cto-new-client "Acme Corp" "acme")
+    (with-temp-buffer
+      (insert-file-contents (org-fractional-cto-client-org-file "acme"))
+      (goto-char (point-min))
+      (should (re-search-forward "^#\\+filetags:[ \t]+:ACME:" nil t)))))
+
+(ert-deftest ofc-hub-headings-omit-client-tag ()
+  "No heading carries the client tag; stage and type subtags remain."
+  (ofc-prospect-test-with-clients-dir
+    (org-fractional-cto-new-client "Acme Corp" "acme")
+    (with-temp-buffer
+      (insert-file-contents (org-fractional-cto-client-org-file "acme"))
+      (goto-char (point-min))
+      (should (re-search-forward "^\\* Acme Corp Engagement[ \t]+:ACTIVE:$" nil t))
+      (goto-char (point-min))
+      (should (re-search-forward "^\\*\\* Risks[ \t]+:RISK:$" nil t))
+      (goto-char (point-min))
+      (should-not (re-search-forward "^\\*+ .*:ACME:" nil t)))))
 
 (provide 'org-fractional-cto-prospect-test)
 

@@ -72,16 +72,17 @@ heading alongside TAG."
     (insert (format "#+AUTHOR: %s\n" org-fractional-cto-author))
     (insert "#+STARTUP: overview\n")
     (insert "#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED\n")
+    (insert (format "#+filetags: :%s:\n" tag))
     (insert "#+OPTIONS: date:nil\n\n")
-    (insert (format "* %s Engagement  :%s:%s:\n" client-name tag stage))
+    (insert (format "* %s Engagement  :%s:\n" client-name stage))
     (insert (format ":PROPERTIES:\n:ID:       %s-OPS\n:CATEGORY: %s\n:END:\n\n"
                     tag client-name))
     (insert "See [[file:CONTEXT.md][CONTEXT.md]] for domain vocabulary, key people, and priorities.\n\n")
     (dolist (section org-fractional-cto-sections)
       (let ((heading (car section)) (subtag (cadr section)))
         (if (string-empty-p subtag)
-            (insert (format "** %s  :%s:\n\n" heading tag))
-          (insert (format "** %s  :%s:%s:\n\n" heading tag subtag)))))))
+            (insert (format "** %s\n\n" heading))
+          (insert (format "** %s  :%s:\n\n" heading subtag)))))))
 
 (defun org-fractional-cto--write-standup (file tag)
   "Write a per-client standup template FILE tagged TAG."
