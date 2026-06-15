@@ -1,4 +1,4 @@
-* WAITING %^{Delegated task}  :%(org-capture-get :ofc-client-tag):DELEGATED:
+* WAITING %^{Delegated task}  :DELEGATED:
 DEADLINE: %^{Expected delivery}t
 SCHEDULED: %^{Check-in / follow-up}t
 :PROPERTIES:

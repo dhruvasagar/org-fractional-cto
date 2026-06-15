@@ -1,6 +1,6 @@
-* DISCOVERY: %^{Team / Role} :ENGAGEMENT:DISCOVERY:
+* DISCOVERY: %^{Team / Role} :DISCOVERY:
 %U
-Client: %^{Client}
+Client: %(org-capture-get :ofc-client-name)
 Attendees: %^{Attendees}
 Focus area: %^{Focus|PM|Frontend|Backend|Auth|Payments|Data|DevOps|QA|Integration|AI|Other}
 Stream: %^{Work stream or product area}

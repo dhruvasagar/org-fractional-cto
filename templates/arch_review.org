@@ -1,6 +1,6 @@
-* ARCH REVIEW: Q%^{Quarter} %^{Year} :ENGAGEMENT:ARCHREVIEW:
+* ARCH REVIEW: Q%^{Quarter} %^{Year} :ARCHREVIEW:
 %U
-Client: %^{Client}
+Client: %(org-capture-get :ofc-client-name)
 Conducted by: %^{Your name}
 Teams / streams reviewed: %^{Teams reviewed}
 

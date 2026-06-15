@@ -390,6 +390,30 @@ scaffold, so their hubs agree on every heading once slug and stage are removed."
         (while (re-search-forward "^#\\+filetags:" nil t) (setq n (1+ n)))
         (should (= n 1))))))
 
+(ert-deftest ofc-inline-templates-drop-client-tag ()
+  "No inline capture template references the client tag any more."
+  (dolist (tpl (org-fractional-cto-capture-templates))
+    (let ((body (and (> (length tpl) 4) (nth 4 tpl))))
+      (when (stringp body)
+        (should-not (string-match-p ":ofc-client-tag" body))))))
+
+(ert-deftest ofc-templates-keep-type-subtags ()
+  "The risk template still carries its :RISK: subtag."
+  (let ((body (nth 4 (seq-find (lambda (tpl) (equal (car-safe tpl) "er"))
+                               (org-fractional-cto-capture-templates)))))
+    (should (string-match-p ":RISK:" body))
+    (should-not (string-match-p ":ofc-client-tag" body))))
+
+(ert-deftest ofc-file-templates-drop-client-tag ()
+  "No bundled file template embeds the client tag (it comes from #+filetags)."
+  (let ((dir (file-name-directory
+              (org-fractional-cto--template "x.org"))))
+    (dolist (f (directory-files dir t "\\.org\\'"))
+      (with-temp-buffer
+        (insert-file-contents f)
+        (goto-char (point-min))
+        (should-not (re-search-forward "ofc-client-tag" nil t))))))
+
 (provide 'org-fractional-cto-prospect-test)
 
 ;;; org-fractional-cto-prospect-test.el ends here

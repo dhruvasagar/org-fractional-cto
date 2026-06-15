@@ -1,4 +1,4 @@
-* MEETING %^{Client} - %^{Meeting title} :ENGAGEMENT:MEETING:
+* MEETING %(org-capture-get :ofc-client-name) - %^{Meeting title} :MEETING:
 %U
 Attendees (Client): %^{Client attendees}
 Attendees (Us): %^{Our attendees}

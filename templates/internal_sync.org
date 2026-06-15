@@ -1,6 +1,6 @@
-* MEETING Internal Sync %^{Date|%<%Y-%m-%d>} :ENGAGEMENT:INTERNAL:
+* MEETING Internal Sync %^{Date|%<%Y-%m-%d>} :INTERNAL:
 %U
-Client: %^{Client}
+Client: %(org-capture-get :ofc-client-name)
 
 ** Commitments vs. Reality Gap
 | Commitment | Promised By | Status | Gap? |

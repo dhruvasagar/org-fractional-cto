@@ -1,4 +1,4 @@
-* PRE-SALES CALL: %^{Company / contact}  :%(org-capture-get :ofc-client-tag):PRESALES:
+* PRE-SALES CALL: %^{Company / contact}  :PRESALES:
 %U
 Source / referral: %^{How did this come in}
 Attendees: %^{Who was on the call}

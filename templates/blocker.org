@@ -1,4 +1,4 @@
-* TODO [#A] BLOCKER: %^{What is blocked}  :%(org-capture-get :ofc-client-tag):BLOCKER:
+* TODO [#A] BLOCKER: %^{What is blocked}  :BLOCKER:
 %U
 :PROPERTIES:
 :BLOCKING: %^{Feature / work stream being blocked}
