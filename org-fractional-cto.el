@@ -100,6 +100,15 @@ yourself."
   :type '(choice (key-sequence :tag "Prefix") (const :tag "None" nil))
   :group 'org-fractional-cto)
 
+(defcustom org-fractional-cto-agenda-keymap-prefix nil
+  "Optional prefix key for `org-fractional-cto-agenda-command-map' in agendas.
+Bound in `org-agenda-mode-map' by `org-fractional-cto-setup' for non-Evil users.
+Default nil: reach the at-point actions via \\[execute-extended-command], or --
+under Evil -- the comma (`,') localleader (`, g' delegate, `, b' block).  Plain
+`,' is `org-agenda-priority' in vanilla agendas, so it is not overridden."
+  :type '(choice (key-sequence :tag "Prefix") (const :tag "None" nil))
+  :group 'org-fractional-cto)
+
 (defcustom org-fractional-cto-stages
   '("LEAD" "QUALIFIED" "ACTIVE" "LOST" "DORMANT")
   "Ordered engagement stages, carried as a tag on the engagement heading.
@@ -279,6 +288,11 @@ picked up automatically."
   (org-fractional-cto-set-active-client slug)
   (org-fractional-cto-dashboard))
 
+(declare-function evil-define-key* "evil-core")
+(declare-function org-fractional-cto-delegate-at-point "org-fractional-cto-actions")
+(declare-function org-fractional-cto-block-at-point "org-fractional-cto-actions")
+(defvar org-agenda-mode-map)
+
 (defvar org-fractional-cto-command-map
   (let ((map (make-sparse-keymap)))
     (define-key map "n" #'org-fractional-cto-new-client)
@@ -294,6 +308,28 @@ picked up automatically."
     map)
   "Keymap for `org-fractional-cto' commands.
 Bound under `org-fractional-cto-keymap-prefix' by `org-fractional-cto-setup'.")
+
+(defvar org-fractional-cto-agenda-command-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "g" #'org-fractional-cto-delegate-at-point)
+    (define-key map "b" #'org-fractional-cto-block-at-point)
+    map)
+  "Keymap of org-fractional-cto at-point actions for use inside agendas.")
+
+(defun org-fractional-cto-agenda-install-keys ()
+  "Bind the at-point actions in `org-agenda-mode-map'.
+Non-Evil: under `org-fractional-cto-agenda-keymap-prefix' if set.  Evil: under
+the comma localleader (`, g' / `, b') in the agenda's motion state, across all
+agenda buffers.  The commands no-op gracefully on non-hub entries."
+  (require 'org-agenda)
+  (when org-fractional-cto-agenda-keymap-prefix
+    (define-key org-agenda-mode-map
+                (kbd org-fractional-cto-agenda-keymap-prefix)
+                org-fractional-cto-agenda-command-map))
+  (with-eval-after-load 'evil
+    (evil-define-key* 'motion org-agenda-mode-map
+                      (kbd ", g") #'org-fractional-cto-delegate-at-point
+                      (kbd ", b") #'org-fractional-cto-block-at-point)))
 
 (defun org-fractional-cto--keyword-names (sequence)
   "Return the bare keyword names in a `org-todo-keywords' SEQUENCE.
@@ -344,6 +380,7 @@ Call once from your init file, after Org is available."
   (org-fractional-cto-pipeline-install)
   (dolist (dir (org-fractional-cto-agenda-files))
     (add-to-list 'org-agenda-files dir t))
+  (org-fractional-cto-agenda-install-keys)
   (when org-fractional-cto-keymap-prefix
     (global-set-key (kbd org-fractional-cto-keymap-prefix)
                     org-fractional-cto-command-map)))

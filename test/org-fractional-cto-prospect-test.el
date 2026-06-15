@@ -443,6 +443,13 @@ scaffold, so their hubs agree on every heading once slug and stage are removed."
     (org-fractional-cto--install-tag-inheritance)
     (should (eq org-agenda-use-tag-inheritance t))))
 
+(ert-deftest ofc-agenda-command-map-bindings ()
+  "The agenda command map binds g/b to the at-point actions."
+  (should (eq (lookup-key org-fractional-cto-agenda-command-map "g")
+              #'org-fractional-cto-delegate-at-point))
+  (should (eq (lookup-key org-fractional-cto-agenda-command-map "b")
+              #'org-fractional-cto-block-at-point)))
+
 (provide 'org-fractional-cto-prospect-test)
 
 ;;; org-fractional-cto-prospect-test.el ends here
