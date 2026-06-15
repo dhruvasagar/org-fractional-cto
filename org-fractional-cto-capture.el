@@ -82,6 +82,19 @@ capture time so Org expands the file's %-escapes."
   "Return the list of `org-capture-templates' entries for the `e' group."
   `(("e" "Engagement (select client)")
 
+    ;; -- Pre-sales / pipeline ---------------------------------------------
+    ("el" "Pre-sales call / lead intake" entry
+     (function ,(org-fractional-cto--target "Pre-Sales Notes"))
+     (function ,(org-fractional-cto--file "presales_call.org"))
+     :clock-in t :clock-resume t)
+    ("eo" "Research note" entry
+     (function ,(org-fractional-cto--target "Research"))
+     "* RESEARCH: %^{Topic} :%(org-capture-get :ofc-client-tag):RESEARCH:\n%U\nArea: %^{Area|Company|Market|Competitor|Tech stack|People|Funding|Other}\nSource: %^{Source / link}\n\n** Finding\n%?\n\n** Implication\n\n** Follow-up\n- [ ]\n")
+    ("eF" "Fit / qualification" entry
+     (function ,(org-fractional-cto--target "Qualification"))
+     (function ,(org-fractional-cto--file "qualification.org"))
+     :clock-in t :clock-resume t)
+
     ;; -- Action tracking & delegation -------------------------------------
     ("ew" "Action item" entry
      (function ,(org-fractional-cto--target "Actions"))

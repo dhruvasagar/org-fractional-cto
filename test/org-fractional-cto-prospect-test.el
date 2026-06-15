@@ -135,6 +135,17 @@
           (setq count (1+ count)))
         (should (= count 1))))))
 
+(ert-deftest ofc-capture-templates-include-presales ()
+  (let* ((templates (org-fractional-cto-capture-templates))
+         (keys (mapcar #'car templates)))
+    (should (member "el" keys))
+    (should (member "eo" keys))
+    (should (member "eF" keys))))
+
+(ert-deftest ofc-presales-template-files-exist ()
+  (should (file-exists-p (org-fractional-cto--template "presales_call.org")))
+  (should (file-exists-p (org-fractional-cto--template "qualification.org"))))
+
 (provide 'org-fractional-cto-prospect-test)
 
 ;;; org-fractional-cto-prospect-test.el ends here
