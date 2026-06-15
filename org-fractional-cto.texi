@@ -182,7 +182,7 @@ Quick Lookup — "I need to@dots{}"
 
 Legend
 
-* keywords (client files)::
+* keywords::
 * Engagement stages (tag on the engagement heading)::
 * Priorities::
 * Type tags::
@@ -493,6 +493,10 @@ states:
 @end example
 
 (Note @samp{INPROGRESS} has no hyphen — that is deliberate; see @ref{Troubleshooting}.)
+This line is a convenience, not a requirement: @samp{org-fractional-cto-setup} already
+registers the same keyword sequence into the global @samp{org-todo-keywords}, so the
+states work in any buffer even before you open a hub. The per-file line just
+means a hub still cycles correctly on a machine where setup never ran.
 
 Below the top-level @samp{* Acme Corp Engagement :ACME:} heading is one @samp{**} section
 per capture type — @samp{Actions}, @samp{Delegations}, @samp{Blockers}, @samp{People}, @samp{Commitments},
@@ -840,7 +844,7 @@ by-product of working.
 @section Step 8 — Read your dashboard
 
 With @samp{acme} active, press @code{C-c a E} (or @code{M-x org-fractional-cto-dashboard}). You
-get a single per-client board with six blocks, in this order:
+get a single per-client board with nine blocks, in this order:
 
 @enumerate
 @item
@@ -858,8 +862,24 @@ commitments filtered out so they are not double-listed.
 @strong{Commitments} — promises made, by you or the client.
 @item
 @strong{Active risks} — the risk register (the section container is skipped, so you
-see the risks themselves, not the empty parent heading).
+see the risks themselves, not the empty parent heading). A risk closed out
+with @samp{Status: Resolved} or @samp{Mitigated} drops off the board; @samp{Open} and
+@samp{Accepted} risks stay.
+@item
+@strong{Open security findings} — @samp{[SECURITY]} findings, with closed-out ones
+(@samp{Status: Resolved} or @samp{Mitigated}) filtered out — the @strong{same closed-set rule}
+as risks.
+@item
+@strong{Open tech debt} — every @samp{[TECH DEBT]} item recorded for the client.
+@item
+@strong{Scope changes — pending decisions} — @samp{SCOPE CHANGE} entries sorted by their
+"decision needed by" deadline, so a decision due beyond the seven-day agenda
+window is still visible here.
 @end enumerate
+
+Blocks 6–9 are the @strong{watch list}: severity-rated liabilities (risks, security
+findings, tech debt) and scope decisions that carry no @samp{TODO} keyword and so
+would otherwise never appear in an action view.
 
 Because the dashboard is a @strong{real Org agenda command}, not a bespoke function, it
 inherits the dispatcher's powers: refresh with @samp{r}, filter with @samp{/}, narrow by
@@ -1033,12 +1053,14 @@ decision frameworks — is the job of @uref{playbook.org, playbook.org}. Read it
 behaviour, not a bug — it just means one extra keystroke per capture.
 
 @item
-@strong{An @samp{INPROGRESS} task is missing from the dashboard's Open actions.} The
-keyword must be exactly @samp{INPROGRESS}, with @strong{no hyphen}. Org's agenda match
-language treats @samp{-} as a boolean NOT, so a hyphenated keyword (@samp{IN-PROGRESS})
-is parsed as "@samp{IN} and not @samp{PROGRESS}" and never matches. Scaffolded hubs use
-the hyphen-free form; if you have an old hub, fix its @samp{#+TODO} line and any
-task states.
+@strong{An @samp{INPROGRESS} task is missing from the dashboard's Open actions.} First
+confirm @samp{org-fractional-cto-setup} ran — it registers @samp{INPROGRESS} globally, so
+if it never ran (and the file lacks a @samp{#+TODO} line) the state is unknown.
+Second, the keyword must be exactly @samp{INPROGRESS}, with @strong{no hyphen}. Org's
+agenda match language treats @samp{-} as a boolean NOT, so a hyphenated keyword
+(@samp{IN-PROGRESS}) is parsed as "@samp{IN} and not @samp{PROGRESS}" and never matches.
+Scaffolded hubs use the hyphen-free form; if you have an old hub, fix its
+@samp{#+TODO} line and any task states.
 
 @item
 @strong{The dashboard is empty or errors.} Confirm a client is active and that its
@@ -2146,6 +2168,12 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 @tab @samp{C-c a E} → "Commitments" block
 @item Active risks
 @tab @samp{C-c a E} → "Active Risks" block
+@item Open security findings
+@tab @samp{C-c a E} → "Open Security Findings" block
+@item Open tech debt
+@tab @samp{C-c a E} → "Open Tech Debt" block
+@item Pending scope decisions
+@tab @samp{C-c a E} → "Scope Changes — Pending Decisions"
 @item Set active client (avoid repeated prompts)
 @tab @samp{M-x org-fractional-cto-set-active-client}
 @item Clear active client
@@ -2176,17 +2204,20 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 @section Legend
 
 @menu
-* keywords (client files)::
+* keywords::
 * Engagement stages (tag on the engagement heading)::
 * Priorities::
 * Type tags::
 * Key bindings::
 @end menu
 
-@node keywords (client files)
-@subsection @strong{TODO} keywords (client files)
+@node keywords
+@subsection @strong{TODO} keywords
 
-Client hubs declare: @samp{#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED}.
+@samp{org-fractional-cto-setup} registers these globally (via @samp{org-todo-keywords}), so
+they work in every buffer without touching your personal Org config; client hubs
+also declare them locally with @samp{#+TODO: TODO NEXT INPROGRESS WAITING | DONE
+CANCELLED}. Customize via @samp{org-fractional-cto-todo-keywords}.
 
 @multitable {aaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
 @headitem Keyword
@@ -2754,7 +2785,9 @@ Prioritise at the next architecture session. Debt that isn't visible isn't manag
 
 @emph{Use:} Any security or compliance observation — immediately when found.
 @emph{Fields:} Finding description, severity, area (PCI/GDPR/API/Auth/Data/Infra),
-current status (Open/Mitigated/Accepted), recommended action, owner.
+current status (Open/Mitigated/Resolved/Accepted), recommended action, owner.
+Closed-out findings (Resolved/Mitigated) drop off the dashboard's "Open security
+findings" block — the same rule as the risk register.
 @emph{Rule:} Critical findings surface to the internal sync before end of day.
 High findings surface within 48 hours. Never downgrade severity to avoid a
 difficult conversation.
@@ -2966,13 +2999,13 @@ Essential keybindings:
 
 Your operational dashboard. Key views:
 
-@multitable {aaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@multitable {aaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
 @headitem Key
 @tab View
 @item @samp{C-c a a}
 @tab Day/week agenda — deadlines, scheduled items (all files)
 @item @samp{C-c a E}
-@tab ★ Active client dashboard — delegated, blockers, actions, commitments, risks, 7-day agenda
+@tab ★ Active client dashboard — delegated, blockers, actions, commitments, risks, security findings, tech debt, scope decisions, 7-day agenda
 @item @samp{C-c a t}
 @tab All TODO items across all agenda files
 @item @samp{C-c a m TAGNAME}

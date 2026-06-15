@@ -48,8 +48,30 @@
                 (org-agenda-sorting-strategy '(deadline-up))))
     (tags "+RISK"
           ((org-agenda-overriding-header "Active risks")
-           ;; Show only the risk entries themselves, not the section container.
-           (org-agenda-skip-function '(org-agenda-skip-entry-if 'notregexp "\\[RISK\\]")))))
+           ;; Keep only real risk entries (not the section container), and drop
+           ;; closed-out risks (Status: Resolved or Mitigated).
+           (org-agenda-skip-function
+            '(or (org-agenda-skip-entry-if 'notregexp "\\[RISK\\]")
+                 (org-agenda-skip-entry-if 'regexp "^Status: \\(?:Resolved\\|Mitigated\\)")))))
+    (tags "+SECURITY"
+          ((org-agenda-overriding-header "Open security findings")
+           (org-agenda-sorting-strategy '(priority-down deadline-up))
+           ;; Keep only [SECURITY] entries, dropping closed-out findings
+           ;; (Status: Resolved or Mitigated) -- same rule as risks.
+           (org-agenda-skip-function
+            '(or (org-agenda-skip-entry-if 'notregexp "\\[SECURITY\\]")
+                 (org-agenda-skip-entry-if 'regexp "^Status: \\(?:Resolved\\|Mitigated\\)")))))
+    (tags "+TECHDEBT"
+          ((org-agenda-overriding-header "Open tech debt")
+           ;; Show only the tech-debt entries themselves, not the container.
+           (org-agenda-skip-function
+            '(org-agenda-skip-entry-if 'notregexp "\\[TECH DEBT\\]"))))
+    (tags "+SCOPE"
+          ((org-agenda-overriding-header "Scope changes — pending decisions")
+           (org-agenda-sorting-strategy '(deadline-up))
+           ;; Show only SCOPE CHANGE entries, not the section container.
+           (org-agenda-skip-function
+            '(org-agenda-skip-entry-if 'notregexp "SCOPE CHANGE:")))))
   "Agenda blocks composing the per-client dashboard.
 A list of Org agenda series entries (see `org-agenda-custom-commands').  Each
 block runs against the active client's file only; reorder, drop, or extend as

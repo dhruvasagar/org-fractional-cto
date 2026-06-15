@@ -80,6 +80,9 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 | All open TODOs for this client             | =C-c a E= → "Open Actions" block                  |
 | Open commitments                           | =C-c a E= → "Commitments" block                   |
 | Active risks                               | =C-c a E= → "Active Risks" block                  |
+| Open security findings                     | =C-c a E= → "Open Security Findings" block        |
+| Open tech debt                             | =C-c a E= → "Open Tech Debt" block                |
+| Pending scope decisions                    | =C-c a E= → "Scope Changes — Pending Decisions"   |
 | Set active client (avoid repeated prompts) | =M-x org-fractional-cto-set-active-client=                      |
 | Clear active client                        | =M-x org-fractional-cto-clear-active-client=                    |
 | Prospect pipeline (all leads)              | =C-c a P= (or =M-x org-fractional-cto-pipeline=)               |
@@ -95,8 +98,11 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 
 ** Legend
 
-*** TODO keywords (client files)
-Client hubs declare: =#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED=.
+*** TODO keywords
+=org-fractional-cto-setup= registers these globally (via =org-todo-keywords=), so
+they work in every buffer without touching your personal Org config; client hubs
+also declare them locally with =#+TODO: TODO NEXT INPROGRESS WAITING | DONE
+CANCELLED=. Customize via =org-fractional-cto-todo-keywords=.
 
 | Keyword       | Meaning                                                   |
 |---------------+-----------------------------------------------------------|
@@ -481,7 +487,9 @@ Prioritise at the next architecture session. Debt that isn't visible isn't manag
 **** =ex= — Security Finding
 /Use:/ Any security or compliance observation — immediately when found.
 /Fields:/ Finding description, severity, area (PCI/GDPR/API/Auth/Data/Infra),
-current status (Open/Mitigated/Accepted), recommended action, owner.
+current status (Open/Mitigated/Resolved/Accepted), recommended action, owner.
+Closed-out findings (Resolved/Mitigated) drop off the dashboard's "Open security
+findings" block — the same rule as the risk register.
 /Rule:/ Critical findings surface to the internal sync before end of day.
 High findings surface within 48 hours. Never downgrade severity to avoid a
 difficult conversation.
@@ -633,7 +641,7 @@ Your operational dashboard. Key views:
 | Key | View |
 |-----+------|
 | =C-c a a= | Day/week agenda — deadlines, scheduled items (all files) |
-| =C-c a E= | ★ Active client dashboard — delegated, blockers, actions, commitments, risks, 7-day agenda |
+| =C-c a E= | ★ Active client dashboard — delegated, blockers, actions, commitments, risks, security findings, tech debt, scope decisions, 7-day agenda |
 | =C-c a t= | All TODO items across all agenda files |
 | =C-c a m TAGNAME= | Match by tag — e.g. =RISK=, =COMMITMENT=, =DELEGATED=, =BLOCKER= |
 | =C-c a s= | Full-text search across all agenda files |

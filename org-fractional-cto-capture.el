@@ -149,7 +149,7 @@ capture time so Org expands the file's %-escapes."
     ;; -- Risk & delivery --------------------------------------------------
     ("er" "Risk" entry
      (function ,(org-fractional-cto--target "Risks"))
-     "* [RISK] %^{Risk} :%(org-capture-get :ofc-client-tag):RISK:\n%U\nLikelihood: %^{Likelihood|High|Medium|Low}\nImpact: %^{Impact|High|Medium|Low}\nOwner: %^{Owner}\nMitigation: %?\n")
+     "* [RISK] %^{Risk} :%(org-capture-get :ofc-client-tag):RISK:\n%U\nStatus: %^{Status|Open|Mitigated|Resolved|Accepted}\nLikelihood: %^{Likelihood|High|Medium|Low}\nImpact: %^{Impact|High|Medium|Low}\nOwner: %^{Owner}\nMitigation: %?\n")
     ("ee" "Scope change" entry
      (function ,(org-fractional-cto--target "Scope Changes"))
      "* SCOPE CHANGE: %^{Description} :%(org-capture-get :ofc-client-tag):SCOPE:\n%U\nIdentified by: %^{Who}\nSOW status: %^{Status|Out of scope|In scope|Grey area}\n\n** What Changed\n%?\n\n** Business Impact\n\n** Recommended Action\n%^{Action|Add to SOW|Decline|Defer|Investigate}\n\n** Commercial Impact\nSOW amendment needed? %^{SOW|Yes|No|TBD}\nDEADLINE: %^{Decision needed by}t\n")
@@ -190,7 +190,7 @@ capture time so Org expands the file's %-escapes."
      "* [TECH DEBT] %^{Description} :%(org-capture-get :ofc-client-tag):TECHDEBT:\n%U\nArea: %^{Area|Frontend|Backend|Infrastructure|Integration|Data|Security}\nSeverity: %^{Severity|Critical|High|Medium|Low}\nDiscovered during: %^{Context}\nImpact if unaddressed: %?\n")
     ("ex" "Security finding" entry
      (function ,(org-fractional-cto--target "Security Findings"))
-     "* [SECURITY] %^{Finding} :%(org-capture-get :ofc-client-tag):SECURITY:\n%U\nSeverity: %^{Severity|Critical|High|Medium|Low}\nArea: %^{Area|PCI|GDPR|API|Auth|Data|Infrastructure}\nStatus: %^{Status|Open|Mitigated|Accepted}\nAction: %?\nOwner: %^{Owner}\n")
+     "* [SECURITY] %^{Finding} :%(org-capture-get :ofc-client-tag):SECURITY:\n%U\nStatus: %^{Status|Open|Mitigated|Resolved|Accepted}\nSeverity: %^{Severity|Critical|High|Medium|Low}\nArea: %^{Area|PCI|GDPR|API|Auth|Data|Infrastructure}\nAction: %?\nOwner: %^{Owner}\n")
 
     ;; -- Innovation -------------------------------------------------------
     ("en" "Innovation idea (single)" entry

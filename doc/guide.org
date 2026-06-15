@@ -141,6 +141,10 @@ states:
 #+end_example
 
 (Note =INPROGRESS= has no hyphen — that is deliberate; see [[*Troubleshooting][Troubleshooting]].)
+This line is a convenience, not a requirement: =org-fractional-cto-setup= already
+registers the same keyword sequence into the global =org-todo-keywords=, so the
+states work in any buffer even before you open a hub. The per-file line just
+means a hub still cycles correctly on a machine where setup never ran.
 
 Below the top-level =* Acme Corp Engagement :ACME:= heading is one =**= section
 per capture type — =Actions=, =Delegations=, =Blockers=, =People=, =Commitments=,
@@ -326,7 +330,7 @@ by-product of working.
 * Step 8 — Read your dashboard
 
 With =acme= active, press ~C-c a E~ (or ~M-x org-fractional-cto-dashboard~). You
-get a single per-client board with six blocks, in this order:
+get a single per-client board with nine blocks, in this order:
 
 1. *Next 7 days* — scheduled items and deadlines from the hub.
 2. *Delegated — awaiting response* — everything =WAITING=, deadline-sorted.
@@ -337,7 +341,20 @@ get a single per-client board with six blocks, in this order:
    commitments filtered out so they are not double-listed.
 5. *Commitments* — promises made, by you or the client.
 6. *Active risks* — the risk register (the section container is skipped, so you
-   see the risks themselves, not the empty parent heading).
+   see the risks themselves, not the empty parent heading). A risk closed out
+   with =Status: Resolved= or =Mitigated= drops off the board; =Open= and
+   =Accepted= risks stay.
+7. *Open security findings* — =[SECURITY]= findings, with closed-out ones
+   (=Status: Resolved= or =Mitigated=) filtered out — the *same closed-set rule*
+   as risks.
+8. *Open tech debt* — every =[TECH DEBT]= item recorded for the client.
+9. *Scope changes — pending decisions* — =SCOPE CHANGE= entries sorted by their
+   "decision needed by" deadline, so a decision due beyond the seven-day agenda
+   window is still visible here.
+
+Blocks 6–9 are the *watch list*: severity-rated liabilities (risks, security
+findings, tech debt) and scope decisions that carry no =TODO= keyword and so
+would otherwise never appear in an action view.
 
 Because the dashboard is a *real Org agenda command*, not a bespoke function, it
 inherits the dispatcher's powers: refresh with =r=, filter with =/=, narrow by
@@ -449,12 +466,14 @@ decision frameworks — is the job of [[file:playbook.org][playbook.org]]. Read 
   =org-fractional-cto-set-active-client= (or =switch-client=). This is expected
   behaviour, not a bug — it just means one extra keystroke per capture.
 
-- *An =INPROGRESS= task is missing from the dashboard's Open actions.* The
-  keyword must be exactly =INPROGRESS=, with *no hyphen*. Org's agenda match
-  language treats =-= as a boolean NOT, so a hyphenated keyword (=IN-PROGRESS=)
-  is parsed as "=IN= and not =PROGRESS=" and never matches. Scaffolded hubs use
-  the hyphen-free form; if you have an old hub, fix its =#+TODO= line and any
-  task states.
+- *An =INPROGRESS= task is missing from the dashboard's Open actions.* First
+  confirm =org-fractional-cto-setup= ran — it registers =INPROGRESS= globally, so
+  if it never ran (and the file lacks a =#+TODO= line) the state is unknown.
+  Second, the keyword must be exactly =INPROGRESS=, with *no hyphen*. Org's
+  agenda match language treats =-= as a boolean NOT, so a hyphenated keyword
+  (=IN-PROGRESS=) is parsed as "=IN= and not =PROGRESS=" and never matches.
+  Scaffolded hubs use the hyphen-free form; if you have an old hub, fix its
+  =#+TODO= line and any task states.
 
 - *The dashboard is empty or errors.* Confirm a client is active and that its
   hub file exists. The dashboard scopes =org-agenda-files= to exactly the active

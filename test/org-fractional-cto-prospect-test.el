@@ -209,6 +209,73 @@ scaffold, so their hubs agree on every heading once slug and stage are removed."
     (should (equal (ofc-test-hub-skeleton "acme" "ACME")
                    (ofc-test-hub-skeleton "acme2" "ACME2")))))
 
+;;;; TODO keyword installation -------------------------------------------------
+
+(ert-deftest ofc-install-todo-keywords-adds-inprogress ()
+  "Setup registers INPROGRESS (and its face) when it is not already known."
+  (let ((org-todo-keywords '((sequence "TODO" "|" "DONE")))
+        (org-todo-keyword-faces nil))
+    (org-fractional-cto--install-todo-keywords)
+    (should (member "INPROGRESS" (org-fractional-cto--known-todo-keywords)))
+    (should (assoc "INPROGRESS" org-todo-keyword-faces))))
+
+(ert-deftest ofc-install-todo-keywords-is-idempotent ()
+  "Re-running keyword install does not append a duplicate sequence."
+  (let ((org-todo-keywords '((sequence "TODO" "|" "DONE")))
+        (org-todo-keyword-faces nil))
+    (org-fractional-cto--install-todo-keywords)
+    (let ((after-first (copy-tree org-todo-keywords)))
+      (org-fractional-cto--install-todo-keywords)
+      (should (equal org-todo-keywords after-first)))))
+
+(ert-deftest ofc-install-todo-keywords-skips-when-known ()
+  "No sequence is added when all its keywords are already recognised."
+  (let ((org-todo-keywords
+         '((sequence "TODO" "NEXT" "INPROGRESS" "WAITING" "|" "DONE" "CANCELLED")))
+        (org-todo-keyword-faces nil))
+    (let ((before (copy-tree org-todo-keywords)))
+      (org-fractional-cto--install-todo-keywords)
+      (should (equal org-todo-keywords before)))))
+
+(ert-deftest ofc-install-todo-keywords-preserves-existing-faces ()
+  "An INPROGRESS face the user already defined is left untouched."
+  (let ((org-todo-keywords '((sequence "TODO" "INPROGRESS" "|" "DONE")))
+        (org-todo-keyword-faces '(("INPROGRESS" . my-face))))
+    (org-fractional-cto--install-todo-keywords)
+    (should (eq (cdr (assoc "INPROGRESS" org-todo-keyword-faces)) 'my-face))))
+
+;;;; Dashboard coverage --------------------------------------------------------
+
+(ert-deftest ofc-dashboard-covers-risk-family ()
+  "The dashboard surfaces risks, security findings, tech debt, and scope."
+  (let ((matches (mapcar (lambda (block) (nth 1 block))
+                         org-fractional-cto-dashboard-blocks)))
+    (should (member "+RISK" matches))
+    (should (member "+SECURITY" matches))
+    (should (member "+TECHDEBT" matches))
+    (should (member "+SCOPE" matches))))
+
+(ert-deftest ofc-risk-and-security-blocks-hide-closed ()
+  "Risks and security findings hide the same closed set: Resolved and Mitigated."
+  (dolist (match '("+RISK" "+SECURITY"))
+    (let* ((block (seq-find (lambda (b) (equal (nth 1 b) match))
+                            org-fractional-cto-dashboard-blocks))
+           (skip (format "%S" (cadr (assq 'org-agenda-skip-function
+                                          (nth 2 block))))))
+      (should (string-match-p "Resolved" skip))
+      (should (string-match-p "Mitigated" skip))
+      ;; Accepted is NOT closed -- it stays on the board.
+      (should-not (string-match-p "Accepted" skip)))))
+
+(ert-deftest ofc-risk-and-security-templates-have-status-field ()
+  "Both the risk and security templates offer the same closeable Status field."
+  (let ((templates (org-fractional-cto-capture-templates)))
+    (dolist (key '("er" "ex"))
+      (let ((body (nth 4 (seq-find (lambda (tpl) (equal (car-safe tpl) key))
+                                   templates))))
+        (should (string-match-p
+                 "Status: %\\^{Status|Open|Mitigated|Resolved|Accepted}" body))))))
+
 (provide 'org-fractional-cto-prospect-test)
 
 ;;; org-fractional-cto-prospect-test.el ends here

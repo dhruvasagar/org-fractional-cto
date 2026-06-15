@@ -200,10 +200,20 @@ board. Blocks, in order:
 4. *Open actions* — your =TODO=/=NEXT=/=INPROGRESS= work, with blockers and
    commitments filtered out so they are not double-listed.
 5. *Commitments* — promises made, by you or the client.
-6. *Active risks* — the risk register (the section container is skipped, so you
-   see only the risks themselves).
+6. *Active risks* — the risk register. Risks closed out (=Status: Resolved= or
+   =Mitigated=) drop off, so the block stays current instead of accumulating;
+   =Open= and =Accepted= risks stay visible.
+7. *Open security findings* — =[SECURITY]= findings, with closed-out ones
+   (=Status: Resolved= or =Mitigated=) filtered out by the *same rule as risks*,
+   priority- then deadline-sorted.
+8. *Open tech debt* — every =[TECH DEBT]= item logged against the client.
+9. *Scope changes — pending decisions* — =SCOPE CHANGE= entries, soonest
+   "decision needed by" deadline first, so a decision due next month is visible
+   now rather than only inside the seven-day window.
 
-Reorder or extend the blocks with =org-fractional-cto-dashboard-blocks=.
+Blocks 6–9 are the engagement's *watch list*: liabilities that carry no =TODO=
+keyword and would otherwise never surface in an action view. Reorder or extend
+the blocks with =org-fractional-cto-dashboard-blocks=.
 
 =M-x org-fractional-cto-switch-client= sets a different client active and opens
 their board in one step — the fast path for context switching.
@@ -255,7 +265,17 @@ Captures: ~C-c c e~ then the key from the [[*Capture reference][capture referenc
 
 ** TODO keywords
 
-Scaffolded client files declare:
+The workflow is self-contained: =org-fractional-cto-setup= registers the keyword
+sequence it needs into the global =org-todo-keywords= (and a face for
+=INPROGRESS=), so these states are recognised in *every* Org buffer and agenda
+match — you do not have to touch your personal Org configuration. The merge is
+additive and idempotent: a sequence is added only when it introduces a keyword
+Org does not already know, and any face you have defined wins. Customize the
+sequence with =org-fractional-cto-todo-keywords= (set it to nil to manage
+keywords entirely yourself).
+
+Scaffolded client files additionally declare the same line locally, so a hub
+opened on a machine that never ran setup still cycles the right states:
 
 #+begin_example
 #+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED
