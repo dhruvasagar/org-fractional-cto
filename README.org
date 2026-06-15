@@ -17,13 +17,19 @@ the Org scaffolding to do all of it without leaving Emacs.
 Three moving parts, one workflow:
 
 1. *Onboarding* — =org-fractional-cto-new-client= scaffolds a complete
-   per-client workspace in seconds (operational hub, standup, context file).
+   per-client workspace in seconds (operational hub, standup, context file), or
+   =org-fractional-cto-new-prospect= does the same for a pre-sales lead.
 2. *Capture* — a single =e= prefix (~C-c c e ...~) routes every kind of note —
-   discovery, ADRs, risks, commitments, delegated tasks, blockers,
-   retrospectives, QBRs, innovation ideas — straight into the active client's
-   file. No per-client key prefixes.
+   pre-sales calls, research, discovery, ADRs, risks, commitments, delegated
+   tasks, blockers, retrospectives, QBRs, innovation ideas — straight into the
+   active client's file. No per-client key prefixes.
 3. *Dashboard* — a per-client agenda view (~C-c a E~) surfacing delegated work
    awaiting response, blockers, open actions, commitments, and active risks.
+
+Every engagement also carries a *stage* — from =LEAD= (a fresh pre-sales
+prospect) through =QUALIFIED= and =ACTIVE= to =LOST= / =DORMANT= — and a
+cross-client *pipeline* view (~C-c a P~) lists your whole funnel, one line per
+prospect.
 
 It is *multi-client by design*. Set an "active client" once per session and
 every capture and the dashboard follow it. Switch clients with one command.
@@ -112,6 +118,11 @@ construction — they are generated from one section list.
    (a discovery session)…
 5. Review: ~C-c a E~ opens the Acme dashboard.
 
+Prospecting rather than onboarding a won client? Use =M-x
+org-fractional-cto-new-prospect= in step 1 — it builds the same hub at the
+=LEAD= stage and drops you straight into the pre-sales call capture (=el=). Then
+~C-c a P~ shows your whole pipeline across clients.
+
 New here and want the long way round? [[file:doc/guide.org][doc/guide.org]] is a step-by-step
 walkthrough of every feature, in order, with "what you should see" at each step.
 
@@ -119,6 +130,16 @@ walkthrough of every feature, in order, with "what you should see" at each step.
 
 All engagement captures are under ~C-c c e~. They file directly into the active
 client's hub.
+
+** Pre-sales / pipeline
+| Key  | Captures                     | Files to        |
+|------+------------------------------+-----------------|
+| =el= | Pre-sales call / lead intake | Pre-Sales Notes |
+| =eo= | Research note                | Research        |
+| =eF= | Fit / qualification          | Qualification   |
+
+These are the lead stage's working set; the operational captures below
+(actions, delegations, blockers, …) apply at every stage, prospects included.
 
 ** Action tracking & delegation
 | Key  | Captures             | Files to       |
@@ -187,6 +208,10 @@ Reorder or extend the blocks with =org-fractional-cto-dashboard-blocks=.
 =M-x org-fractional-cto-switch-client= sets a different client active and opens
 their board in one step — the fast path for context switching.
 
+For the cross-client view, ~C-c a P~ (=M-x org-fractional-cto-pipeline=) lists
+every =LEAD= / =QUALIFIED= engagement across all clients, one line per prospect —
+your funnel board, complementing the per-client dashboard.
+
 * Key bindings & legend
 
 ** Key bindings
@@ -196,20 +221,28 @@ Under the agenda dispatcher (=C-c a=):
 | Key           | Action                                 |
 |---------------+----------------------------------------|
 | ~C-c a E~     | Active-client dashboard                |
+| ~C-c a P~     | Prospect pipeline (LEAD / QUALIFIED)   |
 | ~C-c a t~     | All TODOs across clients               |
 | ~C-c a m TAG~ | Match a tag across clients (see below) |
 
 Management commands (run via =M-x=, or bind the map yourself — see below):
 
-| Command                                  | Action                         |
-|------------------------------------------+--------------------------------|
-| =org-fractional-cto-new-client=          | New client (onboard)           |
-| =org-fractional-cto-set-active-client=   | Set active client              |
-| =org-fractional-cto-clear-active-client= | Clear active client            |
-| =org-fractional-cto-dashboard=           | Dashboard for active client    |
-| =org-fractional-cto-switch-client=       | Switch client + open dashboard |
+| Command                                   | Action                           |
+|-------------------------------------------+----------------------------------|
+| =org-fractional-cto-new-client=           | New client (onboard, ACTIVE)     |
+| =org-fractional-cto-new-prospect=         | New prospect (LEAD stage)        |
+| =org-fractional-cto-set-active-client=    | Set active client                |
+| =org-fractional-cto-clear-active-client=  | Clear active client              |
+| =org-fractional-cto-set-stage=            | Set the engagement stage         |
+| =org-fractional-cto-dashboard=            | Dashboard for active client      |
+| =org-fractional-cto-switch-client=        | Switch client + open dashboard   |
+| =org-fractional-cto-delegate-at-point=    | Delegate the heading at point    |
+| =org-fractional-cto-block-at-point=       | Blocker against heading at point |
+| =org-fractional-cto-upgrade-hub=          | Upgrade an old hub in place      |
+| =org-fractional-cto-docs=                 | Open the bundled manuals         |
 
-These also live in =org-fractional-cto-command-map= (keys =n s k d w=).  It is
+Most also live in =org-fractional-cto-command-map= (keys =n p s k S d w g b h=;
+=upgrade-hub= is =M-x=-only).  It is
 *not* bound to any prefix by default — =org-fractional-cto-keymap-prefix= is
 nil, since common prefixes like =C-c f= are already taken (e.g. Magit).  Opt in
 with, for example:
@@ -240,14 +273,35 @@ Scaffolded client files declare:
 =WAITING= is load-bearing: it is what separates "things I owe" from "things I
 am owed," and it feeds the dashboard's *Delegated* block.
 
+** Engagement stages
+
+Distinct from the TODO keywords above, a single *stage* tag sits on the top
+=* … Engagement= heading (and is inherited by the whole subtree). Switch it with
+=M-x org-fractional-cto-set-stage=.
+
+| Stage       | Meaning                                      |
+|-------------+----------------------------------------------|
+| =LEAD=      | Captured from a pre-sales call; raw          |
+| =QUALIFIED= | Researched and worth pursuing (pre-contract) |
+| =ACTIVE=    | Won / engaged — the default for new-client   |
+| =LOST=      | Did not convert                              |
+| =DORMANT=   | Paused / on hold                             |
+
+=org-fractional-cto-new-prospect= starts an engagement at =LEAD=;
+=org-fractional-cto-new-client= starts it at =ACTIVE=. The pipeline view
+(~C-c a P~) lists every =LEAD= / =QUALIFIED= engagement across all clients.
+
 ** Tags
 
 Every capture is tagged with the client tag (e.g. =:ACME:=) plus a *type tag*.
 The type tags are what the dashboard and =C-c a m= search on:
 
-| Tag           | Section / capture                   |
-|---------------+-------------------------------------|
-| =DELEGATED=   | Delegations (=eg=)                  |
+| Tag             | Section / capture                   |
+|-----------------+-------------------------------------|
+| =PRESALES=      | Pre-Sales Notes (=el=)              |
+| =RESEARCH=      | Research (=eo=)                     |
+| =QUALIFICATION= | Qualification (=eF=)                |
+| =DELEGATED=     | Delegations (=eg=)                  |
 | =BLOCKER=     | Blockers (=eb=)                     |
 | =COMMITMENT=  | Commitments (=ec=)                  |
 | =RISK=        | Risks (=er=)                        |
@@ -296,6 +350,14 @@ creates:
 
 The new client is added to =org-agenda-files= immediately — no restart.
 
+*Prospects.* =M-x org-fractional-cto-new-prospect= builds the identical
+workspace but stamps the engagement at the =LEAD= stage, sets it active, and
+opens the pre-sales call capture. As a lead progresses, advance it with =M-x
+org-fractional-cto-set-stage= (=LEAD= → =QUALIFIED= → =ACTIVE= on a win, or
+=LOST= / =DORMANT=). Hubs created before stages existed can be brought current
+with =M-x org-fractional-cto-upgrade-hub= — it adds any missing sections and an
+=ACTIVE= stage tag, and is idempotent.
+
 * Customisation
 
 | Variable                                | Default                   | Purpose                                        |
@@ -304,8 +366,10 @@ The new client is added to =org-agenda-files= immediately — no restart.
 | =org-fractional-cto-template-directory= | bundled =templates/=      | Capture templates (override to customise)      |
 | =org-fractional-cto-author=             | =user-full-name=          | =#+AUTHOR= in scaffolded files                 |
 | =org-fractional-cto-agenda-key=         | ="E"                      | Dispatcher key for the dashboard (=C-c a E=)   |
+| =org-fractional-cto-pipeline-key=       | ="P"                      | Dispatcher key for the pipeline (=C-c a P=)    |
 | =org-fractional-cto-keymap-prefix=      | =nil=                     | Optional command-map prefix (unset by default) |
 | =org-fractional-cto-dashboard-blocks=   | (6 blocks)                | The dashboard's agenda blocks                  |
+| =org-fractional-cto-stages=             | (5 stages)                | Engagement stage tags (=LEAD=…=DORMANT=)       |
 
 To customise a single template, copy the bundled =templates/= folder somewhere,
 edit the file you care about, and point =org-fractional-cto-template-directory=
@@ -368,6 +432,7 @@ discipline is not to switch hats mid-session.
 
 | Hat                 | When                              | Captures            |
 |---------------------+-----------------------------------+---------------------|
+| Trusted Advisor     | Pre-sales calls, research, qualifying | =el eo eF=      |
 | Engagement Director | Client calls, QBRs, scope         | =em ec eq eh ee=    |
 | Discovery           | Stream interviews, system mapping | =ed ek=             |
 | Fractional CTO      | ADRs, roadmap, build-vs-buy       | =ea eD eA ev=       |
