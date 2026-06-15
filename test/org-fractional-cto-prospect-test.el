@@ -95,6 +95,46 @@
     (setq org-fractional-cto-active-client "acme")
     (should-error (org-fractional-cto-set-stage "BOGUS") :type 'user-error)))
 
+(ert-deftest ofc-upgrade-hub-adds-stage-and-sections ()
+  (ofc-prospect-test-with-clients-dir
+    (let* ((dir (expand-file-name "legacy" org-fractional-cto-clients-directory))
+           (hub (org-fractional-cto-client-org-file "legacy")))
+      (make-directory dir t)
+      (with-temp-file hub
+        (insert "#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED\n\n"
+                "* Legacy Engagement  :LEGACY:\n"
+                "** Actions  :LEGACY:\n"))
+      (setq org-fractional-cto-active-client "legacy")
+      (org-fractional-cto-upgrade-hub)
+      (find-file hub)
+      (goto-char (point-min))
+      (org-mode)
+      (re-search-forward "^\\* Legacy Engagement")
+      (org-back-to-heading t)
+      (should (member "ACTIVE" (org-get-tags nil t)))
+      (goto-char (point-min))
+      (should (re-search-forward "^\\*\\* Pre-Sales Notes .*:LEGACY:PRESALES:" nil t))
+      (goto-char (point-min))
+      (should (re-search-forward "^\\*\\* Qualification .*:LEGACY:QUALIFICATION:" nil t)))))
+
+(ert-deftest ofc-upgrade-hub-is-idempotent ()
+  (ofc-prospect-test-with-clients-dir
+    (let* ((dir (expand-file-name "legacy" org-fractional-cto-clients-directory))
+           (hub (org-fractional-cto-client-org-file "legacy")))
+      (make-directory dir t)
+      (with-temp-file hub
+        (insert "* Legacy Engagement  :LEGACY:\n** Actions  :LEGACY:\n"))
+      (setq org-fractional-cto-active-client "legacy")
+      (org-fractional-cto-upgrade-hub)
+      (org-fractional-cto-upgrade-hub)
+      (find-file hub)
+      (goto-char (point-min))
+      (org-mode)
+      (let ((count 0))
+        (while (re-search-forward "^\\*\\* Pre-Sales Notes" nil t)
+          (setq count (1+ count)))
+        (should (= count 1))))))
+
 (provide 'org-fractional-cto-prospect-test)
 
 ;;; org-fractional-cto-prospect-test.el ends here
