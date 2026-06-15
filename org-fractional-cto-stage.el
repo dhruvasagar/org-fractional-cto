@@ -18,6 +18,7 @@
 
 (declare-function org-fractional-cto--select-client "org-fractional-cto")
 (declare-function org-fractional-cto-client-org-file "org-fractional-cto")
+(declare-function org-fractional-cto-client-tag "org-fractional-cto")
 (defvar org-fractional-cto-stages)
 (defvar org-fractional-cto-default-stage)
 (defvar org-fractional-cto-sections)
@@ -32,10 +33,30 @@ Signal a `user-error' if the buffer has no top-level heading."
                 (or (buffer-file-name) (buffer-name))))
   (org-back-to-heading t))
 
-(defun org-fractional-cto--engagement-client-tag ()
-  "Return the non-stage tag on the engagement heading at point, or nil."
-  (car (seq-remove (lambda (tag) (member tag org-fractional-cto-stages))
-                   (org-get-tags nil t))))
+(defun org-fractional-cto--migrate-to-filetags ()
+  "Ensure a \"#+filetags\" line and strip the client tag from every heading.
+The client tag is derived from the hub's filename so it is correct even after
+the engagement heading's tag has already been stripped.  Idempotent."
+  (let ((tag (org-fractional-cto-client-tag
+              (file-name-base (buffer-file-name)))))
+    (goto-char (point-min))
+    (unless (re-search-forward
+             (format "^#\\+filetags:.*:%s:" (regexp-quote tag)) nil t)
+      (goto-char (point-min))
+      (if (re-search-forward "^#\\+filetags:[ \t]*\\(.*\\)$" nil t)
+          (replace-match (format "#+filetags: \\1:%s:" tag) t)
+        (goto-char (point-min))
+        (if (re-search-forward "^#\\+TODO:.*$" nil t)
+            (progn (end-of-line) (insert (format "\n#+filetags: :%s:" tag)))
+          (goto-char (point-min))
+          (insert (format "#+filetags: :%s:\n" tag)))))
+    (goto-char (point-min))
+    (while (re-search-forward "^\\*+ " nil t)
+      (org-back-to-heading t)
+      (let ((tags (org-get-tags nil t)))
+        (when (member tag tags)
+          (org-set-tags (remove tag tags))))
+      (end-of-line))))
 
 ;;;###autoload
 (defun org-fractional-cto-set-stage (stage)
@@ -71,20 +92,18 @@ leaving the client tag and any other tags untouched."
 
 (defun org-fractional-cto--ensure-sections ()
   "Append any `org-fractional-cto-sections' headings missing from the buffer.
-Appended sections carry the engagement heading's client tag."
-  (let ((client-tag (save-excursion
-                      (org-fractional-cto--goto-engagement-heading)
-                      (org-fractional-cto--engagement-client-tag))))
-    (dolist (section org-fractional-cto-sections)
-      (let ((heading (car section)) (subtag (cadr section)))
-        (goto-char (point-min))
-        (unless (re-search-forward
-                 (concat "^\\*+ " (regexp-quote heading) "\\(?:[ \t]\\|$\\)") nil t)
-          (goto-char (point-max))
-          (unless (bolp) (insert "\n"))
-          (if (string-empty-p subtag)
-              (insert (format "** %s  :%s:\n\n" heading client-tag))
-            (insert (format "** %s  :%s:%s:\n\n" heading client-tag subtag))))))))
+Appended sections carry only their type subtag; the client tag is supplied by
+the file's \"#+filetags\" line."
+  (dolist (section org-fractional-cto-sections)
+    (let ((heading (car section)) (subtag (cadr section)))
+      (goto-char (point-min))
+      (unless (re-search-forward
+               (concat "^\\*+ " (regexp-quote heading) "\\(?:[ \t]\\|$\\)") nil t)
+        (goto-char (point-max))
+        (unless (bolp) (insert "\n"))
+        (if (string-empty-p subtag)
+            (insert (format "** %s\n\n" heading))
+          (insert (format "** %s  :%s:\n\n" heading subtag)))))))
 
 ;;;###autoload
 (defun org-fractional-cto-upgrade-hub ()
@@ -98,6 +117,7 @@ Ensures the engagement heading carries a stage tag (defaulting to
                          (org-fractional-cto--select-client)))
     (let ((was-modified (buffer-modified-p)))
       (save-excursion
+        (org-fractional-cto--migrate-to-filetags)
         (org-fractional-cto--ensure-stage-tag)
         (org-fractional-cto--ensure-sections))
       ;; Only persist if we opened a clean buffer; if the hub already had

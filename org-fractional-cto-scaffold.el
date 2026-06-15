@@ -66,7 +66,7 @@
 (defun org-fractional-cto--write-hub (file client-name tag stage)
   "Write the operational hub FILE for CLIENT-NAME tagged TAG at STAGE.
 STAGE is a string from `org-fractional-cto-stages' placed on the engagement
-heading alongside TAG."
+heading; TAG is written as the file's `#+filetags'."
   (with-temp-file file
     (insert (format "#+title: %s\n" client-name))
     (insert (format "#+AUTHOR: %s\n" org-fractional-cto-author))

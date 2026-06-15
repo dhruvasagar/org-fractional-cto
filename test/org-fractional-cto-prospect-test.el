@@ -118,9 +118,11 @@
       (org-back-to-heading t)
       (should (member "ACTIVE" (org-get-tags nil t)))
       (goto-char (point-min))
-      (should (re-search-forward "^\\*\\* Pre-Sales Notes .*:LEGACY:PRESALES:" nil t))
+      (should (re-search-forward "^\\*\\* Pre-Sales Notes .*:PRESALES:" nil t))
       (goto-char (point-min))
-      (should (re-search-forward "^\\*\\* Qualification .*:LEGACY:QUALIFICATION:" nil t)))))
+      (should (re-search-forward "^\\*\\* Qualification .*:QUALIFICATION:" nil t))
+      (goto-char (point-min))
+      (should-not (re-search-forward "^\\*+ .*:LEGACY:" nil t)))))
 
 (ert-deftest ofc-upgrade-hub-is-idempotent ()
   (ofc-prospect-test-with-clients-dir
@@ -139,6 +141,31 @@
         (while (re-search-forward "^\\*\\* Pre-Sales Notes" nil t)
           (setq count (1+ count)))
         (should (= count 1))))))
+
+(ert-deftest ofc-migrate-amends-existing-filetags ()
+  "Migration amends an existing filetags line rather than adding a second."
+  (ofc-prospect-test-with-clients-dir
+    (let* ((slug "acme")
+           (dir (expand-file-name slug (org-fractional-cto--clients-dir)))
+           (file (org-fractional-cto-client-org-file slug)))
+      (make-directory dir t)
+      (with-temp-file file
+        (insert "#+title: Acme Corp\n")
+        (insert "#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED\n")
+        (insert "#+filetags: :OTHER:\n\n")
+        (insert "* Acme Corp Engagement  :ACTIVE:\n"))
+      (org-fractional-cto-set-active-client slug)
+      (org-fractional-cto-upgrade-hub)
+      (with-temp-buffer
+        (insert-file-contents file)
+        (goto-char (point-min))
+        (let ((n 0))
+          (while (re-search-forward "^#\\+filetags:" nil t) (setq n (1+ n)))
+          (should (= n 1)))
+        (goto-char (point-min))
+        (should (re-search-forward "^#\\+filetags:.*:OTHER:" nil t))
+        (goto-char (point-min))
+        (should (re-search-forward "^#\\+filetags:.*:ACME:" nil t))))))
 
 (ert-deftest ofc-capture-templates-include-presales ()
   (let* ((templates (org-fractional-cto-capture-templates))
@@ -322,6 +349,46 @@ scaffold, so their hubs agree on every heading once slug and stage are removed."
       (should (re-search-forward "^\\*\\* Risks[ \t]+:RISK:$" nil t))
       (goto-char (point-min))
       (should-not (re-search-forward "^\\*+ .*:ACME:" nil t)))))
+
+(ert-deftest ofc-upgrade-hub-migrates-to-filetags ()
+  "Upgrading an old-style hub adds a filetag and strips heading client tags."
+  (ofc-prospect-test-with-clients-dir
+    (let* ((slug "acme")
+           (dir (expand-file-name slug (org-fractional-cto--clients-dir)))
+           (file (org-fractional-cto-client-org-file slug)))
+      (make-directory dir t)
+      (with-temp-file file
+        (insert "#+title: Acme Corp\n")
+        (insert "#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED\n\n")
+        (insert "* Acme Corp Engagement  :ACME:ACTIVE:\n\n")
+        (insert "** Risks  :ACME:RISK:\n\n")
+        (insert "** Actions  :ACME:\n\n"))
+      (org-fractional-cto-set-active-client slug)
+      (org-fractional-cto-upgrade-hub)
+      (with-temp-buffer
+        (insert-file-contents file)
+        (goto-char (point-min))
+        (should (re-search-forward "^#\\+filetags:[ \t]+:ACME:" nil t))
+        (goto-char (point-min))
+        (should-not (re-search-forward "^\\*+ .*:ACME:" nil t))
+        (goto-char (point-min))
+        (should (re-search-forward "^\\* Acme Corp Engagement[ \t]+:ACTIVE:$" nil t))
+        (goto-char (point-min))
+        (should (re-search-forward "^\\*\\* Risks[ \t]+:RISK:$" nil t))))))
+
+(ert-deftest ofc-upgrade-hub-filetags-idempotent ()
+  "Re-upgrading a migrated hub does not add a second filetags line."
+  (ofc-prospect-test-with-clients-dir
+    (org-fractional-cto-new-client "Acme Corp" "acme")
+    (org-fractional-cto-set-active-client "acme")
+    (org-fractional-cto-upgrade-hub)
+    (org-fractional-cto-upgrade-hub)
+    (with-temp-buffer
+      (insert-file-contents (org-fractional-cto-client-org-file "acme"))
+      (goto-char (point-min))
+      (let ((n 0))
+        (while (re-search-forward "^#\\+filetags:" nil t) (setq n (1+ n)))
+        (should (= n 1))))))
 
 (provide 'org-fractional-cto-prospect-test)
 
