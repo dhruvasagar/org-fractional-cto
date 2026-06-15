@@ -1,0 +1,29 @@
+#+TITLE: org-fractional-cto
+#+SUBTITLE: An Org-mode operating system for fractional-CTO engagements
+#+AUTHOR: Dhruva Sagar
+#+TEXINFO_FILENAME: org-fractional-cto.info
+#+TEXINFO_DIR_CATEGORY: Emacs
+#+TEXINFO_DIR_TITLE: org-fractional-cto: (org-fractional-cto).
+#+TEXINFO_DIR_DESC: Org-mode workflow for running fractional-CTO engagements
+#+OPTIONS: H:4 num:t toc:t
+#+EXPORT_FILE_NAME: ../org-fractional-cto.texi
+
+# This file is the source for the Texinfo/Info manual.  It stitches the three
+# hand-written documents into one manual by INCLUDE-ing them as chapters.  The
+# ":lines N-" ranges strip only each file's fixed top matter (keywords, file
+# property drawer, and wrapper heading); they are open-ended so edits to the
+# body never shift them.  Regenerate the manual with "make info".
+
+org-fractional-cto turns Org mode into an operating system for running
+technical client engagements as a fractional CTO or engagement director.  This
+manual collects the user guide, the engagement playbook, and the reference into
+one place.  Read the guide first; keep the reference open while you work.
+
+* Guide
+#+INCLUDE: "guide.org" :minlevel 2 :lines "5-"
+
+* Playbook
+#+INCLUDE: "playbook.org" :minlevel 2 :lines "13-"
+
+* Reference
+#+INCLUDE: "reference.org" :minlevel 2 :lines "14-"

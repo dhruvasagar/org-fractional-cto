@@ -1,0 +1,3222 @@
+\input texinfo    @c -*- texinfo -*-
+@c %**start of header
+@setfilename org-fractional-cto.info
+@settitle org-fractional-cto
+@documentencoding UTF-8
+@documentlanguage en
+@c %**end of header
+
+@dircategory Emacs
+@direntry
+* org-fractional-cto: (org-fractional-cto). Org-mode workflow for running fractional-CTO engagements.
+@end direntry
+
+@finalout
+@titlepage
+@title org-fractional-cto
+@subtitle An Org-mode operating system for fractional-CTO engagements
+@author Dhruva Sagar
+@end titlepage
+
+@contents
+
+@ifnottex
+@node Top
+@top org-fractional-cto
+
+org-fractional-cto turns Org mode into an operating system for running
+technical client engagements as a fractional CTO or engagement director.  This
+manual collects the user guide, the engagement playbook, and the reference into
+one place.  Read the guide first; keep the reference open while you work.
+
+@end ifnottex
+
+@menu
+* Guide::
+* Playbook::
+* Reference::
+
+@detailmenu
+--- The Detailed Node Listing ---
+
+Guide
+
+* Before you start::
+* Step 1 — Install and verify::
+* Step 2 — The two concepts you will lean on::
+* Step 3 — Onboard your first client::
+* Step 4 — Fill in CONTEXT.md: Step 4 — Fill in CONTEXTmd. 
+* Step 5 — Set the active client::
+* Step 6 — Your first capture, in detail: Step 6 — Your first capture in detail. 
+* Step 7 — A tour of every capture, in working order: Step 7 — A tour of every capture in working order. 
+* Step 8 — Read your dashboard::
+* Step 9 — Look across all clients::
+* Step 10 — The management commands::
+* Step 11 — Make it yours::
+* Step 12 — Wire in AI session skills (optional)::
+* Step 13 — Settle into the rhythm::
+* Troubleshooting::
+* Where to go next::
+
+Step 1 — Install and verify
+
+* Install::
+* Verify::
+
+Step 2 — The two concepts you will lean on
+
+* The active client::
+* The client hub::
+
+Step 3 — Onboard your first client
+
+* Walk the hub it generated::
+
+Step 7 — A tour of every capture, in working order
+
+* Action tracking & delegation::
+* Relationship & communication::
+* Risk & delivery::
+* Technical::
+* Innovation::
+
+Step 11 — Make it yours
+
+* Override a single template::
+* Reorder or extend the dashboard::
+
+Playbook
+
+* The Hat Model::
+* Phase 0 — Engagement Setup::
+* Phase 1 — Discovery::
+* Phase 2 — Architecture Assessment::
+* Phase 3 — Operating Rhythm::
+* Phase 4 — Growth & Innovation::
+* New Client Onboarding Checklist::
+* Reference All Capture Templates::
+
+The Hat Model
+
+* Hat-switching tools::
+
+Phase 0 — Engagement Setup
+
+* Purpose::
+* Checklist::
+* Questions to answer::
+* Capture templates::
+* Deliverable::
+
+Phase 1 — Discovery
+
+* Purpose: Purpose (1). 
+* Rhythm::
+* Per-session approach::
+* Questions that cut across all streams::
+* Capture templates: Capture templates (1). 
+* Deliverable: Deliverable (1). 
+
+Phase 2 — Architecture Assessment
+
+* Purpose: Purpose (2). 
+* Approach::
+* Checklist: Checklist (1). 
+* Build vs. Buy decision frame: Build vs Buy decision frame. 
+* Capture templates: Capture templates (2). 
+* Deliverable: Deliverable (2). 
+
+Phase 3 — Operating Rhythm
+
+* Purpose: Purpose (3). 
+* Ceremonies::
+* Capture templates: Capture templates (3). 
+* Managing client expectations::
+
+Phase 4 — Growth & Innovation
+
+* Purpose: Purpose (4). 
+* Innovation pipeline approach::
+* Expansion conversation triggers::
+* Scope change discipline::
+* Capture templates: Capture templates (4). 
+
+New Client Onboarding Checklist
+
+* Step 1 — Emacs scaffold (60 seconds)::
+* Step 2 — Fill CONTEXT.md: Step 2 — Fill CONTEXTmd. 
+* Step 3 — Capture key contacts::
+* Step 4 — Tools (if doing implementation work)::
+* First week checklist::
+
+Reference: All Capture Templates
+
+* Relationship & Communication::
+* Action Tracking & Delegation::
+* Risk & Delivery::
+* Technical: Technical (1). 
+
+Reference
+
+* Quick Lookup — "I need to@dots{}"::
+* Legend::
+* File Organization::
+* Capture Templates — Complete Reference::
+* Operating Rhythms — Day by Day::
+* The Hat Model in Practice::
+* Tools Reference::
+* New Client Setup::
+* Scenario Guides::
+
+Quick Lookup — "I need to@dots{}"
+
+* Capture something::
+* Look up / analyse::
+
+Legend
+
+* keywords (client files)::
+* Priorities::
+* Type tags::
+* Key bindings::
+
+File Organization
+
+* The capture flow::
+* The lookup flow::
+
+Capture Templates — Complete Reference
+
+* Relationship & Communication Templates::
+* Action Tracking & Delegation Templates::
+* Risk & Delivery Templates::
+* Technical Templates::
+
+Relationship & Communication Templates
+
+* @samp{es} — Standup Notes::
+* @samp{em} — Client Meeting::
+* @samp{ei} — Internal Sync::
+* @samp{ep} — Stakeholder Profile::
+* @samp{ec} — Commitment Captured::
+* @samp{eh} — Client Health Check::
+* @samp{eq} — QBR (Quarterly Business Review)::
+
+Action Tracking & Delegation Templates
+
+* @samp{ew} — Action Item (quick TODO)::
+* @samp{eg} — Delegate Action (WAITING)::
+* @samp{eb} — Blocker / Escalation::
+* @samp{eW} — Weekly Review::
+* @samp{eP} — Person / Team Member Note::
+
+Risk & Delivery Templates
+
+* @samp{er} — Risk Item::
+* @samp{ee} — Scope Change / Out-of-Scope Flag::
+* @samp{ef} — Post-Mortem / Incident::
+* @samp{eR} — Retrospective::
+
+Technical Templates
+
+* @samp{ed} — Discovery Session::
+* @samp{ea} — Architecture Decision Record (ADR)::
+* @samp{eA} — Architecture Health Review::
+* @samp{ev} — Vendor / Tool Evaluation::
+* @samp{et} — Technical Debt Item::
+* @samp{ex} — Security Finding::
+* @samp{en} — Innovation Pipeline Idea::
+
+Operating Rhythms — Day by Day
+
+* Daily::
+* Weekly::
+* Monthly::
+* Quarterly::
+
+The Hat Model in Practice
+
+* Before any significant session::
+* Hat descriptions::
+
+Tools Reference
+
+* org-capture (@samp{C-c c})::
+* org-agenda (@samp{C-c a})::
+* org-clock::
+* org-refile::
+* org-roam::
+* How AI skills associate with an Org work item::
+* mattpocock/skills::
+* gstack (garrytan/gstack)::
+
+New Client Setup
+
+* Step 1 — Run org-fractional-cto-new-client::
+* Step 2 — Fill CONTEXT.md: Step 2 — Fill CONTEXTmd (1). 
+* Step 3 — Set active client::
+* Step 4 — Capture key contacts::
+* Step 5 — Tools (if doing implementation work)::
+* First week checklist: First week checklist (1). 
+
+Scenario Guides
+
+* "I just had a discovery session"::
+* "Something went wrong in production"::
+* "Client asked for something that might be out of scope"::
+* "I want to pitch an innovation idea"::
+* "I need to make an architecture decision"::
+* "Preparing for a QBR"::
+* "Starting a new engagement for the first time"::
+
+@end detailmenu
+@end menu
+
+@node Guide
+@chapter Guide
+
+This guide walks you through @strong{every feature}, in the order you would actually
+meet them: install and verify, onboard a client, capture work, read the
+dashboard, look across clients, and tailor the system. It assumes you are
+comfortable in Emacs and Org (@samp{M-x}, @samp{C-c c} capture, the agenda dispatcher,
+editing your init file).
+
+It complements the other two documents rather than repeating them:
+
+@itemize
+@item
+This @strong{guide} is the hand-held tour — @emph{how do I use the tool?}
+@item
+@uref{playbook.org, playbook.org} is the methodology — @emph{how do I run the engagement?}
+@item
+@uref{reference.org, reference.org} is the lookup — @emph{what does each capture and tag mean?}
+@end itemize
+
+Work through it once, top to bottom, with Emacs open. Every step says what you
+should @strong{see} so you can confirm it worked before moving on.
+
+@menu
+* Before you start::
+* Step 1 — Install and verify::
+* Step 2 — The two concepts you will lean on::
+* Step 3 — Onboard your first client::
+* Step 4 — Fill in CONTEXT.md: Step 4 — Fill in CONTEXTmd. 
+* Step 5 — Set the active client::
+* Step 6 — Your first capture, in detail: Step 6 — Your first capture in detail. 
+* Step 7 — A tour of every capture, in working order: Step 7 — A tour of every capture in working order. 
+* Step 8 — Read your dashboard::
+* Step 9 — Look across all clients::
+* Step 10 — The management commands::
+* Step 11 — Make it yours::
+* Step 12 — Wire in AI session skills (optional)::
+* Step 13 — Settle into the rhythm::
+* Troubleshooting::
+* Where to go next::
+@end menu
+
+@node Before you start
+@section Before you start
+
+You need:
+
+@itemize
+@item
+@strong{Emacs 27.1+} and @strong{Org 9.4+} (@samp{M-x org-version}).
+@item
+@samp{org-capture} bound to a key. This guide assumes the conventional
+@code{C-c c}. If you have not bound it: @code{(global-set-key (kbd "C-c c") #'org-capture)}.
+@item
+@samp{org-agenda} bound to @code{C-c a} (the Org default).
+@item
+A directory to hold clients. The default is @samp{<org-directory>/clients}; this
+guide uses @samp{~/org/clients}.
+@end itemize
+
+Throughout, the example client is @strong{Acme Corp} with the slug @samp{acme}.
+
+@node Step 1 — Install and verify
+@section Step 1 — Install and verify
+
+@menu
+* Install::
+* Verify::
+@end menu
+
+@node Install
+@subsection Install
+
+With @samp{use-package} from a local clone:
+
+@lisp
+(use-package org-fractional-cto
+  :load-path "~/src/org-fractional-cto"
+  :after org
+  :custom
+  (org-fractional-cto-clients-directory "~/org/clients")
+  (org-fractional-cto-author "Your Name")
+  :config
+  (org-fractional-cto-setup))
+@end lisp
+
+Or manually:
+
+@lisp
+(add-to-list 'load-path "~/src/org-fractional-cto")
+(require 'org-fractional-cto)
+(setq org-fractional-cto-clients-directory "~/org/clients")
+(org-fractional-cto-setup)
+@end lisp
+
+@samp{org-fractional-cto-setup} does three things: installs the @samp{e} capture group,
+registers the dashboard agenda command, and adds your existing client
+directories to @samp{org-agenda-files}. It is @strong{idempotent} — safe to run again any
+time (e.g. after you edit @samp{org-fractional-cto-dashboard-blocks}). Re-running
+refreshes the captures and the dashboard in place rather than duplicating them,
+so @code{M-x org-fractional-cto-setup} is the way to apply config changes without
+restarting Emacs.
+
+@node Verify
+@subsection Verify
+
+Three quick checks before you create anything:
+
+@enumerate
+@item
+@strong{Setup ran.} @code{M-x org-fractional-cto-setup} returns without error.
+@item
+@strong{Dashboard is registered.} Press @code{C-c a}. The dispatcher should list:
+@samp{E   Fractional CTO — client dashboard}. (Press @samp{q} to dismiss.)
+@item
+@strong{Captures are installed.} Press @code{C-c c}. You should see
+@samp{e   Engagement (select client)} in the menu. (Press @samp{C-g} to dismiss.)
+@end enumerate
+
+If all three pass, the package is live.
+
+@node Step 2 — The two concepts you will lean on
+@section Step 2 — The two concepts you will lean on
+
+Before onboarding, understand the two ideas the whole workflow rests on.
+
+@menu
+* The active client::
+* The client hub::
+@end menu
+
+@node The active client
+@subsection The active client
+
+Almost everything is scoped to one client at a time. Instead of a key prefix
+per client, you set an @strong{active client} once per session and every capture and
+the dashboard follow it.
+
+@multitable {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Command
+@tab Effect
+@item @samp{M-x org-fractional-cto-set-active-client}
+@tab Pick the client for this session
+@item @samp{M-x org-fractional-cto-clear-active-client}
+@tab Go back to being prompted per capture
+@item @samp{M-x org-fractional-cto-switch-client}
+@tab Set active @strong{and} open its dashboard
+@end multitable
+
+With an active client set, @code{C-c c e ...} and @code{C-c a E} never prompt. With none
+set, they prompt you to choose — nothing breaks, it is just one extra step.
+
+@node The client hub
+@subsection The client hub
+
+Each client owns a directory with three files:
+
+@example
+~/org/clients/
+  acme/
+    acme.org      ← operational hub: one section per capture type
+    standup.org   ← per-client standup template (the es capture reads this)
+    CONTEXT.md    ← domain glossary, people, tech stack (load in AI sessions)
+@end example
+
+The hub's section headings, the capture targets, and the dashboard's queries
+are all generated from a single section list, so they agree by construction —
+you never wire a capture to a heading by hand.
+
+@node Step 3 — Onboard your first client
+@section Step 3 — Onboard your first client
+
+Run:
+
+@example
+M-x org-fractional-cto-new-client
+@end example
+
+
+You are asked for two things:
+
+@enumerate
+@item
+@strong{Client name (display)} — e.g. @samp{Acme Corp}. Becomes the file @samp{#+title}, the
+top-level heading, and the agenda @samp{:CATEGORY:}. (The @samp{#+AUTHOR} line is set
+separately from @samp{org-fractional-cto-author}.)
+@item
+@strong{Client slug} — e.g. @samp{acme}. Lowercase, no spaces; it names the directory
+and files, and is upper-cased into the Org tag (@samp{acme} → @samp{:ACME:};
+non-alphanumerics become @samp{_}, so @samp{acme-eu} → @samp{:ACME_EU:}).
+@end enumerate
+
+The command then creates @samp{acme/acme.org}, @samp{acme/standup.org}, and
+@samp{acme/CONTEXT.md}, adds the new directory to @samp{org-agenda-files} immediately (no
+restart), and opens @samp{CONTEXT.md} for you to fill in.
+
+@menu
+* Walk the hub it generated::
+@end menu
+
+@node Walk the hub it generated
+@subsection Walk the hub it generated
+
+Open @samp{acme/acme.org}. At the top is a @samp{#+TODO} line defining the workflow's
+states:
+
+@example
+#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED
+@end example
+
+(Note @samp{INPROGRESS} has no hyphen — that is deliberate; see @ref{Troubleshooting}.)
+
+Below the top-level @samp{* Acme Corp Engagement :ACME:} heading is one @samp{**} section
+per capture type — @samp{Actions}, @samp{Delegations}, @samp{Blockers}, @samp{People}, @samp{Commitments},
+@samp{Risks}, @samp{Meeting Notes}, …, @samp{Retrospectives} — each pre-tagged with the client
+tag plus its type tag (e.g. @samp{** Delegations :ACME:DELEGATED:}). You do not edit
+these by hand; captures file into them. Seeing the whole engagement in one
+outline is the point — fold with @samp{overview}, expand the section you need.
+
+@node Step 4 — Fill in CONTEXTmd
+@section Step 4 — Fill in CONTEXT.md
+
+@samp{CONTEXT.md} is the human (and AI) brief for the engagement. It opens
+automatically after onboarding, pre-populated with section headers:
+
+@itemize
+@item
+@strong{What We're Building} — one paragraph on the product and the mandate.
+@item
+@strong{Domain Vocabulary} — the terms the team uses; the highest-leverage section.
+@item
+@strong{Tech Stack} — as known at onboarding.
+@item
+@strong{Key People} — client side and your side.
+@item
+@strong{Active Work Streams} and @strong{Current Priorities}.
+@end itemize
+
+Fill at least vocabulary, people, and priorities now; the rest accretes. If you
+do hands-on implementation with an AI agent, load this file at the start of each
+session so the agent speaks the client's language. It is plain Markdown so it
+travels into any tool.
+
+@node Step 5 — Set the active client
+@section Step 5 — Set the active client
+
+Back from @samp{CONTEXT.md}:
+
+@example
+M-x org-fractional-cto-set-active-client
+@end example
+
+
+Choose @samp{acme}. The echo area confirms @samp{Active client: acme}. From here, every
+capture and the dashboard target Acme with no prompting.
+
+@itemize
+@item
+@samp{org-fractional-cto-clear-active-client} returns to per-capture prompting.
+@item
+@samp{org-fractional-cto-switch-client} sets a @strong{different} client active and opens
+its dashboard in one step — the fast path when you change context.
+@end itemize
+
+The active client is per-session state; it resets when Emacs restarts. Set it
+once when you sit down to work on a client.
+
+@node Step 6 — Your first capture in detail
+@section Step 6 — Your first capture, in detail
+
+Capture an action. Press @code{C-c c e w}:
+
+@enumerate
+@item
+@code{C-c c} opens org-capture; @samp{e} selects the engagement group; @samp{w} selects
+@strong{Action item}.
+@item
+You are prompted for the action text, then a deadline.
+@item
+Org files a @samp{TODO} under Acme's @samp{Actions} section, tagged @samp{:ACME:}, stamped
+with the creation time, and @strong{clocks in} (the @samp{ew} template sets @samp{:clock-in}).
+@item
+Finish with @code{C-c C-c} to file it (which also clocks out), or @code{C-c C-k} to
+abort.
+@end enumerate
+
+Open @samp{acme.org} and confirm the new @samp{TODO} sits under @samp{** Actions}. That round
+trip — pick a key, answer the prompts, it lands in the right section already
+tagged — is the entire capture model. Two things make it work:
+
+@itemize
+@item
+@strong{Routing.} Each template targets a section heading by name in the active
+client's hub. No inbox, no manual refiling.
+@item
+@strong{Two kinds of template.} Short captures (action, risk, commitment, …) are
+inline; richer ones (discovery, ADR, QBR, …) are filled from a file in the
+bundled @samp{templates/} folder, which you can override (see @ref{Step 11 — Make it yours, , Step 11}). The
+@strong{standup} (@samp{es}) is special: it reads the client's own @samp{standup.org} so you can
+tailor the streams to the real team, falling back to the bundled template.
+@end itemize
+
+@node Step 7 — A tour of every capture in working order
+@section Step 7 — A tour of every capture, in working order
+
+All engagement captures live under @code{C-c c e}. Here is the full set, grouped the
+way you use them. For each: the key, what it captures, the hub section it files
+into, and when to reach for it. (Field-by-field detail is in @uref{reference.org, reference.org}.)
+
+@menu
+* Action tracking & delegation::
+* Relationship & communication::
+* Risk & delivery::
+* Technical::
+* Innovation::
+@end menu
+
+@node Action tracking & delegation
+@subsection Action tracking & delegation
+
+@multitable {aaaa} {aaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Key
+@tab Captures
+@tab Files to
+@tab Reach for it when…
+@item @samp{ew}
+@tab Action item (TODO)
+@tab Actions
+@tab A task lands on @emph{your} plate
+@item @samp{eg}
+@tab Delegate (WAITING)
+@tab Delegations
+@tab You hand a task to someone — sets @samp{WAITING}
+@item @samp{eb}
+@tab Blocker / escalation
+@tab Blockers
+@tab Something is blocking delivery
+@item @samp{eW}
+@tab Weekly review
+@tab Weekly Reviews
+@tab Your Friday delegation + team pulse pass
+@item @samp{eP}
+@tab Person / team note
+@tab People
+@tab Capacity, a concern, or a win to record
+@end multitable
+
+@samp{eg} is the engine of the @strong{Delegated} dashboard block: it files in the @samp{WAITING}
+state, which is how the system separates "things I owe" from "things I am owed."
+
+@node Relationship & communication
+@subsection Relationship & communication
+
+@multitable {aaaa} {aaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Key
+@tab Captures
+@tab Files to
+@tab Reach for it when…
+@item @samp{es}
+@tab Standup
+@tab Standup Notes
+@tab Daily standup (reads @samp{standup.org})
+@item @samp{em}
+@tab Client meeting
+@tab Meeting Notes
+@tab Any client-facing sync
+@item @samp{ei}
+@tab Internal sync
+@tab Internal Syncs
+@tab Your team's internal sync
+@item @samp{ec}
+@tab Commitment
+@tab Commitments
+@tab A promise is made (by you or them)
+@item @samp{ep}
+@tab Stakeholder profile
+@tab Stakeholder Profiles
+@tab Profiling a decision-maker
+@item @samp{eh}
+@tab Client health check
+@tab Health Checks
+@tab Monthly pulse questions
+@item @samp{eM}
+@tab Metrics snapshot
+@tab Health Checks
+@tab Logging the week's funnel/metrics
+@item @samp{eq}
+@tab QBR
+@tab QBRs
+@tab Quarterly business review prep
+@end multitable
+
+@node Risk & delivery
+@subsection Risk & delivery
+
+@multitable {aaaa} {aaaaaaaaaaaaa} {aaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Key
+@tab Captures
+@tab Files to
+@tab Reach for it when…
+@item @samp{er}
+@tab Risk
+@tab Risks
+@tab A delivery or engagement risk appears
+@item @samp{ee}
+@tab Scope change
+@tab Scope Changes
+@tab Work surfaces outside the SOW
+@item @samp{ef}
+@tab Post-mortem
+@tab Post-Mortems
+@tab @emph{Reactive} — something failed
+@item @samp{eR}
+@tab Retrospective
+@tab Retrospectives
+@tab @emph{Routine} — every sprint, failure or not
+@end multitable
+
+Keep @samp{ef} and @samp{eR} distinct: a post-mortem is written because something broke; a
+retrospective runs on cadence regardless.
+
+@node Technical
+@subsection Technical
+
+@multitable {aaaa} {aaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Key
+@tab Captures
+@tab Files to
+@tab Reach for it when…
+@item @samp{ed}
+@tab Discovery session
+@tab Discovery Sessions
+@tab Interviewing a stream / mapping
+@item @samp{ek}
+@tab Tech spike
+@tab Discovery Sessions
+@tab A timeboxed technical exploration
+@item @samp{ea}
+@tab ADR
+@tab Architecture Decisions
+@tab Recording a significant decision
+@item @samp{eD}
+@tab Quick decision
+@tab Architecture Decisions
+@tab A lighter decision worth a record
+@item @samp{eA}
+@tab Architecture review
+@tab Architecture Reviews
+@tab A formal architecture health pass
+@item @samp{ev}
+@tab Vendor evaluation
+@tab Vendor Evaluations
+@tab Assessing a tool or vendor
+@item @samp{et}
+@tab Technical debt item
+@tab Technical Debt
+@tab You hear/see debt worth tracking
+@item @samp{ex}
+@tab Security finding
+@tab Security Findings
+@tab Any security or compliance signal
+@end multitable
+
+@node Innovation
+@subsection Innovation
+
+@multitable {aaaa} {aaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Key
+@tab Captures
+@tab Files to
+@tab Reach for it when…
+@item @samp{en}
+@tab Innovation idea
+@tab Innovation Pipeline
+@tab A single opportunity occurs
+@item @samp{eI}
+@tab Innovation meeting
+@tab Innovation Pipeline
+@tab A multi-idea ideation session
+@end multitable
+
+By now you have met every capture. You do not need to memorise the table —
+@code{C-c c e} shows the menu, and the mnemonic is roughly "first letter of the
+thing." The richer templates clock in automatically so your time tracking is a
+by-product of working.
+
+@node Step 8 — Read your dashboard
+@section Step 8 — Read your dashboard
+
+With @samp{acme} active, press @code{C-c a E} (or @code{M-x org-fractional-cto-dashboard}). You
+get a single per-client board with six blocks, in this order:
+
+@enumerate
+@item
+@strong{Next 7 days} — scheduled items and deadlines from the hub.
+@item
+@strong{Delegated — awaiting response} — everything @samp{WAITING}, deadline-sorted.
+This is your "work I am owed" inbox; nothing should sit here a full week
+without a check-in.
+@item
+@strong{Blockers & escalations} — anything tagged @samp{BLOCKER}.
+@item
+@strong{Open actions} — your @samp{TODO} / @samp{NEXT} / @samp{INPROGRESS} work, with blockers and
+commitments filtered out so they are not double-listed.
+@item
+@strong{Commitments} — promises made, by you or the client.
+@item
+@strong{Active risks} — the risk register (the section container is skipped, so you
+see the risks themselves, not the empty parent heading).
+@end enumerate
+
+Because the dashboard is a @strong{real Org agenda command}, not a bespoke function, it
+inherits the dispatcher's powers: refresh with @samp{r}, filter with @samp{/}, narrow by
+tag, export, and it is sticky-agenda aware. It stays per-client by computing
+@samp{org-agenda-files} from the active client @strong{each time it runs} — which is why
+@samp{switch-client} can flip the whole board to another client instantly.
+
+@node Step 9 — Look across all clients
+@section Step 9 — Look across all clients
+
+The per-client dashboard is one view. For portfolio-wide questions, use the
+plain agenda dispatcher against the type tags every capture carries:
+
+@multitable {aaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Keys
+@tab Shows
+@item @code{C-c a m RISK}
+@tab Every risk, across all clients
+@item @code{C-c a m DELEGATED}
+@tab Everything you have delegated, anywhere
+@item @code{C-c a m BLOCKER}
+@tab All blockers everywhere
+@item @code{C-c a t}
+@tab All TODOs across clients
+@end multitable
+
+The full tag legend (one tag per capture type) is in the README and
+@uref{reference.org, reference.org}. The pattern: @samp{C-c a m <TAG>} turns any capture type into a
+cross-client list.
+
+@node Step 10 — The management commands
+@section Step 10 — The management commands
+
+Five commands run the lifecycle. They are available via @samp{M-x} and also live in
+@samp{org-fractional-cto-command-map} under the keys shown:
+
+@multitable {aaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Map key
+@tab Command
+@tab Action
+@item @samp{n}
+@tab @samp{org-fractional-cto-new-client}
+@tab New client (onboard)
+@item @samp{s}
+@tab @samp{org-fractional-cto-set-active-client}
+@tab Set active client
+@item @samp{k}
+@tab @samp{org-fractional-cto-clear-active-client}
+@tab Clear active client
+@item @samp{d}
+@tab @samp{org-fractional-cto-dashboard}
+@tab Dashboard for active client
+@item @samp{w}
+@tab @samp{org-fractional-cto-switch-client}
+@tab Switch client + open dashboard
+@end multitable
+
+The map is @strong{not} bound to any prefix by default (@samp{org-fractional-cto-keymap-prefix}
+is @samp{nil}), because common prefixes like @samp{C-c f} are already taken (Magit). Opt
+in by setting the prefix @strong{before} @samp{setup}:
+
+@lisp
+(setq org-fractional-cto-keymap-prefix "C-c k")  ; then n/s/k/d/w under C-c k
+@end lisp
+
+@node Step 11 — Make it yours
+@section Step 11 — Make it yours
+
+Everything tunable lives in the @samp{org-fractional-cto} customize group
+(@code{M-x customize-group RET org-fractional-cto}):
+
+@multitable {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Variable
+@tab Default
+@tab Purpose
+@item @samp{org-fractional-cto-clients-directory}
+@tab @samp{<org-directory>/clients}
+@tab Where engagements live
+@item @samp{org-fractional-cto-template-directory}
+@tab bundled @samp{templates/}
+@tab Capture template files
+@item @samp{org-fractional-cto-author}
+@tab @samp{user-full-name}
+@tab @samp{#+AUTHOR} in scaffolded files
+@item @samp{org-fractional-cto-agenda-key}
+@tab ="E"
+@tab Dispatcher key for the dashboard
+@item @samp{org-fractional-cto-keymap-prefix}
+@tab @samp{nil}
+@tab Optional command-map prefix
+@item @samp{org-fractional-cto-dashboard-blocks}
+@tab (6 blocks)
+@tab The dashboard's agenda blocks
+@end multitable
+
+Two customisations you are most likely to want:
+
+@menu
+* Override a single template::
+* Reorder or extend the dashboard::
+@end menu
+
+@node Override a single template
+@subsection Override a single template
+
+Copy the bundled @samp{templates/} folder somewhere of your own, edit only the file
+you care about (say @samp{adr.org}), and point the variable at your copy:
+
+@lisp
+(setq org-fractional-cto-template-directory "~/org/ofc-templates")
+@end lisp
+
+@node Reorder or extend the dashboard
+@subsection Reorder or extend the dashboard
+
+@samp{org-fractional-cto-dashboard-blocks} is an ordinary list of Org agenda series
+entries. Drop a block, reorder them, or add your own — for example, a block for
+@samp{NEXT} items first — then re-run @code{M-x org-fractional-cto-setup} to apply it (the
+install is idempotent, so this refreshes the command in place).
+
+@node Step 12 — Wire in AI session skills (optional)
+@section Step 12 — Wire in AI session skills (optional)
+
+If you also do hands-on implementation with an AI agent, two skill packs pair
+well with the workflow. They live in your @strong{code} repositories, not here; the
+link between them and Org is the @samp{CONTEXT.md} file plus the captured artifacts.
+The loop is: Org tells you @emph{what} and @emph{why} → the skill helps you @emph{do} it → you
+capture the @emph{outcome} back into Org. See the README's
+"Working with AI session skills" section for the per-capture skill mapping.
+
+@node Step 13 — Settle into the rhythm
+@section Step 13 — Settle into the rhythm
+
+You now know every moving part. The operating cadence ties them together:
+
+@itemize
+@item
+@strong{Daily} — attend standups (@samp{es}), capture blockers (@samp{eb}) as they surface.
+@item
+@strong{Weekly} — delegation + pulse review (@samp{eW}); internal sync (@samp{ei}) before any
+client comms; client sync (@samp{em}); sprint retro (@samp{eR}). Clear the @strong{Delegated}
+block on the dashboard.
+@item
+@strong{Monthly} — client health check (@samp{eh}); review the innovation pipeline (@samp{en}).
+@item
+@strong{Quarterly} — QBR (@samp{eq}); architecture health review (@samp{eA}).
+@end itemize
+
+The @emph{why} behind this cadence — the engagement phases, the "hat" model, and the
+decision frameworks — is the job of @uref{playbook.org, playbook.org}. Read it next.
+
+@node Troubleshooting
+@section Troubleshooting
+
+@itemize
+@item
+@strong{Every capture prompts me for a client.} No active client is set. Run
+@samp{org-fractional-cto-set-active-client} (or @samp{switch-client}). This is expected
+behaviour, not a bug — it just means one extra keystroke per capture.
+
+@item
+@strong{An @samp{INPROGRESS} task is missing from the dashboard's Open actions.} The
+keyword must be exactly @samp{INPROGRESS}, with @strong{no hyphen}. Org's agenda match
+language treats @samp{-} as a boolean NOT, so a hyphenated keyword (@samp{IN-PROGRESS})
+is parsed as "@samp{IN} and not @samp{PROGRESS}" and never matches. Scaffolded hubs use
+the hyphen-free form; if you have an old hub, fix its @samp{#+TODO} line and any
+task states.
+
+@item
+@strong{The dashboard is empty or errors.} Confirm a client is active and that its
+hub file exists. The dashboard scopes @samp{org-agenda-files} to exactly the active
+client's @samp{<slug>.org}.
+
+@item
+@strong{A standup capture inserts literal @samp{%^@{...@}} / @samp{%U} text.} You are on an old
+version where the standup was injected as a string. Update the package; the
+standup is now read as a file template so its escapes expand normally.
+
+@item
+@strong{@code{C-c a E} is not listed in the dispatcher.} @samp{setup} has not run (or ran
+before Org loaded). Ensure @samp{org-fractional-cto-setup} runs @samp{:after org}, then
+re-run it — it is idempotent.
+
+@item
+@strong{I changed config but nothing updated.} Re-run @code{M-x org-fractional-cto-setup}.
+It refreshes captures and the dashboard in place; no restart needed.
+@end itemize
+
+@node Where to go next
+@section Where to go next
+
+@itemize
+@item
+@uref{playbook.org, playbook.org} — the engagement methodology: phases, the hat model, and
+decision frameworks (build-vs-buy, ADR triggers, scope discipline).
+@item
+@uref{reference.org, reference.org} — per-capture field guidance, the full tag/keyword legend, and
+scenario guides ("I just had a discovery session", "something went wrong in
+production", …).
+@item
+@uref{../README.org, README.org} — installation, the capture/tag reference tables, and AI-skill
+integration.
+@end itemize
+
+@node Playbook
+@chapter Playbook
+
+A repeatable process for onboarding, running, and growing client engagements as a
+Fractional CTO & Engagement Director. Adapt per client — this is a map, not a script.
+
+The playbook operates across five phases. Each phase has a dominant @strong{hat}, a set of
+@strong{questions to drive the work}, the @strong{capture templates} to use, and a @strong{deliverable}.
+
+@menu
+* The Hat Model::
+* Phase 0 — Engagement Setup::
+* Phase 1 — Discovery::
+* Phase 2 — Architecture Assessment::
+* Phase 3 — Operating Rhythm::
+* Phase 4 — Growth & Innovation::
+* New Client Onboarding Checklist::
+* Reference All Capture Templates::
+@end menu
+
+@node The Hat Model
+@section The Hat Model
+
+You operate across six modes. The discipline is to not switch hats mid-session.
+Schedule explicit @strong{hat blocks} — a discovery session is discovery only; an
+architecture session is architecture only. Mixing them produces mediocre output
+in both directions.
+
+@multitable {aaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Hat
+@tab When to wear it
+@tab Key discipline
+@item Engagement Director
+@tab Client calls, QBRs, scope conversations
+@tab Speak business outcomes, not tech
+@item Discovery
+@tab Stream interviews, system mapping
+@tab Listen more than you talk
+@item Fractional CTO
+@tab ADRs, roadmap, build vs. buy decisions
+@tab First principles, not vendor bias
+@item QA Auditor
+@tab Test coverage review, release gates
+@tab Find the gaps the team normalised
+@item Security Reviewer
+@tab Compliance posture, infra review
+@tab Assume breach, work backwards
+@item DevOps Reviewer
+@tab CI/CD, infra, deployment, on-call
+@tab Optimise for recovery speed, not uptime
+@end multitable
+
+@menu
+* Hat-switching tools::
+@end menu
+
+@node Hat-switching tools
+@subsection Hat-switching tools
+
+@strong{@uref{https://github.com/mattpocock/skills, mattpocock/skills}} — precision tools for focused sessions:
+@itemize
+@item
+@samp{/grill-me} — structured interview @strong{before} any work starts; surfaces misalignment early
+@item
+@samp{/grill-with-docs} — same, but anchored to a specific document (e.g. an SOW or PRD)
+@item
+@samp{/zoom-out} — forces system-level thinking before diving into a stream
+@item
+@samp{/handoff} — compacts the session into a document so context survives a hat switch
+@item
+@samp{CONTEXT.md} — per-client domain glossary; load it at the start of every Claude Code session
+@end itemize
+
+@strong{@uref{https://github.com/garrytan/gstack, garrytan/gstack}} — sprint structure for execution phases:
+@itemize
+@item
+@samp{/office-hours} — six forcing questions that challenge your framing @strong{before} you commit to a direction
+@item
+@samp{/autoplan} — chains CEO review, engineering review, design review
+@item
+@samp{/review} — staff-engineer audit after implementation
+@item
+@samp{/cso} — OWASP Top 10 + STRIDE threat model
+@item
+@samp{/qa} — real browser QA with regression test generation
+@item
+@samp{/retro} — weekly retrospective
+@end itemize
+
+@strong{Rule:} Run @samp{/office-hours} (gstack) or @samp{/grill-me} (mattpocock) at the @strong{start} of any
+non-trivial session. These are your calibration tools. Skip them when you feel rushed.
+That's exactly when you need them most.
+
+@node Phase 0 — Engagement Setup
+@section Phase 0 — Engagement Setup
+
+@emph{Days 1–3. Hat: Engagement Director.}
+
+@menu
+* Purpose::
+* Checklist::
+* Questions to answer::
+* Capture templates::
+* Deliverable::
+@end menu
+
+@node Purpose
+@subsection Purpose
+
+Establish the working relationship, boundaries, and rhythm before any technical work
+begins. Everything in Phase 1 is harder if you skip this.
+
+@node Checklist
+@subsection Checklist
+
+@itemize
+@item
+Create @samp{clients/<client>/CONTEXT.md} (domain vocabulary, key people, tech stack)
+@item
+Create system discovery master doc (@samp{C-c c ed} for sessions; master doc manually)
+@item
+Capture all known stakeholders (@samp{C-c c ep} for each)
+@item
+Confirm internal reporting line and executive sponsor
+@item
+Agree communication channels: async vs. sync, email vs. Slack, cadence
+@item
+Confirm ClickUp (or equivalent) workspace access
+@item
+Schedule recurring ceremonies: internal sync, client sync, QBR dates
+@item
+Draft role scope document — what you do and explicitly do not do
+@item
+Identify any compliance obligations (GDPR, CCPA, PCI, SOC2) upfront
+@end itemize
+
+@node Questions to answer
+@subsection Questions to answer
+
+@itemize
+@item
+Who are the decision makers vs. influencers on the client side?
+@item
+What does "success" mean to each key stakeholder personally (not the project)?
+@item
+What has failed or frustrated them in previous engagements?
+@item
+What's the one thing they'll judge this engagement on?
+@end itemize
+
+@node Capture templates
+@subsection Capture templates
+
+@itemize
+@item
+@samp{C-c c ep} Stakeholder profile — one per key contact
+@item
+@samp{C-c c ec} Commitment captured — any commitment made in setup calls
+@item
+@samp{C-c c er} Risk item — anything that looks like a blocker this early
+@item
+@samp{C-c c eP} Team member note — one per key internal team member (stream leads, eng leads)
+@end itemize
+
+@node Deliverable
+@subsection Deliverable
+
+Working @samp{CONTEXT.md}. Confirmed ceremony calendar. Role scope document shared internally.
+
+@node Phase 1 — Discovery
+@section Phase 1 — Discovery
+
+@emph{Week 1–2. Hat: Discovery.}
+
+@menu
+* Purpose: Purpose (1). 
+* Rhythm::
+* Per-session approach::
+* Questions that cut across all streams::
+* Capture templates: Capture templates (1). 
+* Deliverable: Deliverable (1). 
+@end menu
+
+@node Purpose (1)
+@subsection Purpose
+
+Build a grounded picture of the system: what exists, who owns it, where the debt
+and risk live, and where innovation is possible. Do not skip streams that seem
+"boring" (DevOps, QA) — they consistently surface the most critical risks.
+
+@node Rhythm
+@subsection Rhythm
+
+One session per stream. After every 2–3 sessions, a 15-minute synthesis pass to
+update cross-cutting sections of the master discovery doc before memory fades.
+
+@node Per-session approach
+@subsection Per-session approach
+
+@enumerate
+@item
+Run @samp{/grill-me} or @samp{/zoom-out} (mattpocock/skills) @strong{before} the session to surface
+what you're assuming and what you don't know
+@item
+Use @samp{C-c c ed} (discovery template) to start a clocked session
+@item
+During the session: listen for what they @strong{don't} say as much as what they do
+@item
+After the session: refile the capture; update the master doc immediately
+@item
+After every 2–3 sessions: update cross-cutting sections (security, tech debt, integrations)
+@end enumerate
+
+@node Questions that cut across all streams
+@subsection Questions that cut across all streams
+
+@itemize
+@item
+What would break first if load doubled tomorrow?
+@item
+What's the one thing you'd fix if you had a sprint of uninterrupted time?
+@item
+What do you not have visibility into that you wish you did?
+@item
+What's the thing nobody talks about but everyone knows is a problem?
+@item
+Where are the handoffs between your stream and others rough?
+@end itemize
+
+@node Capture templates (1)
+@subsection Capture templates
+
+@itemize
+@item
+@samp{C-c c ed} Discovery session (one per stream)
+@item
+@samp{C-c c et} Technical debt item (capture as you hear them)
+@item
+@samp{C-c c ex} Security finding (any compliance or security signal)
+@item
+@samp{C-c c er} Risk item (any delivery or engagement risk)
+@end itemize
+
+@node Deliverable (1)
+@subsection Deliverable
+
+Populated master discovery document with:
+@itemize
+@item
+System architecture map
+@item
+Component inventory and integration map
+@item
+Per-domain deep dives
+@item
+Cross-cutting concerns (security, compliance, performance)
+@item
+Innovation opportunities list
+@item
+Open questions and priority action items
+@end itemize
+
+@node Phase 2 — Architecture Assessment
+@section Phase 2 — Architecture Assessment
+
+@emph{Week 2–4. Hat: Fractional CTO@.}
+
+@menu
+* Purpose: Purpose (2). 
+* Approach::
+* Checklist: Checklist (1). 
+* Build vs. Buy decision frame: Build vs Buy decision frame. 
+* Capture templates: Capture templates (2). 
+* Deliverable: Deliverable (2). 
+@end menu
+
+@node Purpose (2)
+@subsection Purpose
+
+Turn discovery findings into decisions and direction. This is where you earn the
+"CTO" part of the title — not by having all the answers, but by asking the right
+questions and making the call when teams are stuck.
+
+@node Approach
+@subsection Approach
+
+Use @samp{/office-hours} (gstack) before each significant architecture decision to
+challenge your own framing. Architecture decisions made under time pressure without
+a forcing function tend to optimise for comfort over correctness.
+
+@node Checklist (1)
+@subsection Checklist
+
+@itemize
+@item
+ADR for each significant architectural decision in flight
+@item
+Technology roadmap draft: what we're building, what we're retiring, and when
+@item
+Technical debt register: prioritised, owned, with timelines
+@item
+Compliance posture document: gap analysis for each relevant framework
+@item
+Build vs. buy positions for all significant components
+@item
+Engineering standards baseline: what varies across teams that should be standardised
+@item
+Security posture assessment (run @samp{/cso} from gstack)
+@end itemize
+
+@node Build vs Buy decision frame
+@subsection Build vs. Buy decision frame
+
+Before recommending build:
+@enumerate
+@item
+Does a commercial solution exist that solves 80%+ of the problem?
+@item
+What is the total 2-year cost of building vs. buying (including maintenance)?
+@item
+Is this a differentiating capability or commodity infrastructure?
+@item
+What is the opportunity cost of the engineering time?
+@end enumerate
+
+Before recommending buy:
+@enumerate
+@item
+What is the lock-in exposure if we need to exit?
+@item
+Does it touch customer data? What are their data handling practices?
+@item
+Are there contractual terms that could bind the client uncomfortably?
+@end enumerate
+
+@node Capture templates (2)
+@subsection Capture templates
+
+@itemize
+@item
+@samp{C-c c ea} ADR — one per significant technology or architecture decision
+@item
+@samp{C-c c ev} Vendor evaluation — any tool or vendor being assessed
+@item
+@samp{C-c c et} Technical debt item — from the assessment, not just discovery
+@item
+@samp{C-c c ex} Security finding — from the compliance posture review
+@end itemize
+
+@node Deliverable (2)
+@subsection Deliverable
+
+Technology roadmap (quarters, not just quarters). ADR log. Technical debt register
+with owners and timelines. Compliance gap analysis with remediation plan.
+
+@node Phase 3 — Operating Rhythm
+@section Phase 3 — Operating Rhythm
+
+@emph{Ongoing. Multiple hats, scheduled.}
+
+@menu
+* Purpose: Purpose (3). 
+* Ceremonies::
+* Capture templates: Capture templates (3). 
+* Managing client expectations::
+@end menu
+
+@node Purpose (3)
+@subsection Purpose
+
+Maintain visibility, momentum, and client trust through consistent, structured
+communication. The rhythm removes the need to make "how often should I check in?"
+decisions under pressure.
+
+@node Ceremonies
+@subsection Ceremonies
+
+@strong{Daily (Hat: Discovery or Fractional CTO)}
+@itemize
+@item
+Attend one or more team standups — observe, don't manage
+@item
+Capture notes and blockers (@samp{C-c c es})
+@item
+Any new blocker spotted → @samp{C-c c eb} immediately
+@item
+Identify anything that needs to surface to the client or internally
+@end itemize
+
+@strong{Weekly — Delegation review (Hat: People Manager)}
+@itemize
+@item
+Friday, 15 minutes, before the week closes
+@item
+@samp{C-c c eW} — weekly review capture
+@item
+Check every WAITING item: has the owner responded? Is the deadline at risk?
+@item
+Ping directly (don't wait for standup) for anything due within 2 days
+@item
+@samp{C-c A} → "Delegated — Awaiting Response" block is your inbox
+@item
+Rule: nothing WAITING goes more than one week without a check-in
+@end itemize
+
+@strong{Weekly — Internal sync (Hat: Engagement Director)}
+@itemize
+@item
+Monday, before any client-facing communication that week
+@item
+Template: @samp{C-c c ei}
+@item
+Topics: delegation status, commitments vs. reality gap, blockers to escalate,
+risk register updates, client comms review
+@item
+Rule: nothing surfaces to the client that hasn't been through this sync first
+@end itemize
+
+@strong{Weekly — Client sync (Hat: Engagement Director)}
+@itemize
+@item
+Topics: delivery progress, decisions needed, anything that changed
+@item
+Template: @samp{C-c c em} (client meeting)
+@item
+Always send a written summary within 2 hours
+@item
+Capture any commitments made (@samp{C-c c ec}) during the call
+@end itemize
+
+@strong{Weekly — Sprint retrospective (Hat: People Manager)}
+@itemize
+@item
+End of each sprint; separate from client sync
+@item
+Use @samp{gstack =/retro=} as the facilitation prompt
+@item
+Focus: team process, not delivery status (that's what the client sync is for)
+@item
+Output: 1–3 concrete process changes, captured as TODO items in the Actions section
+@end itemize
+
+@strong{Monthly — Client health check (Hat: Engagement Director)}
+@itemize
+@item
+Three pulse questions (@samp{C-c c eh})
+@item
+Analyse the gap between what they say and what you observe
+@item
+Act on one thing from their feedback before the next month
+@end itemize
+
+@strong{Monthly — Architecture review prep (Hat: Fractional CTO)}
+@itemize
+@item
+Review open ADRs, tech debt register, security findings
+@item
+Update technology roadmap
+@item
+Identify anything that needs a formal architecture review this quarter
+@end itemize
+
+@strong{Quarterly — QBR (Hat: Engagement Director)}
+@itemize
+@item
+Template: @samp{C-c c eq}
+@item
+Translate delivery into business language — what did the client gain?
+@item
+Include one strategic recommendation they didn't ask for (business framing first)
+@item
+Surface renewal/expansion conversation naturally
+@item
+Send written summary within 24 hours
+@end itemize
+
+@strong{Quarterly — Architecture health review (Hat: Fractional CTO)}
+@itemize
+@item
+Template: @samp{C-c c eA}
+@item
+Scalability, maintainability, integration fragility, dependency risk, tech debt
+@item
+Frame findings as transparency and forward planning, not a problem list
+@end itemize
+
+@node Capture templates (3)
+@subsection Capture templates
+
+@multitable {aaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Key
+@tab Template
+@tab Ceremony
+@item @samp{C-c c es}
+@tab Standup notes
+@tab Daily
+@item @samp{C-c c eg}
+@tab Delegate action (WAITING)
+@tab When delegating any task
+@item @samp{C-c c eb}
+@tab Blocker / escalation
+@tab When a blocker is identified
+@item @samp{C-c c eW}
+@tab Weekly review
+@tab Friday delegation + team review
+@item @samp{C-c c em}
+@tab Client meeting
+@tab Weekly client sync
+@item @samp{C-c c ei}
+@tab Internal sync
+@tab Weekly internal sync
+@item @samp{C-c c eh}
+@tab Client health check
+@tab Monthly
+@item @samp{C-c c eq}
+@tab QBR
+@tab Quarterly
+@item @samp{C-c c eA}
+@tab Architecture health review
+@tab Quarterly
+@end multitable
+
+@node Managing client expectations
+@subsection Managing client expectations
+
+@itemize
+@item
+Under-promise on timelines; over-deliver on quality
+@item
+Bring problems with mitigations, not just problems
+@item
+Never let a surprise reach the client — if something is going wrong, surface it early
+and frame it as: "here's what's happening, here's what we're doing, here's what we
+need from you"
+@item
+The client's confidence in you is built between meetings, not during them
+@end itemize
+
+@node Phase 4 — Growth & Innovation
+@section Phase 4 — Growth & Innovation
+
+@emph{Quarterly, alongside Phase 3. Hat: Engagement Director + Fractional CTO@.}
+
+@menu
+* Purpose: Purpose (4). 
+* Innovation pipeline approach::
+* Expansion conversation triggers::
+* Scope change discipline::
+* Capture templates: Capture templates (4). 
+@end menu
+
+@node Purpose (4)
+@subsection Purpose
+
+Expand the engagement scope and deepen the relationship through genuine strategic
+value — not sales pushes. The best expansions feel like the client's idea.
+
+@node Innovation pipeline approach
+@subsection Innovation pipeline approach
+
+@enumerate
+@item
+Capture opportunities as you discover them (@samp{C-c c en}) — never filter at capture time
+@item
+Monthly: review the pipeline and select one to develop into a brief
+@item
+Brief format: business opportunity first, technology second, effort estimate third
+@item
+Present the best one at each QBR under "Strategic Recommendation"
+@item
+Frame as: "here's what becomes possible if we@dots{}" not "here's what we could build"
+@end enumerate
+
+@node Expansion conversation triggers
+@subsection Expansion conversation triggers
+
+@itemize
+@item
+A stream is hitting a ceiling the client hasn't named yet
+@item
+You've identified a capability gap across multiple streams
+@item
+A partner or tool evaluation opens a new product direction
+@item
+The client asks a question that reveals a problem outside current scope
+@end itemize
+
+@node Scope change discipline
+@subsection Scope change discipline
+
+Any work identified outside the current SOW must be captured immediately (@samp{C-c c e})
+and brought through the internal sync before any client conversation about it.
+Never agree to out-of-scope work in a client meeting — "let me come back to you on
+what that would look like" is always the right answer in the room.
+
+@node Capture templates (4)
+@subsection Capture templates
+
+@itemize
+@item
+@samp{C-c c en} Innovation pipeline idea
+@item
+@samp{C-c c ee} Scope change / out-of-scope flag
+@item
+@samp{C-c c ev} Vendor evaluation (for new tools or partners)
+@end itemize
+
+@node New Client Onboarding Checklist
+@section New Client Onboarding Checklist
+
+When starting a new engagement, follow this sequence. The Emacs onboarding is now
+fully automated via @samp{M-x org-fractional-cto-new-client} — no manual config editing needed.
+
+@menu
+* Step 1 — Emacs scaffold (60 seconds)::
+* Step 2 — Fill CONTEXT.md: Step 2 — Fill CONTEXTmd. 
+* Step 3 — Capture key contacts::
+* Step 4 — Tools (if doing implementation work)::
+* First week checklist::
+@end menu
+
+@node Step 1 — Emacs scaffold (60 seconds)
+@subsection Step 1 — Emacs scaffold (60 seconds)
+
+In Emacs: @samp{M-x org-fractional-cto-new-client}
+@itemize
+@item
+Enter the client display name (e.g. "Acme Corp")
+@item
+Enter the client slug (lowercase, no spaces, e.g. "acme")
+@end itemize
+
+This automatically creates:
+@itemize
+@item
+@samp{roam/clients/acme/acme.org} with all standard sections (Actions, Delegations, Blockers, People, etc.)
+@item
+@samp{roam/clients/acme/standup.org} with stream-based standup template
+@item
+@samp{roam/clients/acme/CONTEXT.md} pre-populated with all section headers
+@item
+Adds the client directory to @samp{org-agenda-files} automatically
+@end itemize
+
+Then: set this session's active client:
+@samp{M-x org-fractional-cto-set-active-client} → select the slug → captures will auto-route without prompting.
+
+@node Step 2 — Fill CONTEXTmd
+@subsection Step 2 — Fill CONTEXT.md
+
+@itemize
+@item
+What the product is and what you're building
+@item
+Domain vocabulary (terms the team uses)
+@item
+Tech stack (as known at onboarding)
+@item
+Key people — client side and internal leads
+@item
+Active work streams and current priorities
+@end itemize
+
+Load this at the start of every Claude Code session on that account.
+
+@node Step 3 — Capture key contacts
+@subsection Step 3 — Capture key contacts
+
+@itemize
+@item
+@samp{C-c c ep} — Stakeholder profile for each client-side decision maker
+@item
+@samp{C-c c eP} — Team member note for each internal stream lead
+@end itemize
+
+@node Step 4 — Tools (if doing implementation work)
+@subsection Step 4 — Tools (if doing implementation work)
+
+@itemize
+@item
+@samp{npx skills@@latest add mattpocock/skills} in the client repo
+@item
+Run @samp{/setup-matt-pocock-skills} once per repo
+@item
+@samp{gstack} is global (@samp{~/.claude/skills/gstack})
+@end itemize
+
+@node First week checklist
+@subsection First week checklist
+
+@itemize
+@item
+@samp{org-fractional-cto-new-client} run; CONTEXT.md populated
+@item
+Active client set: @samp{M-x org-fractional-cto-set-active-client}
+@item
+Agenda dashboard tested: @samp{C-c A} → should open client dashboard
+@item
+Capture tested: @samp{C-c c ew} → should file to client's Actions section
+@item
+@samp{/grill-me} run before first client conversation
+@item
+Stakeholders captured: @samp{C-c c ep} for all known key contacts
+@item
+Team members captured: @samp{C-c c eP} for all stream leads
+@item
+First internal sync scheduled (Monday cadence)
+@item
+First client sync scheduled
+@end itemize
+
+@node Reference All Capture Templates
+@section Reference: All Capture Templates
+
+All engagement captures use the @samp{e} prefix. File-based templates live in:
+@samp{roam/templates/engagement/}. Active client must be set (@samp{M-x org-fractional-cto-set-active-client})
+or you will be prompted on each capture.
+
+@menu
+* Relationship & Communication::
+* Action Tracking & Delegation::
+* Risk & Delivery::
+* Technical: Technical (1). 
+@end menu
+
+@node Relationship & Communication
+@subsection Relationship & Communication
+
+@multitable {aaaaaaaaaa} {aaaaaaaaaaaaaaaaaaa} {aaaaa} {aaaaaaaaaaaaaaaaaaa}
+@headitem Full key
+@tab Template
+@tab Phase
+@tab Hat
+@item @samp{C-c c es}
+@tab Standup notes
+@tab 3
+@tab Discovery
+@item @samp{C-c c em}
+@tab Client meeting
+@tab 3
+@tab Engagement Director
+@item @samp{C-c c ei}
+@tab Internal sync
+@tab 3
+@tab Engagement Director
+@item @samp{C-c c ep}
+@tab Stakeholder profile
+@tab 0
+@tab Engagement Director
+@item @samp{C-c c ec}
+@tab Commitment captured
+@tab all
+@tab Engagement Director
+@item @samp{C-c c eh}
+@tab Client health check
+@tab 3
+@tab Engagement Director
+@item @samp{C-c c eq}
+@tab QBR
+@tab 3
+@tab Engagement Director
+@item @samp{C-c c eM}
+@tab Metrics snapshot
+@tab 3
+@tab Engagement Director
+@end multitable
+
+@node Action Tracking & Delegation
+@subsection Action Tracking & Delegation
+
+@multitable {aaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Full key
+@tab Template
+@tab When
+@item @samp{C-c c ew}
+@tab Action item (quick TODO)
+@tab Ad hoc task for yourself
+@item @samp{C-c c eg}
+@tab Delegate action (WAITING)
+@tab Assigning a task to a team member
+@item @samp{C-c c eb}
+@tab Blocker / escalation
+@tab When something is blocking delivery
+@item @samp{C-c c eW}
+@tab Weekly review
+@tab Friday delegation + team pulse review
+@item @samp{C-c c eP}
+@tab Person / team member note
+@tab Capacity, concerns, or wins to record
+@end multitable
+
+@node Risk & Delivery
+@subsection Risk & Delivery
+
+@multitable {aaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaa}
+@headitem Full key
+@tab Template
+@tab Phase
+@tab Hat
+@item @samp{C-c c er}
+@tab Risk item
+@tab all
+@tab Engagement Director
+@item @samp{C-c c ee}
+@tab Scope change
+@tab all
+@tab Engagement Director
+@item @samp{C-c c ef}
+@tab Post-mortem (incident)
+@tab all
+@tab all
+@item @samp{C-c c eR}
+@tab Retrospective
+@tab each sprint
+@tab People Manager
+@end multitable
+
+@node Technical (1)
+@subsection Technical
+
+@multitable {aaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaa} {aaaaaaaaaaaaaaaaa}
+@headitem Full key
+@tab Template
+@tab Phase
+@tab Hat
+@item @samp{C-c c ed}
+@tab Discovery session
+@tab 1
+@tab Discovery
+@item @samp{C-c c ek}
+@tab Tech spike
+@tab 1/2
+@tab Fractional CTO
+@item @samp{C-c c ea}
+@tab ADR
+@tab 2
+@tab Fractional CTO
+@item @samp{C-c c eD}
+@tab Quick decision
+@tab 2/3
+@tab Fractional CTO
+@item @samp{C-c c eA}
+@tab Architecture health review
+@tab 3
+@tab Fractional CTO
+@item @samp{C-c c ev}
+@tab Vendor evaluation
+@tab 2
+@tab Fractional CTO
+@item @samp{C-c c et}
+@tab Technical debt item
+@tab 1/2
+@tab Fractional CTO
+@item @samp{C-c c ex}
+@tab Security finding
+@tab 1/2
+@tab Security Reviewer
+@item @samp{C-c c en}
+@tab Innovation idea (single)
+@tab 4
+@tab Fractional CTO
+@item @samp{C-c c eI}
+@tab Innovation meeting (multi-idea)
+@tab 4
+@tab Fractional CTO
+@end multitable
+
+@node Reference
+@chapter Reference
+
+A practical reference for running client engagements using the full tool stack:
+org-mode captures, org-roam, the Fractional CTO playbook, mattpocock/skills,
+and gstack. Read top-to-bottom once to understand the system; use as a lookup
+reference after that.
+
+All engagement captures use a single @samp{e} prefix (@samp{C-c c e<key>}) and route to the
+@strong{active client}. Set it once per session with @samp{M-x org-fractional-cto-set-active-client} and every
+capture files to that client automatically — no per-client prefix letters, no
+copy-pasted config. Switch clients mid-session by setting a different active client.
+
+The mechanics (captures, dashboard, onboarding) are provided by the
+@samp{org-fractional-cto} package (@uref{../README.org, README}). This guide is the @strong{methodology} layer
+on top of it: when to use each capture, the operating rhythm, and the hats.
+
+@menu
+* Quick Lookup — "I need to@dots{}"::
+* Legend::
+* File Organization::
+* Capture Templates — Complete Reference::
+* Operating Rhythms — Day by Day::
+* The Hat Model in Practice::
+* Tools Reference::
+* New Client Setup::
+* Scenario Guides::
+@end menu
+
+@node Quick Lookup — "I need to@dots{}"
+@section Quick Lookup — "I need to@dots{}"
+
+@menu
+* Capture something::
+* Look up / analyse::
+@end menu
+
+@node Capture something
+@subsection Capture something
+
+@multitable {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem I need to@dots{}
+@tab Key
+@tab Files to
+@item Quick action / TODO
+@tab @samp{C-c c ew}
+@tab <client>.org → Actions
+@item Delegate a task (WAITING)
+@tab @samp{C-c c eg}
+@tab <client>.org → Delegations
+@item Flag a blocker / escalation
+@tab @samp{C-c c eb}
+@tab <client>.org → Blockers
+@item Weekly review (delegation + pulse)
+@tab @samp{C-c c eW}
+@tab <client>.org → Weekly Reviews
+@item Note on a team member
+@tab @samp{C-c c eP}
+@tab <client>.org → People
+@item Capture a standup
+@tab @samp{C-c c es}
+@tab <client>.org → Standup Notes
+@item Log a client meeting
+@tab @samp{C-c c em}
+@tab <client>.org → Meeting Notes
+@item Log an internal sync
+@tab @samp{C-c c ei}
+@tab <client>.org → Internal Syncs
+@item Record a commitment made
+@tab @samp{C-c c ec}
+@tab <client>.org → Commitments
+@item Flag a risk
+@tab @samp{C-c c er}
+@tab <client>.org → Risks
+@item Start a discovery session
+@tab @samp{C-c c ed}
+@tab <client>.org → Discovery Sessions
+@item Tech spike / investigation
+@tab @samp{C-c c ek}
+@tab <client>.org → Discovery Sessions
+@item Add a stakeholder profile
+@tab @samp{C-c c ep}
+@tab <client>.org → Stakeholder Profiles
+@item Log an architecture decision
+@tab @samp{C-c c ea}
+@tab <client>.org → Architecture Decisions
+@item Quick decision log
+@tab @samp{C-c c eD}
+@tab <client>.org → Architecture Decisions
+@item Record tech debt
+@tab @samp{C-c c et}
+@tab <client>.org → Technical Debt
+@item Flag a security finding
+@tab @samp{C-c c ex}
+@tab <client>.org → Security Findings
+@item Evaluate a vendor / tool
+@tab @samp{C-c c ev}
+@tab <client>.org → Vendor Evaluations
+@item Run a QBR session
+@tab @samp{C-c c eq}
+@tab <client>.org → QBRs
+@item Monthly health check
+@tab @samp{C-c c eh}
+@tab <client>.org → Health Checks
+@item Metrics snapshot
+@tab @samp{C-c c eM}
+@tab <client>.org → Health Checks
+@item Flag out-of-scope work
+@tab @samp{C-c c ee}
+@tab <client>.org → Scope Changes
+@item Document a production incident
+@tab @samp{C-c c ef}
+@tab <client>.org → Post-Mortems
+@item Sprint retrospective
+@tab @samp{C-c c eR}
+@tab <client>.org → Retrospectives
+@item Capture an innovation idea
+@tab @samp{C-c c en}
+@tab <client>.org → Innovation Pipeline
+@item Innovation meeting (multi-idea)
+@tab @samp{C-c c eI}
+@tab <client>.org → Innovation Pipeline
+@item Quarterly arch review
+@tab @samp{C-c c eA}
+@tab <client>.org → Architecture Reviews
+@item Scope change / SOW flag
+@tab @samp{C-c c ee}
+@tab <client>.org → Scope Changes
+@end multitable
+
+@node Look up / analyse
+@subsection Look up / analyse
+
+@multitable {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem I need to@dots{}
+@tab Do this
+@item Client dashboard (actions, delegations)
+@tab @samp{C-c a E} → select client
+@item Delegated items awaiting response
+@tab @samp{C-c a E} → "Delegated — Awaiting Response" block
+@item Blockers & escalations
+@tab @samp{C-c a E} → "Blockers & Escalations" block
+@item All open TODOs for this client
+@tab @samp{C-c a E} → "Open Actions" block
+@item Open commitments
+@tab @samp{C-c a E} → "Commitments" block
+@item Active risks
+@tab @samp{C-c a E} → "Active Risks" block
+@item Set active client (avoid repeated prompts)
+@tab @samp{M-x org-fractional-cto-set-active-client}
+@item Clear active client
+@tab @samp{M-x org-fractional-cto-clear-active-client}
+@item Browse by section (meetings, risks, etc.)
+@tab @samp{C-x C-f <client>.org} then navigate headings
+@item Find a specific past note or doc
+@tab @samp{M-x org-roam-node-find} (fuzzy search)
+@item Search text across all org files
+@tab @samp{C-c a s} (agenda search)
+@item All entries with a specific tag
+@tab @samp{C-c a m TAGNAME} (e.g. @samp{C-c a m RISK})
+@item Challenge my own framing
+@tab @samp{/grill-me} (mattpocock/skills)
+@item Structure a big decision
+@tab @samp{/office-hours} (gstack)
+@item Security audit
+@tab @samp{/cso} (gstack)
+@item Run a sprint retrospective
+@tab @samp{/retro} (gstack) + @samp{C-c c eR}
+@item Onboard a new client
+@tab @samp{M-x org-fractional-cto-new-client}
+@end multitable
+
+@node Legend
+@section Legend
+
+@menu
+* keywords (client files)::
+* Priorities::
+* Type tags::
+* Key bindings::
+@end menu
+
+@node keywords (client files)
+@subsection @strong{TODO} keywords (client files)
+
+Client hubs declare: @samp{#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED}.
+
+@multitable {aaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Keyword
+@tab Meaning
+@item @samp{TODO}
+@tab Open action you own
+@item @samp{NEXT}
+@tab The next physical action (GTD-style)
+@item @samp{INPROGRESS}
+@tab Actively being worked
+@item @samp{WAITING}
+@tab @strong{Delegated} — owned by someone else, you're tracking it
+@item @samp{DONE}
+@tab Completed
+@item @samp{CANCELLED}
+@tab Dropped
+@end multitable
+
+@samp{WAITING} is load-bearing: it separates "things I owe" from "things I'm owed,"
+and feeds the dashboard's @strong{Delegated} block.
+
+@node Priorities
+@subsection Priorities
+
+@multitable {aaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@item @samp{[#A]}
+@tab Blocking / time-critical (blockers default here)
+@item @samp{[#B]}
+@tab Important, not urgent
+@item @samp{[#C]}
+@tab Nice to have / backlog
+@end multitable
+
+@node Type tags
+@subsection Type tags
+
+Every capture carries the client tag (e.g. @samp{:ACME:}) plus a @strong{type tag}. The
+dashboard and @samp{C-c a m TAG} search on these.
+
+@multitable {aaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Tag
+@tab Section / capture
+@item @samp{DELEGATED}
+@tab Delegations (@samp{eg})
+@item @samp{BLOCKER}
+@tab Blockers (@samp{eb})
+@item @samp{COMMITMENT}
+@tab Commitments (@samp{ec})
+@item @samp{RISK}
+@tab Risks (@samp{er})
+@item @samp{REVIEW}
+@tab Weekly Reviews (@samp{eW})
+@item @samp{PEOPLE}
+@tab People (@samp{eP})
+@item @samp{MEETING}
+@tab Meeting Notes (@samp{em})
+@item @samp{STANDUP}
+@tab Standup Notes (@samp{es})
+@item @samp{INTERNAL}
+@tab Internal Syncs (@samp{ei})
+@item @samp{DISCOVERY}
+@tab Discovery / Tech spike (@samp{ed}, @samp{ek})
+@item @samp{STAKEHOLDER}
+@tab Stakeholder Profiles (@samp{ep})
+@item @samp{ADR}
+@tab Architecture Decisions (@samp{ea}, @samp{eD})
+@item @samp{ARCHREVIEW}
+@tab Architecture Reviews (@samp{eA})
+@item @samp{VENDOR}
+@tab Vendor Evaluations (@samp{ev})
+@item @samp{TECHDEBT}
+@tab Technical Debt (@samp{et})
+@item @samp{SECURITY}
+@tab Security Findings (@samp{ex})
+@item @samp{HEALTH}
+@tab Health Checks (@samp{eh}, @samp{eM})
+@item @samp{QBR}
+@tab QBRs (@samp{eq})
+@item @samp{INNOVATION}
+@tab Innovation Pipeline (@samp{en}, @samp{eI})
+@item @samp{SCOPE}
+@tab Scope Changes (@samp{ee})
+@item @samp{POSTMORTEM}
+@tab Post-Mortems (@samp{ef})
+@item @samp{RETRO}
+@tab Retrospectives (@samp{eR})
+@end multitable
+
+@node Key bindings
+@subsection Key bindings
+
+@multitable {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@item @code{C-c c e<key>}
+@tab Capture (see @ref{Capture Templates — Complete Reference, , capture reference})
+@item @code{C-c a E}
+@tab Active-client dashboard
+@item @code{C-c a m TAG}
+@tab Match a type tag across all clients
+@item @samp{M-x org-fractional-cto-new-client}
+@tab New client (onboard)
+@item @samp{M-x org-fractional-cto-set-active-client}
+@tab Set active client
+@item @samp{M-x org-fractional-cto-dashboard}
+@tab Dashboard for active client
+@item @samp{M-x org-fractional-cto-switch-client}
+@tab Switch client + open dashboard
+@end multitable
+
+Management commands run via @samp{M-x} by default (no global prefix is claimed).
+They also live in @samp{org-fractional-cto-command-map} (keys @samp{n s k d w}); set
+@samp{org-fractional-cto-keymap-prefix} to bind it under a prefix of your choice.
+
+@node File Organization
+@section File Organization
+
+The package ships the templates and these guides; your engagements live in
+@samp{org-fractional-cto-clients-directory} (default @samp{<org-directory>/clients}).
+
+The package (shareable, read-only to you):
+
+@example
+org-fractional-cto/
+  org-fractional-cto.el          ← core: state, paths, keymap, setup
+  org-fractional-cto-capture.el  ← the `e' capture group
+  org-fractional-cto-agenda.el   ← the C-c a E dashboard
+  org-fractional-cto-scaffold.el ← new-client onboarding
+  templates/                     ← bundled capture templates (override-able)
+    client_meeting.org adr.org discovery.org delegation.org blocker.org
+    weekly_review.org retrospective.org standup.org ... etc.
+  doc/
+    playbook.org                 ← phases, hat model, decision frameworks
+    reference.org                ← this file
+  README.org                     ← install + manual + legend
+@end example
+
+Your engagements (yours, version-controlled separately):
+
+@example
+<clients-directory>/
+  acme/                ← created by M-x org-fractional-cto-new-client
+    acme.org           ← ★ OPERATIONAL HUB: all captures land here directly
+    standup.org        ← per-client standup template (tailor the streams)
+    CONTEXT.md         ← domain vocab, key people, stack (load in AI sessions)
+  globex/
+    globex.org
+    standup.org
+    CONTEXT.md
+@end example
+
+A non-client inbox (@samp{refile.org} or your @samp{org-default-notes-file}) still holds
+generic captures (@samp{t}, @samp{n}, @samp{m}); engagement captures bypass it entirely.
+
+@menu
+* The capture flow::
+* The lookup flow::
+@end menu
+
+@node The capture flow
+@subsection The capture flow
+
+Client captures go @strong{directly} to the relevant section of @samp{<client>.org} via
+@samp{file+headline} — no inbox step, no refiling needed. Open @samp{<client>.org} (or any
+client file) to see everything that has been captured for that account, organised
+by section.
+
+@samp{refile.org} is still the inbox for @strong{non-client} captures (generic todos, notes,
+meeting entries via the @samp{t}, @samp{n}, @samp{m} keys). The discipline of clearing it still
+applies, but client work bypasses it entirely.
+
+@node The lookup flow
+@subsection The lookup flow
+
+@enumerate
+@item
+@strong{Agenda dashboard} — @samp{C-c a E} opens the active client's dashboard: 7-day agenda,
+delegated items awaiting response, blockers & escalations, open actions,
+commitments with deadlines, active risks. This is the daily starting point.
+(If no active client is set, it prompts you to pick one.)
+@item
+@strong{Browse by section} — @samp{C-x C-f <client>.org} then navigate headings (@samp{C-c C-n/p}
+to move between headings, @samp{S-TAB} to collapse/expand). Each section contains
+all captures of that type in reverse-chronological order.
+@item
+@strong{Tag search} — @samp{C-c a m TAGNAME} to find entries across all agenda files by tag
+(e.g. @samp{RISK}, @samp{COMMITMENT}, @samp{TECHDEBT}).
+@item
+@strong{Full-text search} — @samp{C-c a s} to search across all agenda files by keyword.
+@item
+@strong{org-roam} — @samp{M-x org-roam-node-find} for the longer-form reference docs
+(role plan, system discovery).
+@end enumerate
+
+@node Capture Templates — Complete Reference
+@section Capture Templates — Complete Reference
+
+All engagement templates use the pattern: @samp{C-c c e<key>}. Captures file @strong{directly}
+to the relevant section of the active client's @samp{<client>.org} (set the active
+client with @samp{M-x org-fractional-cto-set-active-client} to avoid being prompted each time).
+Clocked entries start the org-clock automatically.
+
+@menu
+* Relationship & Communication Templates::
+* Action Tracking & Delegation Templates::
+* Risk & Delivery Templates::
+* Technical Templates::
+@end menu
+
+@node Relationship & Communication Templates
+@subsection Relationship & Communication Templates
+
+@menu
+* @samp{es} — Standup Notes::
+* @samp{em} — Client Meeting::
+* @samp{ei} — Internal Sync::
+* @samp{ep} — Stakeholder Profile::
+* @samp{ec} — Commitment Captured::
+* @samp{eh} — Client Health Check::
+* @samp{eq} — QBR (Quarterly Business Review)::
+@end menu
+
+@node @samp{es} — Standup Notes
+@subsubsection @samp{es} — Standup Notes
+
+@emph{Use:} Attending any team standup. One capture per session you attend.
+@emph{Clock:} Yes — tracks time spent in standups.
+@emph{Fields:} Date (auto), client name.
+@emph{Structure:} Per-team sections (Shipped / Next / Blockers) + Actions/Escalations.
+@emph{After capturing:} Scan for any blocker that needs a risk entry (@samp{er}) or
+commitment capture (@samp{ec}). Refile to client's discovery or ops folder.
+
+@node @samp{em} — Client Meeting
+@subsubsection @samp{em} — Client Meeting
+
+@emph{Use:} Any call or meeting with the client — planning, status, ad hoc.
+@emph{Clock:} Yes.
+@emph{Fields:} Meeting title, client attendees, our attendees.
+@emph{Structure:} Agenda → Discussion → Decisions → Commitments (both sides) → Actions → Follow-up deadline.
+@emph{After capturing:} Immediately capture any commitments (@samp{ec}). Send written
+summary to client within 2 hours. Never let a meeting end without a follow-up
+summary — this is how trust is built.
+
+@node @samp{ei} — Internal Sync
+@subsubsection @samp{ei} — Internal Sync
+
+@emph{Use:} Weekly internal sync with team leads — always before client-facing comms.
+@emph{Clock:} Yes.
+@emph{Fields:} Date, client name.
+@emph{Structure:} Commitments vs. reality gap | Blockers to escalate | Risk updates |
+Client comms review | Actions.
+@emph{Rule:} Nothing surfaces to the client that hasn't passed through this sync first.
+
+@node @samp{ep} — Stakeholder Profile
+@subsubsection @samp{ep} — Stakeholder Profile
+
+@emph{Use:} First time you meet or learn about a significant client contact. One profile
+per person. Update it as the relationship develops.
+@emph{Clock:} Yes.
+@emph{Fields:} Full name, role, organisation.
+@emph{Key sections:} Their personal definition of success (not the project's) | Key
+priorities & concerns | Communication preferences | Relationship status |
+How to engage them effectively.
+@emph{Why it matters:} Stakeholder maps decay fast. Documenting what makes each person
+tick lets you tailor every communication.
+
+@node @samp{ec} — Commitment Captured
+@subsubsection @samp{ec} — Commitment Captured
+
+@emph{Use:} Any time a commitment is made — by you @strong{or} by the client — in any meeting.
+Capture it immediately, while still in the session.
+@emph{Clock:} Yes.
+@emph{Fields:} Commitment description, due date (becomes a @samp{DEADLINE}), owner.
+@emph{After capturing:} Refile to the commitment log in the client's document. Review
+all open commitments at each internal sync.
+
+@node @samp{eh} — Client Health Check
+@subsubsection @samp{eh} — Client Health Check
+
+@emph{Use:} Monthly. Three pulse questions sent to the client (or discussed in a call).
+@emph{Fields:} Month, year.
+@emph{Questions (built in):} What's working well? What would you change? What would you
+love to see in the next 30 days?
+@emph{After capturing:} Act on one specific thing from their feedback before next month.
+The pattern of not acting on feedback is invisible until it's too late.
+
+@node @samp{eq} — QBR (Quarterly Business Review)
+@subsubsection @samp{eq} — QBR (Quarterly Business Review)
+
+@emph{Use:} Quarterly formal checkpoint with client stakeholders.
+@emph{Clock:} Yes.
+@emph{Fields:} Quarter, client attendees, our attendees.
+@emph{Structure:} Deliverables table | Business impact | Technology roadmap review |
+Strategic recommendation | Next quarter priorities | Renewal/expansion | Decisions
+needed | Action items.
+@emph{After capturing:} Send written summary within 24 hours. The written summary is
+part of the ceremony — don't skip it.
+@emph{Strategic recommendation:} Always include one recommendation they didn't ask for.
+Frame it as business opportunity first, technology second. This is what separates
+a vendor from a strategic partner.
+
+@node Action Tracking & Delegation Templates
+@subsection Action Tracking & Delegation Templates
+
+@menu
+* @samp{ew} — Action Item (quick TODO)::
+* @samp{eg} — Delegate Action (WAITING)::
+* @samp{eb} — Blocker / Escalation::
+* @samp{eW} — Weekly Review::
+* @samp{eP} — Person / Team Member Note::
+@end menu
+
+@node @samp{ew} — Action Item (quick TODO)
+@subsubsection @samp{ew} — Action Item (quick TODO)
+
+@emph{Use:} A task you're taking on yourself. The fast path for ad-hoc work.
+@emph{Clock:} Yes.
+@emph{Fields:} Action description, due date (becomes a @samp{DEADLINE}).
+@emph{After capturing:} Shows up in @samp{C-c a E} → "Open Actions". Re-prioritise as needed.
+
+@node @samp{eg} — Delegate Action (WAITING)
+@subsubsection @samp{eg} — Delegate Action (WAITING)
+
+@emph{Use:} Any time you hand a task to a team member. This is the core delegation tool.
+@emph{Fields:} Task, assignee (@samp{ASSIGNED_TO} property), expected delivery (@samp{DEADLINE}),
+your check-in date (@samp{SCHEDULED}), success criteria.
+@emph{Why WAITING:} The entry is created in the @samp{WAITING} state, not @samp{TODO}. This separates
+"things I owe" from "things I'm owed" — they surface in the dedicated
+"Delegated — Awaiting Response" block of @samp{C-c a E}.
+@emph{After capturing:} The @samp{SCHEDULED} date is your follow-up trigger. If the check-in
+passes with no update, escalate. Review every WAITING item at the Friday weekly review.
+@emph{Discipline:} Delegation without a check-in date is hoping, not managing. Always set one.
+
+@node @samp{eb} — Blocker / Escalation
+@subsubsection @samp{eb} — Blocker / Escalation
+
+@emph{Use:} The moment something is blocking delivery and you can't clear it yourself.
+@emph{Fields:} What is blocked, what feature/stream it blocks (@samp{BLOCKING}), who can remove
+it (@samp{UNBLOCK_OWNER}), root cause, options, escalation path, resolve-by deadline.
+@emph{Priority:} Created as @samp{[#A] TODO}. Blockers are always top priority — they compound.
+@emph{After capturing:} Surfaces in @samp{C-c a E} → "Blockers & Escalations". If unresolved by
+the deadline, escalate via the named path (standup → internal sync → client).
+
+@node @samp{eW} — Weekly Review
+@subsubsection @samp{eW} — Weekly Review
+
+@emph{Use:} Friday, 15 minutes, before the week closes. Your delegation and team pulse review.
+@emph{Clock:} Yes.
+@emph{Fields:} Week ending.
+@emph{Structure:} Shipped this week | What slipped and why | Delegation inbox check-in
+table | Blockers to escalate | Key decisions | Team pulse | Top 3 next week | Comms to send.
+@emph{The discipline:} This is where you reconcile every WAITING item against reality.
+Anyone who's gone quiet gets a direct ping — don't wait for the next standup.
+@emph{After capturing:} Each "change/action needed" becomes a TODO@. Use @samp{C-c a E} delegated
+block as the source of truth while filling the inbox table.
+
+@node @samp{eP} — Person / Team Member Note
+@subsubsection @samp{eP} — Person / Team Member Note
+
+@emph{Use:} Capturing something about a team member — capacity, a concern, a win, a
+development need. Builds the People section over time.
+@emph{Fields:} Name, role/stream, @samp{STREAM} property.
+@emph{Why it matters:} As a fractional CTO you're managing people you didn't hire and
+don't see daily. Tracking capacity signals (who's overloaded, who's a single point
+of failure) is how you spot delivery risk before it becomes a missed deadline.
+@emph{Maintain:} The People section also holds the Team Roster and Stream → Lead map —
+keep those current as the team changes.
+
+@node Risk & Delivery Templates
+@subsection Risk & Delivery Templates
+
+@menu
+* @samp{er} — Risk Item::
+* @samp{ee} — Scope Change / Out-of-Scope Flag::
+* @samp{ef} — Post-Mortem / Incident::
+* @samp{eR} — Retrospective::
+@end menu
+
+@node @samp{er} — Risk Item
+@subsubsection @samp{er} — Risk Item
+
+@emph{Use:} Any new risk to the engagement or delivery — technical or otherwise.
+Capture immediately when identified; don't wait for the next sync.
+@emph{Fields:} Description, likelihood (High/Medium/Low), impact (High/Medium/Low), owner, mitigation.
+@emph{After capturing:} Add to the risk register in the master discovery doc. Review
+at every internal sync. A risk that sits in refile.org is not managed.
+
+@node @samp{ee} — Scope Change / Out-of-Scope Flag
+@subsubsection @samp{ee} — Scope Change / Out-of-Scope Flag
+
+@emph{Use:} Any time you identify work that is outside the current SOW, or the client
+asks for something that may be out of scope.
+@emph{Fields:} Description, who identified it, SOW status (out/in/grey area).
+@emph{Rule:} Never agree to out-of-scope work in a client meeting. Capture it here,
+bring it through the internal sync, then respond to the client with a clear framing.
+@emph{After capturing:} Internal sync review → commercial assessment → client response.
+
+@node @samp{ef} — Post-Mortem / Incident
+@subsubsection @samp{ef} — Post-Mortem / Incident
+
+@emph{Use:} Any production incident, delivery failure, or significant quality issue.
+@emph{Fields:} Incident title, date, severity, duration, what was affected.
+@emph{Structure:} What happened | Root cause | How we fixed it | Was client notified? |
+Prevention | Actions.
+@emph{Timing:} Capture within 24 hours. The detail fades quickly.
+@emph{Client communication:} "Here's what happened, here's what we did, here's what
+we're doing to prevent recurrence." In that order.
+
+@node @samp{eR} — Retrospective
+@subsubsection @samp{eR} — Retrospective
+
+@emph{Use:} End of each sprint or delivery cycle. Distinct from a post-mortem — a
+retro is @strong{proactive and routine} (team process), a post-mortem is @strong{reactive} (a
+failure). Run a retro whether or not anything went wrong.
+@emph{Clock:} Yes.
+@emph{Fields:} Sprint/period, facilitator, attendees.
+@emph{Structure:} Sprint goals vs. actuals (table) | What went well | What didn't go
+well | What we'll change (owned, time-boxed) | Team health signals | Action items.
+@emph{Pair with:} gstack @samp{/retro} as the facilitation prompt before or during the session.
+@emph{After capturing:} Each "what we'll change" row becomes a TODO in the Actions section.
+@emph{Discipline:} Focus on the system, not the person. "What process let this happen?"
+not "who dropped this?" The retro is for improving how the team works, not assigning blame.
+
+@node Technical Templates
+@subsection Technical Templates
+
+@menu
+* @samp{ed} — Discovery Session::
+* @samp{ea} — Architecture Decision Record (ADR)::
+* @samp{eA} — Architecture Health Review::
+* @samp{ev} — Vendor / Tool Evaluation::
+* @samp{et} — Technical Debt Item::
+* @samp{ex} — Security Finding::
+* @samp{en} — Innovation Pipeline Idea::
+@end menu
+
+@node @samp{ed} — Discovery Session
+@subsubsection @samp{ed} — Discovery Session
+
+@emph{Use:} Structured conversation with any team lead to map their stream. One per stream.
+@emph{Clock:} Yes — these are significant sessions.
+@emph{Fields:} Team/role, client, attendees, focus area, stream name.
+@emph{Structure:} Team context | Active workstreams (table) | Tech stack (table) |
+Architecture & integrations | Pain points | Quality & testing | Deployment & ops |
+Tech debt (table) | Security observations | Innovation opportunities | Open questions |
+Follow-up actions.
+@emph{Before the session:} Run @samp{/grill-me} (mattpocock/skills) to surface your assumptions.
+@emph{After the session:} Refile immediately. Update cross-cutting sections of the master
+discovery doc. Run a synthesis pass after every 2–3 sessions.
+
+@node @samp{ea} — Architecture Decision Record (ADR)
+@subsubsection @samp{ea} — Architecture Decision Record (ADR)
+
+@emph{Use:} Any significant technology or architecture decision — things that are hard to
+reverse, affect multiple streams, or have long-term cost implications.
+@emph{Clock:} Yes.
+@emph{Fields:} Decision title, client, status (Proposed/Accepted/Deprecated/Superseded).
+@emph{Structure:} Context (the forcing situation) | Decision (what and by whom) |
+Alternatives considered | Trade-offs accepted | Consequences (positive/negative/risks) |
+Review date.
+@emph{Rule:} If you're spending more than 30 minutes deciding something, it warrants an ADR@.
+A decision not documented is a decision that will be re-litigated.
+
+@node @samp{eA} — Architecture Health Review
+@subsubsection @samp{eA} — Architecture Health Review
+
+@emph{Use:} Quarterly. A structured assessment of the full system's health.
+@emph{Clock:} Yes.
+@emph{Fields:} Quarter, year, client, your name, teams reviewed.
+@emph{Structure:} Scalability | Maintainability | Integration fragility | Dependency risk |
+Technical debt table | Technology roadmap review | Recommendations | How to present.
+@emph{Framing for the client:} "Transparency and forward planning" — never a problem list.
+The goal is to demonstrate that you're ahead of issues, not behind them.
+
+@node @samp{ev} — Vendor / Tool Evaluation
+@subsubsection @samp{ev} — Vendor / Tool Evaluation
+
+@emph{Use:} Assessing any new tool, platform, or technology vendor.
+@emph{Clock:} Yes.
+@emph{Fields:} Vendor name, client, category, evaluator.
+@emph{Structure:} Problem being solved | Recommendation (with rationale) | Alternatives |
+Assessment (solves the problem? build vs. buy? lock-in? data handling? 2-year TCO) |
+Decision deadline.
+@emph{Decision framework:} Commodity infrastructure → buy. Differentiating capability → build.
+Anything that touches customer PII → scrutinise the vendor's data handling terms first.
+
+@node @samp{et} — Technical Debt Item
+@subsubsection @samp{et} — Technical Debt Item
+
+@emph{Use:} Immediately when you identify tech debt — during discovery, code review,
+architecture sessions, or standups.
+@emph{Fields:} Description, area (Frontend/Backend/Infra/Integration/Data/Security),
+severity (Critical/High/Medium/Low), discovery context, impact if unaddressed.
+@emph{After capturing:} Add to the tech debt register in the master discovery doc.
+Prioritise at the next architecture session. Debt that isn't visible isn't managed.
+
+@node @samp{ex} — Security Finding
+@subsubsection @samp{ex} — Security Finding
+
+@emph{Use:} Any security or compliance observation — immediately when found.
+@emph{Fields:} Finding description, severity, area (PCI/GDPR/API/Auth/Data/Infra),
+current status (Open/Mitigated/Accepted), recommended action, owner.
+@emph{Rule:} Critical findings surface to the internal sync before end of day.
+High findings surface within 48 hours. Never downgrade severity to avoid a
+difficult conversation.
+
+@node @samp{en} — Innovation Pipeline Idea
+@subsubsection @samp{en} — Innovation Pipeline Idea
+
+@emph{Use:} Any time you spot something that could be done better, smarter, or that the
+client doesn't yet know is possible. Capture without filtering — evaluate later.
+@emph{Fields:} Title, category (AI/ML / Data / Platform / Integration / Music Tech / Other).
+@emph{Structure:} The opportunity (business framing first) | The technology | Why now /
+why this client | Rough effort | Next step.
+@emph{Pipeline review:} Monthly — select one idea to develop into a brief. Present the
+best one at each QBR as the "Strategic Recommendation."
+
+@node Operating Rhythms — Day by Day
+@section Operating Rhythms — Day by Day
+
+@menu
+* Daily::
+* Weekly::
+* Monthly::
+* Quarterly::
+@end menu
+
+@node Daily
+@subsection Daily
+
+@example
+Morning (15 min)
+  └── Review refile.org inbox — refile or act on anything from yesterday
+  └── Check open commitments and today's deadlines in agenda (C-c a a)
+  └── Identify which hat today's sessions require
+
+During day
+  └── Attend standups → C-c c es (clock in)
+  └── Capture risks, debt, security findings immediately when spotted
+  └── Any client meeting → C-c c em + send summary within 2 hours
+
+End of day (10 min)
+  └── Refile today's captures from refile.org
+  └── Any commitment made today → C-c c ec (if not already done)
+  └── Anything that surfaced that needs to go to Monday's internal sync?
+@end example
+
+@node Weekly
+@subsection Weekly
+
+@example
+Monday (internal sync first — then nothing client-facing until done)
+  └── C-c c ei — internal sync
+  └── Review: commitments vs. reality gap, risk register, blockers
+  └── Decide: what goes to the client this week and how
+
+Wednesday / Thursday (client sync)
+  └── C-c c em — client meeting
+  └── Send written summary within 2 hours
+  └── Any commitments → C-c c ec immediately after
+
+Friday (weekly close — 20 min)
+  └── Clear refile.org inbox
+  └── Review open commitments — anything at risk of missing deadline?
+  └── One sentence in the discovery/ops doc Reflection log: what changed this week
+@end example
+
+@node Monthly
+@subsection Monthly
+
+@example
+First week
+  └── Client health check → C-c c eh
+  └── Review open risks — anything escalating or resolved?
+  └── Review innovation pipeline → pick one idea to develop into a brief
+
+Third week
+  └── Architecture review prep: review open ADRs, debt register, security findings
+  └── Update technology roadmap if anything shifted
+  └── Draft any discovery synthesis notes that have been accumulating
+@end example
+
+@node Quarterly
+@subsection Quarterly
+
+@example
+End of quarter
+  └── Architecture health review → C-c c eA
+  └── QBR preparation: translate all delivery into business outcomes
+  └── Select strategic recommendation for the QBR (from innovation pipeline)
+  └── QBR session → C-c c eq
+  └── Send QBR written summary within 24 hours
+  └── Review: any scope expansion opportunity to progress next quarter?
+@end example
+
+@node The Hat Model in Practice
+@section The Hat Model in Practice
+
+Switching hats mid-session dilutes both. When you sit down to work, know which
+hat you're wearing and stick to it for the duration of that block.
+
+@menu
+* Before any significant session::
+* Hat descriptions::
+@end menu
+
+@node Before any significant session
+@subsection Before any significant session
+
+Run one of these first — it takes 5 minutes and prevents hours of rework:
+
+@multitable {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Session type
+@tab Run first
+@tab Why
+@item Discovery interview
+@tab @samp{/grill-me}
+@tab Surface what you're assuming; don't anchor the conversation to your frame
+@item Architecture decision
+@tab @samp{/office-hours}
+@tab Challenge your own framing before committing
+@item Client meeting (complex topic)
+@tab @samp{/grill-with-docs} + SOW
+@tab Verify you're solving the right problem
+@item Starting implementation in an unfamiliar area
+@tab @samp{/zoom-out}
+@tab Map the system before touching it
+@item Handoff between sessions
+@tab @samp{/handoff}
+@tab Compact the context so the next session starts fresh
+@item Security review
+@tab @samp{/cso}
+@tab OWASP Top 10 + STRIDE, with false-positive filtering
+@end multitable
+
+@node Hat descriptions
+@subsection Hat descriptions
+
+@strong{Discovery hat}
+You are listening, not advising. Your job is to surface reality, not impose
+structure. Ask "what would break first if@dots{}" and "what's the thing nobody
+talks about but everyone knows is a problem?" Take the full discovery template
+notes. Don't jump to solutions in the session.
+
+@strong{Fractional CTO hat}
+You are making or advising decisions. Use @samp{/office-hours} to challenge your frame
+first. Document every significant decision as an ADR@. The value is not the answer —
+it's the documented reasoning that lets the team build on it without re-litigating.
+
+@strong{Engagement Director hat}
+You are managing the relationship. Speak business outcomes, not tech. Translate
+everything into: what did the client gain? What risk did we reduce? What opportunity
+does this create? Never bring a problem without a mitigation framing.
+
+@strong{QA Auditor hat}
+Find the gaps the team has normalised. Ask specifically about: billing logic test
+coverage, auth flow integration tests, regression coverage before releases. Teams
+stop seeing their own coverage gaps after a while.
+
+@strong{Security Reviewer hat}
+Assume breach, work backwards. What data would be exposed? What's the blast radius?
+Use @samp{/cso} (gstack) for the systematic scan. Flag immediately — severity doesn't
+get negotiated.
+
+@strong{DevOps hat}
+Optimise for recovery speed, not uptime. Questions: how fast can you detect an
+incident? How fast can you roll back? What's the MTTR@? Infrastructure-as-code
+posture? Where are secrets stored?
+
+@node Tools Reference
+@section Tools Reference
+
+@menu
+* org-capture (@samp{C-c c})::
+* org-agenda (@samp{C-c a})::
+* org-clock::
+* org-refile::
+* org-roam::
+* How AI skills associate with an Org work item::
+* mattpocock/skills::
+* gstack (garrytan/gstack)::
+@end menu
+
+@node org-capture (@samp{C-c c})
+@subsection org-capture (@samp{C-c c})
+
+The entry point for all structured note-taking. Engagement captures (@samp{e} prefix)
+file @strong{directly} to the relevant section of the active client's @samp{<client>.org}
+— no refile step. Generic captures (@samp{t}, @samp{n}, @samp{m}) still go to @samp{refile.org}.
+
+Essential keybindings:
+@multitable {aaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Key
+@tab Action
+@item @samp{C-c c}
+@tab Open capture menu
+@item @samp{C-c c e}
+@tab Jump directly to client group
+@item @samp{C-c C-c}
+@tab Confirm and file the capture
+@item @samp{C-c C-k}
+@tab Abort the capture
+@item @samp{C-c C-w}
+@tab Refile a heading (for refile.org inbox items)
+@item @samp{C-x C-s} in capture
+@tab Save without closing
+@end multitable
+
+@node org-agenda (@samp{C-c a})
+@subsection org-agenda (@samp{C-c a})
+
+Your operational dashboard. Key views:
+
+@multitable {aaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Key
+@tab View
+@item @samp{C-c a a}
+@tab Day/week agenda — deadlines, scheduled items (all files)
+@item @samp{C-c a E}
+@tab ★ Active client dashboard — delegated, blockers, actions, commitments, risks, 7-day agenda
+@item @samp{C-c a t}
+@tab All TODO items across all agenda files
+@item @samp{C-c a m TAGNAME}
+@tab Match by tag — e.g. @samp{RISK}, @samp{COMMITMENT}, @samp{DELEGATED}, @samp{BLOCKER}
+@item @samp{C-c a s}
+@tab Full-text search across all agenda files
+@end multitable
+
+@samp{C-c a E} is a first-class Org agenda command (so it exports, filters with @samp{/},
+refreshes with @samp{r}, etc.). It builds the dashboard dynamically for whichever
+client is active (or prompts you to pick one) — no per-client agenda config to
+maintain; new clients work the moment @samp{org-fractional-cto-new-client} scaffolds
+them. Blocks, in order: 7-day agenda → Delegated (WAITING) → Blockers → Open
+Actions → Commitments → Active Risks. @samp{M-x org-fractional-cto-switch-client}
+switches client and opens it.
+
+@node org-clock
+@subsection org-clock
+
+All discovery sessions, meetings, and reviews are clocked (the templates include
+@samp{:clock-in t}). This gives you automatic time tracking per engagement.
+
+@multitable {aaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Key
+@tab Action
+@item @samp{C-c C-x C-i}
+@tab Clock in to current heading
+@item @samp{C-c C-x C-o}
+@tab Clock out
+@item @samp{C-c C-x C-r}
+@tab Insert clock report at point
+@item @samp{C-c C-x C-d}
+@tab Show time spent on subtree
+@end multitable
+
+Monthly: @samp{M-x org-clock-report} in the client's master doc to see time by stream.
+
+@node org-refile
+@subsection org-refile
+
+After capturing, refile entries from @samp{refile.org} to their permanent home:
+
+@multitable {aaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Key
+@tab Action
+@item @samp{C-c C-w}
+@tab Refile current heading
+@item @samp{C-u C-c C-w}
+@tab Refile and jump to destination
+@item @samp{C-u C-u C-c C-w}
+@tab Jump to last refile location
+@end multitable
+
+Type part of the destination heading name; org-refile searches across all agenda files
+up to 9 levels deep (configured in @samp{init-org.el}).
+
+@node org-roam
+@subsection org-roam
+
+The long-form note graph. Discovery docs and role plans are org-roam nodes (they
+have @samp{:ID:} properties and live in @samp{roam/}).
+
+@multitable {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Key (default / Doom)
+@tab Action
+@item @samp{M-x org-roam-node-find}
+@tab Find or create a roam node
+@item @samp{M-x org-roam-node-insert}
+@tab Insert a link to another node
+@item @samp{M-x org-roam-buffer-toggle}
+@tab Show backlinks panel
+@item @samp{M-x org-roam-db-autosync-mode}
+@tab Enable auto-sync (run once)
+@end multitable
+
+After moving roam files: run @samp{M-x org-roam-db-sync} to rebuild the database.
+
+@node How AI skills associate with an Org work item
+@subsection How AI skills associate with an Org work item
+
+There is no automatic binding between an Org heading and a skill — the link is
+deliberate and manual, and that is the point. The flow is always:
+
+@enumerate
+@item
+@strong{Pick the work item in Org} — an ADR you're about to write (@samp{ea}), a tech
+spike (@samp{ek}), a discovery session (@samp{ed}), a security review (@samp{ex}).
+@item
+@strong{Open the client's code repo} in your AI tool (Claude Code, etc.) and load
+its @samp{CONTEXT.md} so the agent has the domain vocabulary.
+@item
+@strong{Run the matching skill} in that repo's AI session (tables below).
+@item
+@strong{Capture the outcome} back into Org with the relevant @samp{e} key.
+@end enumerate
+
+So Org tells you @emph{what} and @emph{why}; the skill helps you @emph{do} it; Org records the
+@emph{outcome}. The skills live in your code repositories, never in @samp{org-files}.
+
+@node mattpocock/skills
+@subsection mattpocock/skills
+
+Slash commands for focused, disciplined AI-assisted work.
+Install: @samp{npx skills@@latest add mattpocock/skills} in the project repo.
+Setup: run @samp{/setup-matt-pocock-skills} once per repo.
+
+@multitable {aaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Skill
+@tab When to use
+@tab What it does
+@item @samp{/grill-me}
+@tab Before any significant session
+@tab Structured interview that surfaces misalignment and assumptions
+@item @samp{/grill-with-docs}
+@tab Before working on a spec/SOW
+@tab Anchors the grilling to a specific document
+@item @samp{/zoom-out}
+@tab When starting work in unfamiliar area
+@tab Maps the system before touching it
+@item @samp{/tdd}
+@tab Any implementation work
+@tab Enforces red-green-refactor; no tests = no code
+@item @samp{/diagnose}
+@tab Debugging a problem
+@tab Systematic root-cause loop
+@item @samp{/handoff}
+@tab Switching sessions or handing off
+@tab Compacts context to a temp file; references artifacts by path
+@item @samp{/to-prd}
+@tab Client has a rough idea
+@tab Turns a conversation into a structured PRD
+@item @samp{/to-issues}
+@tab PRD exists
+@tab Breaks it into discrete trackable issues
+@item @samp{/write-a-skill}
+@tab New repeatable pattern identified
+@tab Codifies the pattern into a reusable skill
+@end multitable
+
+The @samp{CONTEXT.md} file (@samp{roam/clients/<client>/CONTEXT.md}) is the domain glossary
+for a client. Load it at the start of every Claude Code session on that account.
+It stops you from re-explaining domain vocabulary every session.
+
+@node gstack (garrytan/gstack)
+@subsection gstack (garrytan/gstack)
+
+A sprint-structured software factory. Install:
+@samp{git clone https://github.com/garrytan/gstack ~/.claude/skills/gstack && ./setup}
+
+@multitable {aaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Skill
+@tab When to use
+@tab What it does
+@item @samp{/office-hours}
+@tab Before committing to any direction
+@tab Six forcing questions that challenge your framing
+@item @samp{/autoplan}
+@tab Starting a significant implementation
+@tab Chains CEO, engineering, and design reviews
+@item @samp{/plan-eng-review}
+@tab Architecture or data flow decisions
+@tab Engineering review with diagrams and edge cases
+@item @samp{/review}
+@tab After any implementation
+@tab Staff-engineer audit; auto-fixes obvious issues
+@item @samp{/cso}
+@tab Security posture reviews
+@tab OWASP Top 10 + STRIDE threat model
+@item @samp{/qa}
+@tab Before any release
+@tab Real browser QA with regression test generation
+@item @samp{/retro}
+@tab Weekly
+@tab Team retrospective prompt
+@item @samp{/document-release}
+@tab After deploy
+@tab Auto-updates all docs
+@item @samp{/investigate}
+@tab Debugging a complex issue
+@tab Systematic root-cause analysis
+@item @samp{/freeze} / @samp{/unfreeze}
+@tab Working in sensitive areas
+@tab Locks edits to a single directory
+@end multitable
+
+@strong{The rule:} @samp{/office-hours} before architecture. @samp{/grill-me} before discovery.
+These are your calibration tools. The sessions where you feel least like you need
+them are often the sessions where you most do.
+
+@node New Client Setup
+@section New Client Setup
+
+Client onboarding is fully automated. No manual editing of @samp{init-org.el} needed.
+
+@menu
+* Step 1 — Run org-fractional-cto-new-client::
+* Step 2 — Fill CONTEXT.md: Step 2 — Fill CONTEXTmd (1). 
+* Step 3 — Set active client::
+* Step 4 — Capture key contacts::
+* Step 5 — Tools (if doing implementation work)::
+* First week checklist: First week checklist (1). 
+@end menu
+
+@node Step 1 — Run org-fractional-cto-new-client
+@subsection Step 1 — Run org-fractional-cto-new-client
+
+In Emacs: @samp{M-x org-fractional-cto-new-client}
+@enumerate
+@item
+Enter the client display name (e.g. "Acme Corp")
+@item
+Enter the client slug (lowercase, no spaces — e.g. "acme")
+@end enumerate
+
+This creates in one step:
+@itemize
+@item
+@samp{roam/clients/acme/acme.org} — operational hub with all standard sections
+@item
+@samp{roam/clients/acme/standup.org} — standup template with stream slots
+@item
+@samp{roam/clients/acme/CONTEXT.md} — context file opened immediately for editing
+@item
+Registers the client in @samp{org-agenda-files} automatically (no reload needed)
+@end itemize
+
+@node Step 2 — Fill CONTEXTmd (1)
+@subsection Step 2 — Fill CONTEXT.md
+
+The file opens automatically after Step 1. Fill in:
+@itemize
+@item
+What the product is and what you're building
+@item
+Domain vocabulary (terms the team uses — stop re-explaining every session)
+@item
+Tech stack as known at onboarding
+@item
+Key people: client side and our internal stream leads
+@item
+Active work streams and current priorities
+@item
+Key documents and external references
+@end itemize
+
+Load this at the start of every Claude Code session on that client's codebase.
+
+@node Step 3 — Set active client
+@subsection Step 3 — Set active client
+
+@samp{M-x org-fractional-cto-set-active-client} → select the slug.
+
+From this point on, @samp{C-c c e<key>} routes automatically to this client — no
+per-capture prompting. Switch between clients mid-session with @samp{org-fractional-cto-set-active-client}.
+
+@node Step 4 — Capture key contacts
+@subsection Step 4 — Capture key contacts
+
+@itemize
+@item
+@samp{C-c c ep} — Stakeholder profile for each client-side decision maker
+@item
+@samp{C-c c eP} — Team member note for each internal stream lead
+@end itemize
+
+@node Step 5 — Tools (if doing implementation work)
+@subsection Step 5 — Tools (if doing implementation work)
+
+@example
+# In the client's codebase repo
+npx skills@@latest add mattpocock/skills
+# /setup-matt-pocock-skills once per repo in Claude Code
+@end example
+
+gstack is global (@samp{~/.claude/skills/gstack}) — no per-client install.
+
+@node First week checklist (1)
+@subsection First week checklist
+
+@itemize
+@item
+@samp{org-fractional-cto-new-client} run; @samp{acme.org} and @samp{CONTEXT.md} created
+@item
+@samp{CONTEXT.md} populated with domain vocab, people, and stack
+@item
+Active client set: @samp{M-x org-fractional-cto-set-active-client}
+@item
+Agenda tested: @samp{C-c a E} → should open client dashboard
+@item
+Capture tested: @samp{C-c c ew} → should file to @samp{acme.org} Actions section
+@item
+@samp{/grill-me} run before first client conversation
+@item
+Stakeholders captured: @samp{C-c c ep} for all known client-side contacts
+@item
+Team leads captured: @samp{C-c c eP} for all stream leads
+@item
+First internal sync scheduled (Monday cadence)
+@item
+First client sync scheduled
+@end itemize
+
+@node Scenario Guides
+@section Scenario Guides
+
+@menu
+* "I just had a discovery session"::
+* "Something went wrong in production"::
+* "Client asked for something that might be out of scope"::
+* "I want to pitch an innovation idea"::
+* "I need to make an architecture decision"::
+* "Preparing for a QBR"::
+* "Starting a new engagement for the first time"::
+@end menu
+
+@node "I just had a discovery session"
+@subsection "I just had a discovery session"
+
+@enumerate
+@item
+@samp{C-c C-x C-o} — clock out of the session
+@item
+Immediately refile the capture: @samp{C-c C-w} → client's discovery section
+@item
+Scan the session notes for:
+@itemize
+@item
+Risks → @samp{er} for each
+@item
+Tech debt items → @samp{et} for each
+@item
+Security observations → @samp{ex} for each
+@item
+Innovation opportunities → @samp{en} for each
+@end itemize
+@item
+Open the master system discovery doc, update:
+@itemize
+@item
+Discovery Status table (tick the stream, add date)
+@item
+The relevant per-domain deep dive section
+@end itemize
+@item
+If this was session 2 or 3: do a synthesis pass on cross-cutting sections
+(tech debt aggregate, integration map, security table)
+@end enumerate
+
+@node "Something went wrong in production"
+@subsection "Something went wrong in production"
+
+@enumerate
+@item
+@samp{ef} — post-mortem capture, clock in immediately
+@item
+Fill in: what happened, severity, what is affected
+@item
+Assess: does this need client notification? (Critical/High severity: yes)
+@item
+If client notification needed: verbal first, written summary within 1 hour
+@itemize
+@item
+Frame: "here's what happened / here's what we did / here's what prevents recurrence"
+@end itemize
+@item
+Internal: what process change prevents recurrence?
+@item
+After resolution: complete the post-mortem entry (root cause, prevention, actions)
+@item
+If it revealed a structural issue: @samp{ex} (security) or @samp{et} (tech debt)
+@end enumerate
+
+@node "Client asked for something that might be out of scope"
+@subsection "Client asked for something that might be out of scope"
+
+@enumerate
+@item
+In the meeting: "Let me come back to you on what that would look like" — never agree in the room
+@item
+@samp{ee} — scope change capture immediately after the call
+@item
+Bring it to Monday's internal sync (@samp{ei})
+@item
+Internal assessment: in scope / out of scope / grey area? Commercial impact?
+@item
+Client response: frame as opportunity, not dispute
+@itemize
+@item
+"Here's what that would involve, here's what it would enable, here's how we'd approach it"
+@end itemize
+@end enumerate
+
+@node "I want to pitch an innovation idea"
+@subsection "I want to pitch an innovation idea"
+
+@enumerate
+@item
+@samp{en} — capture the idea immediately, don't filter it yet
+@item
+Monthly pipeline review: shortlist to 1–2 ideas worth developing
+@item
+Develop into a brief: business opportunity → technology → why now / why this client → rough effort
+@item
+Run @samp{/office-hours} (gstack) to stress-test the framing before presenting
+@item
+Present at the next QBR as "Strategic Recommendation"
+@item
+Frame: "here's what becomes possible if@dots{}" — never "here's what we could build"
+@end enumerate
+
+@node "I need to make an architecture decision"
+@subsection "I need to make an architecture decision"
+
+@enumerate
+@item
+Run @samp{/office-hours} (gstack) — challenge your own framing first
+@item
+@samp{ea} — ADR capture, clock in
+@item
+Fill: Context (the forcing situation) → Alternatives considered → Trade-offs → Decision
+@item
+For any vendor/tool involved: @samp{ev} vendor evaluation
+@item
+For security implications: @samp{ex} security finding
+@item
+Mark the ADR status: Proposed → get relevant leads to review → Accepted
+@item
+Note review date — architecture decisions need scheduled re-evaluation
+@end enumerate
+
+@node "Preparing for a QBR"
+@subsection "Preparing for a QBR"
+
+@enumerate
+@item
+Three weeks before: run @samp{/zoom-out} across the discovery doc — what's the narrative?
+@item
+Two weeks before: run @samp{/office-hours} — what's the one strategic recommendation?
+@item
+One week before: draft QBR structure, translate all delivery into business outcomes
+@itemize
+@item
+Not "we shipped X" — "X now means the client can do Y, which reduces risk Z"
+@end itemize
+@item
+Run @samp{/grill-with-docs} on the QBR draft — where are you weak?
+@item
+QBR session: @samp{eq} — clock in
+@item
+Within 24 hours: send written summary (non-negotiable)
+@end enumerate
+
+@node "Starting a new engagement for the first time"
+@subsection "Starting a new engagement for the first time"
+
+Follow the full @ref{New Client Setup} checklist above, then run Phase 0 of the
+@uref{playbook.org, Fractional CTO Playbook}.
+
+The single most important thing in the first week: run @samp{/grill-me} (mattpocock/skills)
+before your first substantive client conversation. You will have assumptions you
+don't know you're making. Surface them before they cost you.
+
+@bye
