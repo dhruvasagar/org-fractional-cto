@@ -1,0 +1,25 @@
+* PRE-SALES CALL: %^{Company / contact}  :%(org-capture-get :ofc-client-tag):PRESALES:
+%U
+Source / referral: %^{How did this come in}
+Attendees: %^{Who was on the call}
+
+** The Ask
+(What are they actually asking for? In their words.)
+%?
+
+** Pain Points / Triggers
+(What's driving this now? What hurts today?)
+-
+
+** Current State (as heard)
+- Team / org shape:
+- Tech hints:
+- What exists today:
+
+** Signals
+- Budget: %^{Budget signal|Strong|Some|Unclear|None}
+- Timeline: %^{Timeline|Urgent|This quarter|Exploratory|Unknown}
+- Decision-maker(s): %^{Who decides}
+
+** Next Step
+- [ ] %^{Immediate next step} (by %^{Next step by}t)

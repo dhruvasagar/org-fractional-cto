@@ -149,6 +149,34 @@ tag plus its type tag (e.g. =** Delegations :ACME:DELEGATED:=). You do not edit
 these by hand; captures file into them. Seeing the whole engagement in one
 outline is the point — fold with =overview=, expand the section you need.
 
+* Step 3b — Capture a prospect (pre-sales)
+
+A prospect is just a client at an earlier stage. Before an engagement is won you
+still want to capture calls, do research, and track follow-ups — and the
+dashboard already does that. Onboard a prospect with:
+
+: M-x org-fractional-cto-new-prospect
+
+It scaffolds the same hub as a client but stamps the engagement heading with the
+=LEAD= stage tag, sets the prospect active, and opens the *pre-sales call*
+capture (=el=) so you record the conversation immediately. From there:
+
+- =C-c c el= — capture each pre-sales call (the ask, pain, signals, next step).
+- =C-c c eo= — log research findings as you learn about the company, market, and
+  tech. Fold the durable facts into =CONTEXT.md=.
+- =C-c c eF= — record a fit / qualification verdict (Pursue / Hold / Pass).
+- =C-c c ew= / =eg= / =eb= — ordinary actions, delegations, and blockers work
+  here too, so your pre-sales follow-ups land on the dashboard like any work.
+
+As the prospect advances, move the stage with =M-x org-fractional-cto-set-stage=
+(=LEAD= → =QUALIFIED= → =ACTIVE= when you win, or =LOST=). Across all clients,
+=C-c a P= shows the whole pipeline — every =LEAD= / =QUALIFIED= engagement, one
+line each.
+
+If you have hubs created before stages existed, run =M-x
+org-fractional-cto-upgrade-hub= on each to add the new sections and an =ACTIVE=
+stage tag.
+
 * Step 4 — Fill in CONTEXT.md
 
 =CONTEXT.md= is the human (and AI) brief for the engagement. It opens

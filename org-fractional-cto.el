@@ -100,6 +100,33 @@ yourself."
   :type '(choice (key-sequence :tag "Prefix") (const :tag "None" nil))
   :group 'org-fractional-cto)
 
+(defcustom org-fractional-cto-stages
+  '("LEAD" "QUALIFIED" "ACTIVE" "LOST" "DORMANT")
+  "Ordered engagement stages, carried as a tag on the engagement heading.
+Exactly one is present at a time; `org-fractional-cto-set-stage' switches it."
+  :type '(repeat string)
+  :group 'org-fractional-cto)
+
+(defcustom org-fractional-cto-default-stage "ACTIVE"
+  "Stage tag applied to engagements created by `org-fractional-cto-new-client'."
+  :type 'string
+  :group 'org-fractional-cto)
+
+(defcustom org-fractional-cto-lead-stage "LEAD"
+  "Stage tag applied to prospects created by `org-fractional-cto-new-prospect'."
+  :type 'string
+  :group 'org-fractional-cto)
+
+(defcustom org-fractional-cto-pipeline-stages "LEAD|QUALIFIED"
+  "Org tag-match expression selecting prospects for the pipeline view."
+  :type 'string
+  :group 'org-fractional-cto)
+
+(defcustom org-fractional-cto-pipeline-key "P"
+  "Dispatcher key, under `C-c a', for the cross-client pipeline view."
+  :type 'string
+  :group 'org-fractional-cto)
+
 ;;;; Core state and path helpers
 
 (defvar org-fractional-cto-active-client nil
@@ -186,6 +213,7 @@ picked up automatically."
 (require 'org-fractional-cto-capture)
 (require 'org-fractional-cto-agenda)
 (require 'org-fractional-cto-scaffold)
+(require 'org-fractional-cto-stage)
 (require 'org-fractional-cto-actions)
 (require 'org-fractional-cto-doc)
 
@@ -213,6 +241,8 @@ picked up automatically."
     (define-key map "k" #'org-fractional-cto-clear-active-client)
     (define-key map "d" #'org-fractional-cto-dashboard)
     (define-key map "w" #'org-fractional-cto-switch-client)
+    (define-key map "p" #'org-fractional-cto-new-prospect)
+    (define-key map "S" #'org-fractional-cto-set-stage)
     (define-key map "g" #'org-fractional-cto-delegate-at-point)
     (define-key map "b" #'org-fractional-cto-block-at-point)
     (define-key map "h" #'org-fractional-cto-docs)
@@ -227,6 +257,7 @@ Call once from your init file, after Org is available."
   (interactive)
   (org-fractional-cto-capture-install)
   (org-fractional-cto-agenda-install)
+  (org-fractional-cto-pipeline-install)
   (dolist (dir (org-fractional-cto-agenda-files))
     (add-to-list 'org-agenda-files dir t))
   (when org-fractional-cto-keymap-prefix

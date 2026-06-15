@@ -32,6 +32,9 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 | I need to...                       | Key           | Files to                                   |
 |------------------------------------+---------------+--------------------------------------------|
 | Quick action / TODO                | =C-c c ew=    | <client>.org → Actions                     |
+| Pre-sales call / lead intake       | =C-c c el=    | <client>.org → Pre-Sales Notes             |
+| Research note                      | =C-c c eo=    | <client>.org → Research                    |
+| Fit / qualification                | =C-c c eF=    | <client>.org → Qualification               |
 | Delegate a task (WAITING)          | =C-c c eg=    | <client>.org → Delegations                 |
 | Flag a blocker / escalation        | =C-c c eb=    | <client>.org → Blockers                    |
 | Weekly review (delegation + pulse) | =C-c c eW=    | <client>.org → Weekly Reviews              |
@@ -65,6 +68,8 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 |---------------------------------------+--------------------------------------------|
 | Delegate the action under my cursor   | =M-x org-fractional-cto-delegate-at-point= |
 | Raise a blocker against it            | =M-x org-fractional-cto-block-at-point=    |
+| Create a new prospect (LEAD)          | =M-x org-fractional-cto-new-prospect=      |
+| Set the engagement stage              | =M-x org-fractional-cto-set-stage=         |
 
 *** Look up / analyse
 | I need to...                               | Do this                                         |
@@ -77,6 +82,7 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 | Active risks                               | =C-c a E= → "Active Risks" block                  |
 | Set active client (avoid repeated prompts) | =M-x org-fractional-cto-set-active-client=                      |
 | Clear active client                        | =M-x org-fractional-cto-clear-active-client=                    |
+| Prospect pipeline (all leads)              | =C-c a P= (or =M-x org-fractional-cto-pipeline=)               |
 | Browse by section (meetings, risks, etc.)  | =C-x C-f <client>.org= then navigate headings   |
 | Find a specific past note or doc           | =M-x org-roam-node-find= (fuzzy search)         |
 | Search text across all org files           | =C-c a s= (agenda search)                       |
@@ -103,6 +109,21 @@ Client hubs declare: =#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED=.
 
 =WAITING= is load-bearing: it separates "things I owe" from "things I'm owed,"
 and feeds the dashboard's *Delegated* block.
+
+*** Engagement stages (tag on the engagement heading)
+One stage tag sits on the top =* … Engagement= heading and is inherited by the
+whole tree. Switch it with =M-x org-fractional-cto-set-stage=.
+
+| Stage       | Meaning                                          |
+|-------------+--------------------------------------------------|
+| =LEAD=      | Captured from a pre-sales call; raw              |
+| =QUALIFIED= | Researched and worth pursuing (pre-contract)     |
+| =ACTIVE=    | Won / engaged — the default for new-client       |
+| =LOST=      | Did not convert                                  |
+| =DORMANT=   | Paused / on hold                                 |
+
+The pipeline view (=C-c a P=) lists every =LEAD=/=QUALIFIED= engagement across
+all clients, one line per prospect.
 
 *** Priorities
 | =[#A]= | Blocking / time-critical (blockers default here) |
@@ -137,6 +158,9 @@ dashboard and =C-c a m TAG= search on these.
 | =SCOPE=       | Scope Changes (=ee=)         |
 | =POSTMORTEM=  | Post-Mortems (=ef=)          |
 | =RETRO=       | Retrospectives (=eR=)        |
+| =PRESALES=      | Pre-Sales Notes (=el=)        |
+| =RESEARCH=      | Research (=eo=)               |
+| =QUALIFICATION= | Qualification (=eF=)          |
 
 *** Key bindings
 | ~C-c c e<key>~ | Capture (see [[*Capture Templates — Complete Reference][capture reference]]) |
@@ -146,11 +170,15 @@ dashboard and =C-c a m TAG= search on these.
 | =M-x org-fractional-cto-set-active-client= | Set active client               |
 | =M-x org-fractional-cto-dashboard=         | Dashboard for active client     |
 | =M-x org-fractional-cto-switch-client=     | Switch client + open dashboard  |
+| =M-x org-fractional-cto-new-prospect=      | New prospect (LEAD stage)       |
+| =M-x org-fractional-cto-set-stage=         | Set engagement stage            |
+| =M-x org-fractional-cto-upgrade-hub=       | Upgrade an old hub in place     |
+| =C-c a P=                                  | Prospect pipeline (all leads)   |
 | =M-x org-fractional-cto-delegate-at-point= | Delegate the heading at point   |
 | =M-x org-fractional-cto-block-at-point=    | Blocker against heading at point|
 
 Management commands run via =M-x= by default (no global prefix is claimed).
-They also live in =org-fractional-cto-command-map= (keys =n s k d w g b h=); set
+They also live in =org-fractional-cto-command-map= (keys =n s k d w p S g b h=); set
 =org-fractional-cto-keymap-prefix= to bind it under a prefix of your choice.
 =g= and =b= act on the Org heading at point; the rest are session-level.
 

@@ -1,0 +1,24 @@
+* QUALIFICATION: %^{Company}  :%(org-capture-get :ofc-client-tag):QUALIFICATION:
+%U
+
+** Scorecard
+| Dimension          | Read (High/Med/Low) | Notes |
+|--------------------+---------------------+-------|
+| Need / pain        |                     |       |
+| Budget             |                     |       |
+| Authority (access) |                     |       |
+| Timing             |                     |       |
+| Technical fit      |                     |       |
+| Strategic fit      |                     |       |
+
+** Risks / Red Flags
+-
+
+** Verdict
+%^{Verdict|Pursue|Hold|Pass}
+
+** Rationale
+%?
+
+** If Pursue — Prep for Discovery
+- [ ] What to validate in the first deep discovery (ed):

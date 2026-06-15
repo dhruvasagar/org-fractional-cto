@@ -54,6 +54,26 @@ in both directions.
 non-trivial session. These are your calibration tools. Skip them when you feel rushed.
 That's exactly when you need them most.
 
+** Phase −1 — Pre-Sales / Pipeline
+/Before the engagement exists. Hat: Trusted Advisor (selling by helping)./
+
+You meet a prospect with almost no information. The goal is to capture
+everything you hear, research to fill the gaps, and decide whether to pursue —
+without yet committing to the deep, team-by-team discovery of Phase 1.
+
+- =M-x org-fractional-cto-new-prospect= — create the prospect at =LEAD= stage.
+- =C-c c el= — capture each pre-sales call: the ask in their words, pain
+  points, budget/timing signals, decision-makers, and the next step.
+- =C-c c eo= — log research findings (company, market, competitors, tech hints,
+  funding, people). Promote durable facts into =CONTEXT.md=.
+- =C-c c eF= — a fit/qualification scorecard ending in a verdict: Pursue, Hold,
+  or Pass. On Pursue, note what to validate in the first deep discovery (=ed=).
+
+Advance the stage as conviction grows (=M-x org-fractional-cto-set-stage=:
+=LEAD= → =QUALIFIED=), and =C-c a P= is your funnel board across all prospects.
+When you win, =set-stage= → =ACTIVE= and proceed to Phase 0 — the hub, its
+history, and every captured artifact carry straight over.
+
 ** Phase 0 — Engagement Setup
 /Days 1–3. Hat: Engagement Director./
 

@@ -5,6 +5,7 @@ EMACS ?= emacs
 test:
 	$(EMACS) -Q --batch -L . \
 	  -l test/org-fractional-cto-actions-test.el \
+	  -l test/org-fractional-cto-prospect-test.el \
 	  -f ert-run-tests-batch-and-exit
 
 # Regenerate the Texinfo manual from the Org sources under doc/.  straight.el
