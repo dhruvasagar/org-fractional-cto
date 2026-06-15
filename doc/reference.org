@@ -72,15 +72,15 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 | Set the engagement stage              | =M-x org-fractional-cto-set-stage=         |
 
 *** Look up / analyse
-| I need to...                               | Do this                                         |
-|--------------------------------------------+-------------------------------------------------|
-| Client dashboard (actions, delegations)    | =C-c a E= → select client                         |
-| Delegated items awaiting response          | =C-c a E= → "Delegated — Awaiting Response" block |
-| Blockers & escalations                     | =C-c a E= → "Blockers & Escalations" block        |
-| All open TODOs for this client             | =C-c a E= → "Open Actions" block                  |
-| Open commitments                           | =C-c a E= → "Commitments" block                   |
-| Active risks                               | =C-c a E= → "Active Risks" block                  |
-| Open security findings                     | =C-c a E= → "Open Security Findings" block        |
+| I need to...                            | Do this                                                  |
+|-----------------------------------------+----------------------------------------------------------|
+| Client dashboard (actions, delegations) | =C-c a E= (global; pre-filtered to active client if set) |
+| Delegated items awaiting response       | =C-c a E= → "Delegated — Awaiting Response" block         |
+| Blockers & escalations                  | =C-c a E= → "Blockers & Escalations" block               |
+| All open TODOs for this client          | =C-c a E= → "Open Actions" block                         |
+| Open commitments                        | =C-c a E= → "Commitments" block                          |
+| Active risks                            | =C-c a E= → "Active Risks" block                         |
+| Open security findings                  | =C-c a E= → "Open Security Findings" block               |
 | Open tech debt                             | =C-c a E= → "Open Tech Debt" block                |
 | Pending scope decisions                    | =C-c a E= → "Scope Changes — Pending Decisions"   |
 | Set active client (avoid repeated prompts) | =M-x org-fractional-cto-set-active-client=                      |
@@ -117,8 +117,10 @@ CANCELLED=. Customize via =org-fractional-cto-todo-keywords=.
 and feeds the dashboard's *Delegated* block.
 
 *** Engagement stages (tag on the engagement heading)
-One stage tag sits on the top =* … Engagement= heading and is inherited by the
-whole tree. Switch it with =M-x org-fractional-cto-set-stage=.
+One stage tag sits on the top =* … Engagement= heading (e.g. =:ACTIVE:=) and is
+inherited by the whole tree. The *client* identity tag (e.g. =:ACME:=) is
+declared at the file level via =#+filetags=, not on the engagement heading.
+Switch it with =M-x org-fractional-cto-set-stage=.
 
 | Stage       | Meaning                                          |
 |-------------+--------------------------------------------------|
@@ -137,8 +139,10 @@ all clients, one line per prospect.
 | =[#C]= | Nice to have / backlog                           |
 
 *** Type tags
-Every capture carries the client tag (e.g. =:ACME:=) plus a *type tag*. The
-dashboard and =C-c a m TAG= search on these.
+Every capture carries a *type tag*. The client identity is inherited from the
+hub's =#+filetags= line (e.g. =#+filetags: :ACME:=) rather than being repeated
+on individual headings or items. The dashboard and =C-c a m TAG= search on these
+type tags.
 
 | Tag           | Section / capture            |
 |---------------+------------------------------|
@@ -170,15 +174,15 @@ dashboard and =C-c a m TAG= search on these.
 
 *** Key bindings
 | ~C-c c e<key>~ | Capture (see [[*Capture Templates — Complete Reference][capture reference]]) |
-| ~C-c a E~      | Active-client dashboard                       |
-| ~C-c a m TAG~  | Match a type tag across all clients           |
-| =M-x org-fractional-cto-new-client=        | New client (onboard)            |
-| =M-x org-fractional-cto-set-active-client= | Set active client               |
-| =M-x org-fractional-cto-dashboard=         | Dashboard for active client     |
-| =M-x org-fractional-cto-switch-client=     | Switch client + open dashboard  |
-| =M-x org-fractional-cto-new-prospect=      | New prospect (LEAD stage)       |
-| =M-x org-fractional-cto-set-stage=         | Set engagement stage            |
-| =M-x org-fractional-cto-upgrade-hub=       | Upgrade an old hub in place     |
+| ~C-c a E~      | Global dashboard (pre-filtered to active client)                            |
+| ~C-c a m TAG~  | Match a type tag across all clients                                         |
+| =M-x org-fractional-cto-new-client=        | New client (onboard)                             |
+| =M-x org-fractional-cto-set-active-client= | Set active client                                |
+| =M-x org-fractional-cto-dashboard=         | Global dashboard (pre-filtered to active client) |
+| =M-x org-fractional-cto-switch-client=     | Switch client + open dashboard                   |
+| =M-x org-fractional-cto-new-prospect=      | New prospect (LEAD stage)                        |
+| =M-x org-fractional-cto-set-stage=         | Set engagement stage                             |
+| =M-x org-fractional-cto-upgrade-hub=       | Upgrade an old hub in place                      |
 | =C-c a P=                                  | Prospect pipeline (all leads)   |
 | =M-x org-fractional-cto-delegate-at-point= | Delegate the heading at point   |
 | =M-x org-fractional-cto-block-at-point=    | Blocker against heading at point|
@@ -186,7 +190,15 @@ dashboard and =C-c a m TAG= search on these.
 Management commands run via =M-x= by default (no global prefix is claimed).
 They also live in =org-fractional-cto-command-map= (keys =n s k d w p S g b h=); set
 =org-fractional-cto-keymap-prefix= to bind it under a prefix of your choice.
-=g= and =b= act on the Org heading at point; the rest are session-level.
+
+=g= (=org-fractional-cto-delegate-at-point=) and =b=
+(=org-fractional-cto-block-at-point=) act on the Org heading at point — both
+from within a hub file and *directly from any Org agenda line*:
+
+- *Evil users*: `, g` (delegate) and `, b` (block) in the agenda's motion state
+  — no extra configuration needed.
+- *Non-Evil users*: set =org-fractional-cto-agenda-keymap-prefix= to a prefix key
+  (e.g. ="C-c C-'"=) for prefix access; otherwise reach them via =M-x=.
 
 ** File Organization
 
@@ -240,10 +252,13 @@ applies, but client work bypasses it entirely.
 
 *** The lookup flow
 
-1. *Agenda dashboard* — =C-c a E= opens the active client's dashboard: 7-day agenda,
-   delegated items awaiting response, blockers & escalations, open actions,
-   commitments with deadlines, active risks. This is the daily starting point.
-   (If no active client is set, it prompts you to pick one.)
+1. *Agenda dashboard* — =C-c a E= opens the *global* dashboard spanning all
+   clients: 7-day agenda, delegated items awaiting response, blockers & escalations,
+   open actions, commitments with deadlines, active risks, security findings, tech
+   debt, and pending scope decisions. This is the daily starting point. When an
+   active client is set, the view opens pre-focused on that client via the native
+   tag filter (=CATEGORY= column shows each entry's client). Use =/= to widen,
+   refocus, or clear the filter.
 2. *Browse by section* — =C-x C-f <client>.org= then navigate headings (=C-c C-n/p=
    to move between headings, =S-TAB= to collapse/expand). Each section contains
    all captures of that type in reverse-chronological order.
@@ -258,7 +273,8 @@ applies, but client work bypasses it entirely.
 All engagement templates use the pattern: =C-c c e<key>=. Captures file *directly*
 to the relevant section of the active client's =<client>.org= (set the active
 client with =M-x org-fractional-cto-set-active-client= to avoid being prompted each time).
-Clocked entries start the org-clock automatically.
+The client display name is auto-filled from the hub's =#+title= — no =Client:=
+prompt appears. Clocked entries start the org-clock automatically.
 
 *** Relationship & Communication Templates
 
@@ -641,18 +657,21 @@ Your operational dashboard. Key views:
 | Key | View |
 |-----+------|
 | =C-c a a= | Day/week agenda — deadlines, scheduled items (all files) |
-| =C-c a E= | ★ Active client dashboard — delegated, blockers, actions, commitments, risks, security findings, tech debt, scope decisions, 7-day agenda |
+| =C-c a E= | ★ Global dashboard (9 blocks) — spans all clients; pre-focused to active client when set; use =/= to widen or refocus |
 | =C-c a t= | All TODO items across all agenda files |
 | =C-c a m TAGNAME= | Match by tag — e.g. =RISK=, =COMMITMENT=, =DELEGATED=, =BLOCKER= |
 | =C-c a s= | Full-text search across all agenda files |
 
 =C-c a E= is a first-class Org agenda command (so it exports, filters with =/=,
-refreshes with =r=, etc.). It builds the dashboard dynamically for whichever
-client is active (or prompts you to pick one) — no per-client agenda config to
-maintain; new clients work the moment =org-fractional-cto-new-client= scaffolds
-them. Blocks, in order: 7-day agenda → Delegated (WAITING) → Blockers → Open
-Actions → Commitments → Active Risks. =M-x org-fractional-cto-switch-client=
-switches client and opens it.
+refreshes with =r=, etc.). It spans *all* client files; when an active client is
+set the view opens pre-focused to it via =org-agenda-tag-filter-preset= — the
+=CATEGORY= column shows each entry's client. Use =/= to widen, refocus, or clear
+the filter; there is no separate focus command. New clients work the moment
+=org-fractional-cto-new-client= scaffolds them — no per-client agenda config to
+maintain. Blocks, in order: 7-day agenda → Delegated (WAITING) → Blockers → Open
+Actions → Commitments → Active Risks → Open Security Findings → Open Tech Debt →
+Scope Changes. =M-x org-fractional-cto-switch-client= switches client and opens
+it.
 
 *** org-clock
 
@@ -809,7 +828,7 @@ gstack is global (=~/.claude/skills/gstack=) — no per-client install.
 - [ ] =org-fractional-cto-new-client= run; =acme.org= and =CONTEXT.md= created
 - [ ] =CONTEXT.md= populated with domain vocab, people, and stack
 - [ ] Active client set: =M-x org-fractional-cto-set-active-client=
-- [ ] Agenda tested: =C-c a E= → should open client dashboard
+- [ ] Agenda tested: =C-c a E= → should open the global dashboard (pre-focused on the active client)
 - [ ] Capture tested: =C-c c ew= → should file to =acme.org= Actions section
 - [ ] =/grill-me= run before first client conversation
 - [ ] Stakeholders captured: =C-c c ep= for all known client-side contacts

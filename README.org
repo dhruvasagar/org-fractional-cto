@@ -23,8 +23,9 @@ Three moving parts, one workflow:
    pre-sales calls, research, discovery, ADRs, risks, commitments, delegated
    tasks, blockers, retrospectives, QBRs, innovation ideas — straight into the
    active client's file. No per-client key prefixes.
-3. *Dashboard* — a per-client agenda view (~C-c a E~) surfacing delegated work
-   awaiting response, blockers, open actions, commitments, and active risks.
+3. *Dashboard* — a global agenda view (~C-c a E~) surfacing delegated work,
+   blockers, open actions, commitments, and active risks across all clients.
+   When an active client is set, it opens pre-focused on that client.
 
 Every engagement also carries a *stage* — from =LEAD= (a fresh pre-sales
 prospect) through =QUALIFIED= and =ACTIVE= to =LOST= / =DORMANT= — and a
@@ -41,8 +42,9 @@ every capture and the dashboard follow it. Switch clients with one command.
 - *The dashboard is a real Org agenda command* (registered under ~C-c a E~), not
   a bespoke function. It therefore inherits everything the agenda dispatcher
   gives you: it appears in the ~C-c a~ menu, it is exportable, filterable with
-  =/=, refreshable with =r=, and sticky-agenda aware. It stays per-client by
-  computing =org-agenda-files= from the active client at run time.
+  =/=, refreshable with =r=, and sticky-agenda aware. It spans *all* client files;
+  when an active client is set it opens pre-focused via the native
+  =org-agenda-tag-filter-preset=. The =CATEGORY= column shows each entry's client.
 - *Captures file directly into the client hub*, not into a refile inbox. Open
   =<client>.org= and the whole engagement is there, organised by section.
 - *Templates are bundled and overridable.* Everything ships with the package;
@@ -106,6 +108,20 @@ Each client owns a directory:
     CONTEXT.md    ← domain glossary, people, tech stack (load in AI sessions)
 #+end_example
 
+The operational hub declares the client identity once as a file-level tag, so it
+is inherited by every heading in the file rather than repeated:
+
+#+begin_example
+#+filetags: :ACME:
+...
+* Acme Corp Engagement  :ACTIVE:
+** Delegations  :DELEGATED:
+** Risks  :RISK:
+#+end_example
+
+The client tag is never repeated per-heading; Org's tag inheritance propagates it.
+Existing hubs can be migrated to this layout with =M-x org-fractional-cto-upgrade-hub=.
+
 The hub's sections, the capture targets, and the dashboard all agree by
 construction — they are generated from one section list.
 
@@ -116,7 +132,7 @@ construction — they are generated from one section list.
 3. =M-x org-fractional-cto-set-active-client= → =acme=.
 4. Capture: ~C-c c e w~ (an action), ~C-c c e g~ (delegate a task), ~C-c c e d~
    (a discovery session)…
-5. Review: ~C-c a E~ opens the Acme dashboard.
+5. Review: ~C-c a E~ opens the global dashboard, pre-focused on Acme.
 
 Prospecting rather than onboarding a won client? Use =M-x
 org-fractional-cto-new-prospect= in step 1 — it builds the same hub at the
@@ -190,8 +206,8 @@ anything broke. Keep them separate.
 
 * The dashboard
 
-~C-c a E~ (or =M-x org-fractional-cto-dashboard=) opens the active client's
-board. Blocks, in order:
+~C-c a E~ (or =M-x org-fractional-cto-dashboard=) opens the *global* dashboard
+spanning all client files. The 9 blocks are:
 
 1. *Next 7 days* — scheduled items and deadlines.
 2. *Delegated — awaiting response* — everything in the =WAITING= state, sorted
@@ -215,12 +231,15 @@ Blocks 6–9 are the engagement's *watch list*: liabilities that carry no =TODO=
 keyword and would otherwise never surface in an action view. Reorder or extend
 the blocks with =org-fractional-cto-dashboard-blocks=.
 
-=M-x org-fractional-cto-switch-client= sets a different client active and opens
-their board in one step — the fast path for context switching.
+When an active client is set, the dashboard opens pre-focused on that client via
+the native tag filter; the =CATEGORY= column shows which client each entry belongs to.
+Use the agenda's native =/= key to widen, refocus on a different client, or clear the
+filter entirely. =M-x org-fractional-cto-switch-client= sets a different client active
+and opens the board in one step — the fast path for context switching.
 
 For the cross-client view, ~C-c a P~ (=M-x org-fractional-cto-pipeline=) lists
 every =LEAD= / =QUALIFIED= engagement across all clients, one line per prospect —
-your funnel board, complementing the per-client dashboard.
+your funnel board, complementing the global =C-c a E= dashboard.
 
 * Key bindings & legend
 
@@ -228,26 +247,38 @@ your funnel board, complementing the per-client dashboard.
 
 Under the agenda dispatcher (=C-c a=):
 
-| Key           | Action                                 |
-|---------------+----------------------------------------|
-| ~C-c a E~     | Active-client dashboard                |
-| ~C-c a P~     | Prospect pipeline (LEAD / QUALIFIED)   |
-| ~C-c a t~     | All TODOs across clients               |
-| ~C-c a m TAG~ | Match a tag across clients (see below) |
+| Key           | Action                                          |
+|---------------+-------------------------------------------------|
+| ~C-c a E~     | Global dashboard (pre-filtered to active client) |
+| ~C-c a P~     | Prospect pipeline (LEAD / QUALIFIED)            |
+| ~C-c a t~     | All TODOs across clients                        |
+| ~C-c a m TAG~ | Match a tag across clients (see below)          |
+
+*** At-point actions (from the agenda or a hub file)
+
+=M-x org-fractional-cto-delegate-at-point= and
+=M-x org-fractional-cto-block-at-point= can be called directly on any
+Org agenda line (or from a hub heading):
+
+- *Evil users* — the comma localleader binds them in any Org agenda
+  buffer: =, g= (delegate) and =, b= (block) in motion state.
+- *Non-Evil users* — set =org-fractional-cto-agenda-keymap-prefix= to a
+  key prefix (e.g. ="C-c C-'"=) to access them via a prefix key;
+  otherwise use =M-x=.
 
 Management commands (run via =M-x=, or bind the map yourself — see below):
 
-| Command                                   | Action                           |
-|-------------------------------------------+----------------------------------|
-| =org-fractional-cto-new-client=           | New client (onboard, ACTIVE)     |
-| =org-fractional-cto-new-prospect=         | New prospect (LEAD stage)        |
-| =org-fractional-cto-set-active-client=    | Set active client                |
-| =org-fractional-cto-clear-active-client=  | Clear active client              |
-| =org-fractional-cto-set-stage=            | Set the engagement stage         |
-| =org-fractional-cto-dashboard=            | Dashboard for active client      |
-| =org-fractional-cto-switch-client=        | Switch client + open dashboard   |
-| =org-fractional-cto-delegate-at-point=    | Delegate the heading at point    |
-| =org-fractional-cto-block-at-point=       | Blocker against heading at point |
+| Command                                   | Action                                           |
+|-------------------------------------------+--------------------------------------------------|
+| =org-fractional-cto-new-client=           | New client (onboard, ACTIVE)                     |
+| =org-fractional-cto-new-prospect=         | New prospect (LEAD stage)                        |
+| =org-fractional-cto-set-active-client=    | Set active client                                |
+| =org-fractional-cto-clear-active-client=  | Clear active client                              |
+| =org-fractional-cto-set-stage=            | Set the engagement stage                         |
+| =org-fractional-cto-dashboard=            | Global dashboard (pre-filtered to active client) |
+| =org-fractional-cto-switch-client=        | Switch client + open dashboard                   |
+| =org-fractional-cto-delegate-at-point=    | Delegate the heading at point                    |
+| =org-fractional-cto-block-at-point=       | Blocker against heading at point                 |
 | =org-fractional-cto-upgrade-hub=          | Upgrade an old hub in place      |
 | =org-fractional-cto-docs=                 | Open the bundled manuals         |
 
@@ -313,7 +344,9 @@ Distinct from the TODO keywords above, a single *stage* tag sits on the top
 
 ** Tags
 
-Every capture is tagged with the client tag (e.g. =:ACME:=) plus a *type tag*.
+Every capture carries a *type tag*. The client identity is inherited from the
+hub's =#+filetags= line (e.g. =#+filetags: :ACME:=), so the client tag is never
+repeated on individual headings or captured items.
 The type tags are what the dashboard and =C-c a m= search on:
 
 | Tag             | Section / capture                   |
@@ -362,7 +395,7 @@ Standard Org priorities apply to actionable items:
 =M-x org-fractional-cto-new-client= asks for a display name and a slug, then
 creates:
 
-- =<slug>/<slug>.org= — the hub, with every section pre-created and tagged.
+- =<slug>/<slug>.org= — the hub, with the client identity in =#+filetags= and every section pre-created with its type subtag.
 - =<slug>/standup.org= — a standup template you can tailor (rename the streams
   to your actual team; the standup capture reads this file).
 - =<slug>/CONTEXT.md= — fill this with domain vocabulary, key people, and the
@@ -374,9 +407,10 @@ The new client is added to =org-agenda-files= immediately — no restart.
 workspace but stamps the engagement at the =LEAD= stage, sets it active, and
 opens the pre-sales call capture. As a lead progresses, advance it with =M-x
 org-fractional-cto-set-stage= (=LEAD= → =QUALIFIED= → =ACTIVE= on a win, or
-=LOST= / =DORMANT=). Hubs created before stages existed can be brought current
-with =M-x org-fractional-cto-upgrade-hub= — it adds any missing sections and an
-=ACTIVE= stage tag, and is idempotent.
+=LOST= / =DORMANT=). Hubs created before filetags / stages were introduced can be migrated with
+=M-x org-fractional-cto-upgrade-hub= — it adds =#+filetags= for the client tag,
+strips per-heading client tags, adds any missing sections, and ensures an =ACTIVE=
+stage tag. The command is idempotent.
 
 * Customisation
 
@@ -388,8 +422,12 @@ with =M-x org-fractional-cto-upgrade-hub= — it adds any missing sections and a
 | =org-fractional-cto-agenda-key=         | ="E"                      | Dispatcher key for the dashboard (=C-c a E=)   |
 | =org-fractional-cto-pipeline-key=       | ="P"                      | Dispatcher key for the pipeline (=C-c a P=)    |
 | =org-fractional-cto-keymap-prefix=      | =nil=                     | Optional command-map prefix (unset by default) |
-| =org-fractional-cto-dashboard-blocks=   | (6 blocks)                | The dashboard's agenda blocks                  |
-| =org-fractional-cto-stages=             | (5 stages)                | Engagement stage tags (=LEAD=…=DORMANT=)       |
+| =org-fractional-cto-dashboard-blocks=          | (9 blocks)                  | The dashboard's agenda blocks                                          |
+| =org-fractional-cto-stages=                    | (5 stages)                  | Engagement stage tags (=LEAD=…=DORMANT=)                              |
+| =org-fractional-cto-todo-keywords=             | (1 sequence)                | TODO keyword sequences registered globally (set nil to self-manage)   |
+| =org-fractional-cto-todo-keyword-faces=        | (INPROGRESS face)           | Keyword faces registered globally                                      |
+| =org-fractional-cto-set-tag-inheritance=       | =t=                         | Enable =org-agenda-use-tag-inheritance= for filetag focus             |
+| =org-fractional-cto-agenda-keymap-prefix=      | =nil=                       | Optional prefix key for at-point actions in agendas                   |
 
 To customise a single template, copy the bundled =templates/= folder somewhere,
 edit the file you care about, and point =org-fractional-cto-template-directory=
