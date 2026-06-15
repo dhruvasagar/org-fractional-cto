@@ -47,6 +47,22 @@
     (should (re-search-forward "^\\*\\* Research .*:RESEARCH:" nil t))
     (should (re-search-forward "^\\*\\* Qualification .*:QUALIFICATION:" nil t))))
 
+(ert-deftest ofc-new-client-engagement-is-active ()
+  (ofc-prospect-test-with-clients-dir
+    (org-fractional-cto-new-client "Acme Corp" "acme")
+    (find-file (org-fractional-cto-client-org-file "acme"))
+    (goto-char (point-min))
+    (org-mode)
+    (should (re-search-forward "^\\* Acme Corp Engagement" nil t))
+    (org-back-to-heading t)
+    (should (member "ACTIVE" (org-get-tags nil t)))
+    (should (member "ACME" (org-get-tags nil t)))))
+
+(ert-deftest ofc-scaffold-rejects-unknown-stage ()
+  (ofc-prospect-test-with-clients-dir
+    (should-error (org-fractional-cto--scaffold "Acme Corp" "acme" "BOGUS")
+                  :type 'user-error)))
+
 (provide 'org-fractional-cto-prospect-test)
 
 ;;; org-fractional-cto-prospect-test.el ends here

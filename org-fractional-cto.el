@@ -100,6 +100,33 @@ yourself."
   :type '(choice (key-sequence :tag "Prefix") (const :tag "None" nil))
   :group 'org-fractional-cto)
 
+(defcustom org-fractional-cto-stages
+  '("LEAD" "QUALIFIED" "ACTIVE" "LOST" "DORMANT")
+  "Ordered engagement stages, carried as a tag on the engagement heading.
+Exactly one is present at a time; `org-fractional-cto-set-stage' switches it."
+  :type '(repeat string)
+  :group 'org-fractional-cto)
+
+(defcustom org-fractional-cto-default-stage "ACTIVE"
+  "Stage tag applied to engagements created by `org-fractional-cto-new-client'."
+  :type 'string
+  :group 'org-fractional-cto)
+
+(defcustom org-fractional-cto-lead-stage "LEAD"
+  "Stage tag applied to prospects created by `org-fractional-cto-new-prospect'."
+  :type 'string
+  :group 'org-fractional-cto)
+
+(defcustom org-fractional-cto-pipeline-stages "LEAD|QUALIFIED"
+  "Org tag-match expression selecting prospects for the pipeline view."
+  :type 'string
+  :group 'org-fractional-cto)
+
+(defcustom org-fractional-cto-pipeline-key "P"
+  "Dispatcher key, under `C-c a', for the cross-client pipeline view."
+  :type 'string
+  :group 'org-fractional-cto)
+
 ;;;; Core state and path helpers
 
 (defvar org-fractional-cto-active-client nil
