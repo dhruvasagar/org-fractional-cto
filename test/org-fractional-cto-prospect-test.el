@@ -146,6 +146,25 @@
   (should (file-exists-p (org-fractional-cto--template "presales_call.org")))
   (should (file-exists-p (org-fractional-cto--template "qualification.org"))))
 
+(ert-deftest ofc-pipeline-skip-keeps-level-1 ()
+  (with-temp-buffer
+    (org-mode)
+    (insert "* Acme Engagement  :ACME:LEAD:\n** Actions  :ACME:\n*** TODO x  :ACME:\n")
+    (goto-char (point-min))
+    (org-back-to-heading t)
+    (should-not (org-fractional-cto--pipeline-skip))
+    (goto-char (point-min))
+    (re-search-forward "^\\*\\* Actions")
+    (org-back-to-heading t)
+    (should (org-fractional-cto--pipeline-skip))))
+
+(ert-deftest ofc-pipeline-install-registers-command ()
+  (let ((org-agenda-custom-commands nil)
+        (org-fractional-cto-pipeline-key "P")
+        (org-fractional-cto-pipeline-stages "LEAD|QUALIFIED"))
+    (org-fractional-cto-pipeline-install)
+    (should (assoc "P" org-agenda-custom-commands))))
+
 (provide 'org-fractional-cto-prospect-test)
 
 ;;; org-fractional-cto-prospect-test.el ends here

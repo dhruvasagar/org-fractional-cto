@@ -25,7 +25,10 @@
 
 (declare-function org-fractional-cto--select-client "org-fractional-cto")
 (declare-function org-fractional-cto-client-org-file "org-fractional-cto")
+(declare-function org-fractional-cto-agenda-files "org-fractional-cto")
 (defvar org-fractional-cto-agenda-key)
+(defvar org-fractional-cto-pipeline-key)
+(defvar org-fractional-cto-pipeline-stages)
 
 (defcustom org-fractional-cto-dashboard-blocks
   '((agenda ""
@@ -78,6 +81,36 @@ leaving a stale command behind."
      "Fractional CTO — client dashboard"
      ,org-fractional-cto-dashboard-blocks
      ((org-agenda-files (org-fractional-cto--dashboard-files))))))
+
+(defun org-fractional-cto--pipeline-skip ()
+  "Agenda skip function keeping only level-1 engagement headings.
+Returns nil for a top-level heading (keep) or the position of the next heading
+\(skip) for anything deeper, so inherited child entries do not clutter the view."
+  (when (> (or (org-current-level) 1) 1)
+    (or (outline-next-heading) (point-max))))
+
+;;;###autoload
+(defun org-fractional-cto-pipeline-install ()
+  "Register (or refresh) the cross-client prospect pipeline custom command.
+Bound to `org-fractional-cto-pipeline-key'.  Idempotent."
+  (setq org-agenda-custom-commands
+        (seq-remove (lambda (cmd)
+                      (equal (car-safe cmd) org-fractional-cto-pipeline-key))
+                    org-agenda-custom-commands))
+  (add-to-list
+   'org-agenda-custom-commands
+   `(,org-fractional-cto-pipeline-key
+     "Fractional CTO — prospect pipeline"
+     ((tags ,org-fractional-cto-pipeline-stages
+            ((org-agenda-overriding-header "Prospect pipeline (LEAD / QUALIFIED)")
+             (org-agenda-skip-function 'org-fractional-cto--pipeline-skip))))
+     ((org-agenda-files (org-fractional-cto-agenda-files))))))
+
+;;;###autoload
+(defun org-fractional-cto-pipeline ()
+  "Open the cross-client prospect pipeline view."
+  (interactive)
+  (org-agenda nil org-fractional-cto-pipeline-key))
 
 (provide 'org-fractional-cto-agenda)
 
