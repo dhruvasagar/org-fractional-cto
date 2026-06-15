@@ -127,6 +127,30 @@ Exactly one is present at a time; `org-fractional-cto-set-stage' switches it."
   :type 'string
   :group 'org-fractional-cto)
 
+(defcustom org-fractional-cto-todo-keywords
+  '((sequence "TODO" "NEXT" "INPROGRESS" "WAITING" "|" "DONE" "CANCELLED"))
+  "TODO keyword sequences the workflow relies on.
+Merged into the global `org-todo-keywords' by `org-fractional-cto-setup' so
+that keywords such as INPROGRESS are recognised everywhere -- in agenda matches,
+the dashboard's \"Open actions\" block, and any Org buffer -- not only inside
+client hubs whose \"#+TODO:\" line happens to declare them.  This keeps the
+workflow self-contained: it does not depend on your personal Org configuration.
+
+A sequence is added only when it introduces a keyword Org does not already know,
+so re-running setup is idempotent and your own keyword definitions win.  Set to
+nil to manage TODO keywords entirely yourself."
+  :type 'sexp
+  :group 'org-fractional-cto)
+
+(defcustom org-fractional-cto-todo-keyword-faces
+  '(("INPROGRESS" . (:foreground "deep sky blue" :weight bold)))
+  "Faces for workflow-specific TODO keywords.
+Merged into `org-todo-keyword-faces' by `org-fractional-cto-setup'.  Only
+keywords without an existing face are added, so any face you have already
+defined is left untouched.  Set to nil to skip face installation."
+  :type 'sexp
+  :group 'org-fractional-cto)
+
 ;;;; Core state and path helpers
 
 (defvar org-fractional-cto-active-client nil
@@ -250,11 +274,43 @@ picked up automatically."
   "Keymap for `org-fractional-cto' commands.
 Bound under `org-fractional-cto-keymap-prefix' by `org-fractional-cto-setup'.")
 
+(defun org-fractional-cto--keyword-names (sequence)
+  "Return the bare keyword names in a `org-todo-keywords' SEQUENCE.
+Strips the type symbol (`sequence'/`type'), the \"|\" separator, and any
+fast-access or logging cookie -- so \"WAITING(w@/!)\" yields \"WAITING\"."
+  (seq-remove
+   (lambda (kw) (equal kw "|"))
+   (mapcar (lambda (kw) (car (split-string kw "(")))
+           (cdr sequence))))
+
+(defun org-fractional-cto--known-todo-keywords ()
+  "Return every TODO keyword currently known to `org-todo-keywords'."
+  (apply #'append
+         (mapcar #'org-fractional-cto--keyword-names org-todo-keywords)))
+
+(defun org-fractional-cto--install-todo-keywords ()
+  "Register the workflow's TODO keywords and faces globally, non-destructively.
+Each sequence in `org-fractional-cto-todo-keywords' is appended to
+`org-todo-keywords' only when it introduces a keyword Org does not already
+recognise, so existing definitions are never duplicated or overridden.  Missing
+keyword faces from `org-fractional-cto-todo-keyword-faces' are likewise merged
+into `org-todo-keyword-faces'.  Idempotent."
+  (let ((known (org-fractional-cto--known-todo-keywords)))
+    (dolist (sequence org-fractional-cto-todo-keywords)
+      (unless (seq-every-p (lambda (kw) (member kw known))
+                           (org-fractional-cto--keyword-names sequence))
+        (add-to-list 'org-todo-keywords sequence t)
+        (setq known (append known (org-fractional-cto--keyword-names sequence))))))
+  (dolist (face org-fractional-cto-todo-keyword-faces)
+    (unless (assoc (car face) org-todo-keyword-faces)
+      (add-to-list 'org-todo-keyword-faces face))))
+
 ;;;###autoload
 (defun org-fractional-cto-setup ()
   "Install captures, the dashboard agenda command, and key bindings.
 Call once from your init file, after Org is available."
   (interactive)
+  (org-fractional-cto--install-todo-keywords)
   (org-fractional-cto-capture-install)
   (org-fractional-cto-agenda-install)
   (org-fractional-cto-pipeline-install)
