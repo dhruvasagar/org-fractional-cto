@@ -1,0 +1,150 @@
+;;; org-fractional-cto-actions-test.el --- Tests for at-point commands -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2026 Dhruva Sagar
+;; SPDX-License-Identifier: GPL-3.0-or-later
+
+;;; Commentary:
+
+;; ERT tests for `org-fractional-cto-delegate-at-point' and
+;; `org-fractional-cto-block-at-point'.  Run with: make test
+;;
+;; Each test runs inside a throwaway client hub on disk (named acme.org so the
+;; commands can derive the ACME client tag from the filename) and drives the
+;; commands non-interactively by passing their arguments directly.
+
+;;; Code:
+
+(require 'ert)
+(require 'org-fractional-cto)
+
+(defconst ofc-test-hub "\
+#+TITLE: Acme Corp
+#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED
+
+* Acme Corp Engagement :ACME:
+** Actions :ACME:
+*** TODO Ship the thing :ACME:
+** Blockers :ACME:BLOCKER:
+"
+  "Minimal client hub used as the fixture for every test.")
+
+(defmacro ofc-test-with-hub (&rest body)
+  "Visit a fresh acme.org hub in a temp dir and run BODY at its start."
+  (declare (indent 0) (debug t))
+  `(let* ((dir (make-temp-file "ofc-test" t))
+          (file (expand-file-name "acme.org" dir)))
+     (unwind-protect
+         (progn
+           (with-temp-file file (insert ofc-test-hub))
+           (find-file file)
+           (org-mode)
+           (goto-char (point-min))
+           ,@body)
+       (when (get-file-buffer file) (kill-buffer (get-file-buffer file)))
+       (delete-directory dir t))))
+
+(defun ofc-test-goto (substring)
+  "Move to the heading containing SUBSTRING, point at its bol."
+  (goto-char (point-min))
+  (search-forward substring)
+  (org-back-to-heading t))
+
+(defun ofc-test-goto-blocker (what)
+  "Move to the BLOCKER heading for WHAT (the headline, not the back-reference)."
+  (goto-char (point-min))
+  (re-search-forward (concat "^\\*+ .*BLOCKER: " (regexp-quote what)))
+  (org-back-to-heading t))
+
+;;;; Delegate
+
+(ert-deftest ofc-delegate-sets-waiting-state ()
+  (ofc-test-with-hub
+    (ofc-test-goto "Ship the thing")
+    (org-fractional-cto-delegate-at-point "Alice" nil nil)
+    (ofc-test-goto "Ship the thing")
+    (should (equal (org-get-todo-state) "WAITING"))))
+
+(ert-deftest ofc-delegate-records-tag-and-properties ()
+  (ofc-test-with-hub
+    (ofc-test-goto "Ship the thing")
+    (org-fractional-cto-delegate-at-point "Alice" "2026-07-01" "2026-07-15")
+    (ofc-test-goto "Ship the thing")
+    (should (member "DELEGATED" (org-get-tags nil t)))
+    (should (member "ACME" (org-get-tags nil t)))
+    (should (equal (org-entry-get nil "ASSIGNED_TO") "Alice"))
+    (should (string-match-p "\\`\\[[0-9]\\{4\\}-" (org-entry-get nil "DELEGATED_ON")))
+    (should (string-match-p "2026-07-01" (org-entry-get nil "SCHEDULED")))
+    (should (string-match-p "2026-07-15" (org-entry-get nil "DEADLINE")))))
+
+(ert-deftest ofc-delegate-without-dates-sets-no-planning ()
+  (ofc-test-with-hub
+    (ofc-test-goto "Ship the thing")
+    (org-fractional-cto-delegate-at-point "Alice" nil nil)
+    (ofc-test-goto "Ship the thing")
+    (should-not (org-entry-get nil "SCHEDULED"))
+    (should-not (org-entry-get nil "DEADLINE"))))
+
+(ert-deftest ofc-delegate-requires-assignee ()
+  (ofc-test-with-hub
+    (ofc-test-goto "Ship the thing")
+    (should-error (org-fractional-cto-delegate-at-point "   " nil nil)
+                  :type 'user-error)))
+
+(ert-deftest ofc-delegate-errors-before-first-heading ()
+  (ofc-test-with-hub
+    (goto-char (point-min))
+    (should-error (org-fractional-cto-delegate-at-point "Alice" nil nil)
+                  :type 'user-error)))
+
+;;;; Block
+
+(ert-deftest ofc-block-creates-blocker-under-blockers-section ()
+  (ofc-test-with-hub
+    (ofc-test-goto "Ship the thing")
+    (org-fractional-cto-block-at-point "Payments API down" "Dave" "2026-07-20")
+    (ofc-test-goto-blocker "Payments API down")
+    (should (= (org-current-level) 3))
+    (should (member "BLOCKER" (org-get-tags nil t)))
+    (should (member "ACME" (org-get-tags nil t)))
+    (should (string-match-p "\\[#A\\]" (org-get-heading)))))
+
+(ert-deftest ofc-block-links-back-to-action ()
+  (ofc-test-with-hub
+    (ofc-test-goto "Ship the thing")
+    (org-fractional-cto-block-at-point "Payments API down" "Dave" "2026-07-20")
+    (ofc-test-goto-blocker "Payments API down")
+    (should (string-match-p "Ship the thing" (org-entry-get nil "BLOCKING")))
+    (should (equal (org-entry-get nil "UNBLOCK_OWNER") "Dave"))
+    (should (string-match-p "2026-07-20" (org-entry-get nil "DEADLINE")))))
+
+(ert-deftest ofc-block-adds-backreference-to-action ()
+  (ofc-test-with-hub
+    (ofc-test-goto "Ship the thing")
+    (org-fractional-cto-block-at-point "Payments API down" "Dave" nil)
+    (ofc-test-goto "Ship the thing")
+    (let ((end (save-excursion (org-end-of-subtree t t) (point))))
+      (should (re-search-forward "Blocked by \\[\\[\\*BLOCKER: Payments API down"
+                                 end t)))))
+
+(ert-deftest ofc-block-deadline-is-optional ()
+  (ofc-test-with-hub
+    (ofc-test-goto "Ship the thing")
+    (org-fractional-cto-block-at-point "Payments API down" "Dave" nil)
+    (ofc-test-goto-blocker "Payments API down")
+    (should-not (org-entry-get nil "DEADLINE"))))
+
+(ert-deftest ofc-block-requires-description ()
+  (ofc-test-with-hub
+    (ofc-test-goto "Ship the thing")
+    (should-error (org-fractional-cto-block-at-point "  " "Dave" nil)
+                  :type 'user-error)))
+
+(ert-deftest ofc-block-errors-before-first-heading ()
+  (ofc-test-with-hub
+    (goto-char (point-min))
+    (should-error (org-fractional-cto-block-at-point "X" "Dave" nil)
+                  :type 'user-error)))
+
+(provide 'org-fractional-cto-actions-test)
+
+;;; org-fractional-cto-actions-test.el ends here

@@ -224,6 +224,27 @@ into, and when to reach for it. (Field-by-field detail is in [[file:reference.or
 =eg= is the engine of the *Delegated* dashboard block: it files in the =WAITING=
 state, which is how the system separates "things I owe" from "things I am owed."
 
+*** Acting on an action that already exists
+
+=ew=, =eg= and =eb= all *create* an item. Two commands instead act on the Org
+heading already under your cursor, so you never retype work that is already
+captured:
+
+- =M-x org-fractional-cto-delegate-at-point= — hand off the action at point. It
+  flips the heading to =WAITING=, adds the =DELEGATED= tag, records who now owns
+  it (=ASSIGNED_TO=) and when (=DELEGATED_ON=), and schedules your follow-up
+  check-in (=SCHEDULED=), optionally with a delivery =DEADLINE=. It is =eg=
+  applied in place — the action moves from *Open actions* to *Delegated —
+  awaiting response* on the next dashboard refresh.
+- =M-x org-fractional-cto-block-at-point= — raise a blocker against the action
+  at point. It files a =[#A]= blocker into the client's *Blockers* section with
+  its =BLOCKING= property linked back to the action, and drops a back-reference
+  under the action itself, so the two sides point at each other.
+
+Both are bound to =g= and =b= in =org-fractional-cto-command-map= (see
+[[*Step 10 — The management commands][Step 10]]). Reach for them when the work is
+already on a heading; reach for =eg= / =eb= when you are capturing something new.
+
 ** Relationship & communication
 
 | Key  | Captures            | Files to             | Reach for it when…                  |
@@ -324,6 +345,12 @@ Five commands run the lifecycle. They are available via =M-x= and also live in
 | =k=     | =org-fractional-cto-clear-active-client= | Clear active client            |
 | =d=     | =org-fractional-cto-dashboard=           | Dashboard for active client    |
 | =w=     | =org-fractional-cto-switch-client=       | Switch client + open dashboard |
+| =g=     | =org-fractional-cto-delegate-at-point=   | Delegate the action at point   |
+| =b=     | =org-fractional-cto-block-at-point=      | Blocker against action at point|
+| =h=     | =org-fractional-cto-docs=                | Open the manuals               |
+
+=g= and =b= act on the Org heading at point (see [[*Acting on an action that already exists][Step 7]]); the rest are
+session-level management commands.
 
 The map is *not* bound to any prefix by default (=org-fractional-cto-keymap-prefix=
 is =nil=), because common prefixes like =C-c f= are already taken (Magit). Opt

@@ -80,6 +80,10 @@ Step 7 — A tour of every capture, in working order
 * Technical::
 * Innovation::
 
+Action tracking & delegation
+
+* Acting on an action that already exists::
+
 Step 11 — Make it yours
 
 * Override a single template::
@@ -171,6 +175,7 @@ Reference
 Quick Lookup — "I need to@dots{}"
 
 * Capture something::
+* Act on an existing item::
 * Look up / analyse::
 
 Legend
@@ -207,6 +212,7 @@ Action Tracking & Delegation Templates
 * @samp{ew} — Action Item (quick TODO)::
 * @samp{eg} — Delegate Action (WAITING)::
 * @samp{eb} — Blocker / Escalation::
+* Acting on an item that already exists (@samp{delegate-at-point}, @samp{block-at-point}): Acting on an item that already exists (@samp{delegate-at-point} @samp{block-at-point}). 
 * @samp{eW} — Weekly Review::
 * @samp{eP} — Person / Team Member Note::
 
@@ -622,6 +628,36 @@ into, and when to reach for it. (Field-by-field detail is in @uref{reference.org
 @samp{eg} is the engine of the @strong{Delegated} dashboard block: it files in the @samp{WAITING}
 state, which is how the system separates "things I owe" from "things I am owed."
 
+@menu
+* Acting on an action that already exists::
+@end menu
+
+@node Acting on an action that already exists
+@subsubsection Acting on an action that already exists
+
+@samp{ew}, @samp{eg} and @samp{eb} all @strong{create} an item. Two commands instead act on the Org
+heading already under your cursor, so you never retype work that is already
+captured:
+
+@itemize
+@item
+@samp{M-x org-fractional-cto-delegate-at-point} — hand off the action at point. It
+flips the heading to @samp{WAITING}, adds the @samp{DELEGATED} tag, records who now owns
+it (@samp{ASSIGNED_TO}) and when (@samp{DELEGATED_ON}), and schedules your follow-up
+check-in (@samp{SCHEDULED}), optionally with a delivery @samp{DEADLINE}. It is @samp{eg}
+applied in place — the action moves from @strong{Open actions} to @strong{Delegated —
+awaiting response} on the next dashboard refresh.
+@item
+@samp{M-x org-fractional-cto-block-at-point} — raise a blocker against the action
+at point. It files a @samp{[#A]} blocker into the client's @strong{Blockers} section with
+its @samp{BLOCKING} property linked back to the action, and drops a back-reference
+under the action itself, so the two sides point at each other.
+@end itemize
+
+Both are bound to @samp{g} and @samp{b} in @samp{org-fractional-cto-command-map} (see
+@ref{Step 10 — The management commands, , Step 10}). Reach for them when the work is
+already on a heading; reach for @samp{eg} / @samp{eb} when you are capturing something new.
+
 @node Relationship & communication
 @subsection Relationship & communication
 
@@ -818,7 +854,7 @@ cross-client list.
 Five commands run the lifecycle. They are available via @samp{M-x} and also live in
 @samp{org-fractional-cto-command-map} under the keys shown:
 
-@multitable {aaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@multitable {aaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
 @headitem Map key
 @tab Command
 @tab Action
@@ -837,7 +873,19 @@ Five commands run the lifecycle. They are available via @samp{M-x} and also live
 @item @samp{w}
 @tab @samp{org-fractional-cto-switch-client}
 @tab Switch client + open dashboard
+@item @samp{g}
+@tab @samp{org-fractional-cto-delegate-at-point}
+@tab Delegate the action at point
+@item @samp{b}
+@tab @samp{org-fractional-cto-block-at-point}
+@tab Blocker against action at point
+@item @samp{h}
+@tab @samp{org-fractional-cto-docs}
+@tab Open the manuals
 @end multitable
+
+@samp{g} and @samp{b} act on the Org heading at point (see @ref{Acting on an action that already exists, , Step 7}); the rest are
+session-level management commands.
 
 The map is @strong{not} bound to any prefix by default (@samp{org-fractional-cto-keymap-prefix}
 is @samp{nil}), because common prefixes like @samp{C-c f} are already taken (Magit). Opt
@@ -1887,6 +1935,7 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 
 @menu
 * Capture something::
+* Act on an existing item::
 * Look up / analyse::
 @end menu
 
@@ -1981,6 +2030,18 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 @item Scope change / SOW flag
 @tab @samp{C-c c ee}
 @tab <client>.org → Scope Changes
+@end multitable
+
+@node Act on an existing item
+@subsection Act on an existing item
+
+@multitable {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem I need to@dots{}
+@tab Command
+@item Delegate the action under my cursor
+@tab @samp{M-x org-fractional-cto-delegate-at-point}
+@item Raise a blocker against it
+@tab @samp{M-x org-fractional-cto-block-at-point}
 @end multitable
 
 @node Look up / analyse
@@ -2145,11 +2206,16 @@ dashboard and @samp{C-c a m TAG} search on these.
 @tab Dashboard for active client
 @item @samp{M-x org-fractional-cto-switch-client}
 @tab Switch client + open dashboard
+@item @samp{M-x org-fractional-cto-delegate-at-point}
+@tab Delegate the heading at point
+@item @samp{M-x org-fractional-cto-block-at-point}
+@tab Blocker against heading at point
 @end multitable
 
 Management commands run via @samp{M-x} by default (no global prefix is claimed).
-They also live in @samp{org-fractional-cto-command-map} (keys @samp{n s k d w}); set
+They also live in @samp{org-fractional-cto-command-map} (keys @samp{n s k d w g b h}); set
 @samp{org-fractional-cto-keymap-prefix} to bind it under a prefix of your choice.
+@samp{g} and @samp{b} act on the Org heading at point; the rest are session-level.
 
 @node File Organization
 @section File Organization
@@ -2345,6 +2411,7 @@ a vendor from a strategic partner.
 * @samp{ew} — Action Item (quick TODO)::
 * @samp{eg} — Delegate Action (WAITING)::
 * @samp{eb} — Blocker / Escalation::
+* Acting on an item that already exists (@samp{delegate-at-point}, @samp{block-at-point}): Acting on an item that already exists (@samp{delegate-at-point} @samp{block-at-point}). 
 * @samp{eW} — Weekly Review::
 * @samp{eP} — Person / Team Member Note::
 @end menu
@@ -2379,6 +2446,30 @@ it (@samp{UNBLOCK_OWNER}), root cause, options, escalation path, resolve-by dead
 @emph{Priority:} Created as @samp{[#A] TODO}. Blockers are always top priority — they compound.
 @emph{After capturing:} Surfaces in @samp{C-c a E} → "Blockers & Escalations". If unresolved by
 the deadline, escalate via the named path (standup → internal sync → client).
+
+@node Acting on an item that already exists (@samp{delegate-at-point} @samp{block-at-point})
+@subsubsection Acting on an item that already exists (@samp{delegate-at-point}, @samp{block-at-point})
+
+@samp{ew}, @samp{eg} and @samp{eb} @emph{create} entries. Two interactive commands act on the Org
+heading already at point, so you never retype work that is already captured.
+
+@itemize
+@item
+@samp{M-x org-fractional-cto-delegate-at-point} (@samp{g} in the command map) — the @samp{eg}
+gesture applied in place. Sets the heading to @samp{WAITING}, adds the @samp{DELEGATED}
+tag, records @samp{ASSIGNED_TO} and @samp{DELEGATED_ON}, and @samp{SCHEDULED=s your check-in;
+  optionally sets a delivery =DEADLINE}. The item moves to the dashboard's
+"Delegated — Awaiting Response" block. An assignee is required.
+@item
+@samp{M-x org-fractional-cto-block-at-point} (@samp{b} in the command map) — the @samp{eb}
+gesture applied in place. Files a @samp{[#A]} blocker into the client's Blockers
+section with @samp{BLOCKING} linked back to the action, and inserts a
+back-reference under the action. Optional resolve-by @samp{DEADLINE}.
+@end itemize
+
+@emph{Discipline:} reach for these when the work is already on a heading; reach for
+@samp{eg} / @samp{eb} when you are capturing something new. The back-link is an internal
+@samp{[[*heading]]} link, so keep action headings distinctly named.
 
 @node @samp{eW} — Weekly Review
 @subsubsection @samp{eW} — Weekly Review

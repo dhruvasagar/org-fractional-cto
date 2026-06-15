@@ -1,5 +1,12 @@
 EMACS ?= emacs
 
+# Run the ERT test suite in batch.
+.PHONY: test
+test:
+	$(EMACS) -Q --batch -L . \
+	  -l test/org-fractional-cto-actions-test.el \
+	  -f ert-run-tests-batch-and-exit
+
 # Regenerate the Texinfo manual from the Org sources under doc/.  straight.el
 # (and MELPA) compile org-fractional-cto.texi -> .info at build time, so only
 # the committed .texi needs to be up to date; run "make info" after editing any

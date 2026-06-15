@@ -1,0 +1,177 @@
+;;; org-fractional-cto-actions.el --- At-point action lifecycle commands -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2026 Dhruva Sagar
+;; SPDX-License-Identifier: GPL-3.0-or-later
+
+;;; Commentary:
+
+;; The capture group (`org-fractional-cto-capture') creates new items; the
+;; dashboard (`org-fractional-cto-agenda') reads them.  This module covers the
+;; step in between: acting on an item that already exists, in place.
+;;
+;; Two commands, mirroring the `eg' and `eb' captures but applied to the Org
+;; heading at point:
+;;
+;;   `org-fractional-cto-delegate-at-point' -- flip the heading to WAITING, tag
+;;       it DELEGATED, record who owns it and when, and schedule a follow-up.
+;;       This is "delegate this existing action" without re-typing it.
+;;
+;;   `org-fractional-cto-block-at-point' -- file a [#A] BLOCKER into the same
+;;       client's Blockers section, its BLOCKING property linking back to the
+;;       action, plus a back-reference under the action itself.
+;;
+;; Both are pure Org-mode underneath: TODO state, tags, properties, planning
+;; lines, and internal `[[*heading]]' links.  Each public command takes its
+;; inputs as arguments (gathered interactively via the `interactive' form) so
+;; it can be driven non-interactively from tests.
+
+;;; Code:
+
+(require 'org)
+(require 'seq)
+(require 'subr-x)
+
+(declare-function org-fractional-cto-client-tag "org-fractional-cto")
+
+;;;; Small helpers
+
+(defun org-fractional-cto--require-heading ()
+  "Signal a `user-error' unless point is on (or within) an Org heading."
+  (unless (derived-mode-p 'org-mode)
+    (user-error "Not in an Org buffer"))
+  (when (org-before-first-heading-p)
+    (user-error "Point is not on an Org heading")))
+
+(defun org-fractional-cto--heading-title ()
+  "Return the heading at point with TODO, priority, tags and comment stripped."
+  (save-excursion
+    (org-back-to-heading t)
+    (org-get-heading t t t t)))
+
+(defun org-fractional-cto--buffer-client-tag ()
+  "Return the client tag derived from the current hub file, or nil.
+A client hub is DIRECTORY/<slug>/<slug>.org, so the file's base name is the
+slug; e.g. visiting acme.org yields \"ACME\"."
+  (when-let* ((file (buffer-file-name)))
+    (org-fractional-cto-client-tag (file-name-base file))))
+
+(defun org-fractional-cto--inactive-timestamp ()
+  "Return the current time as an inactive Org timestamp string."
+  (format-time-string "[%Y-%m-%d %a %H:%M]"))
+
+(defun org-fractional-cto--active-timestamp (date)
+  "Return DATE (a string Org can parse) as an active timestamp string."
+  (format-time-string "<%Y-%m-%d %a>" (org-time-string-to-time date)))
+
+(defun org-fractional-cto--goto-section (heading)
+  "Move point to the headline named HEADING, creating it if absent.
+Search is from the top of the (widened) buffer.  When the section is missing it
+is appended at end of buffer as a level-2 heading.  Returns the heading's level
+\(number of leading stars)."
+  (widen)
+  (goto-char (point-min))
+  (if (re-search-forward
+       (concat "^\\(\\*+\\) " (regexp-quote heading) "\\(?:[ \t]\\|$\\)") nil t)
+      (let ((level (length (match-string 1))))
+        (beginning-of-line)
+        level)
+    (goto-char (point-max))
+    (unless (bolp) (insert "\n"))
+    (insert (format "** %s\n" heading))
+    (forward-line -1)
+    2))
+
+;;;; Delegate an existing action
+
+;;;###autoload
+(defun org-fractional-cto-delegate-at-point (assignee &optional check-in delivery)
+  "Turn the Org heading at point into a WAITING delegation.
+This is the `eg' capture applied to a heading that already exists: it sets the
+TODO state to WAITING, adds the DELEGATED tag, records the ASSIGNED_TO and
+DELEGATED_ON properties, and SCHEDULEs a follow-up.
+
+ASSIGNEE is who now owns the work (required).  CHECK-IN, when given, is the
+follow-up date set as SCHEDULED -- your escalate-if trigger.  DELIVERY, when
+given, is the expected-delivery date set as DEADLINE.  Both date arguments are
+strings any Org date parser accepts (e.g. \"2026-07-01\")."
+  (interactive
+   (list (read-string "Assigned to: ")
+         (org-read-date nil nil nil "Check-in / follow-up")
+         (when (y-or-n-p "Set an expected-delivery deadline? ")
+           (org-read-date nil nil nil "Expected delivery"))))
+  (org-fractional-cto--require-heading)
+  (when (string-empty-p (string-trim assignee))
+    (user-error "An assignee is required to delegate"))
+  (save-excursion
+    (org-back-to-heading t)
+    (org-todo "WAITING")
+    (org-toggle-tag "DELEGATED" 'on)
+    (org-set-property "ASSIGNED_TO" assignee)
+    (org-set-property "DELEGATED_ON" (org-fractional-cto--inactive-timestamp))
+    (when (and check-in (not (string-empty-p check-in)))
+      (org-schedule nil check-in))
+    (when (and delivery (not (string-empty-p delivery)))
+      (org-deadline nil delivery)))
+  (message "Delegated to %s%s" assignee
+           (if (and check-in (not (string-empty-p check-in)))
+               (format " — check in %s" check-in) "")))
+
+;;;; Block an existing action
+
+(defun org-fractional-cto--blocker-subtree (level what owner resolve-by link)
+  "Return the text of a BLOCKER subtree at LEVEL stars.
+WHAT is what is blocked; OWNER can clear it; RESOLVE-BY (optional) becomes a
+DEADLINE; LINK is an Org link string stored in the BLOCKING property."
+  (let* ((stars (make-string level ?*))
+         (client-tag (org-fractional-cto--buffer-client-tag))
+         (tags (if client-tag (format ":%s:BLOCKER:" client-tag) ":BLOCKER:")))
+    (concat
+     (format "%s TODO [#A] BLOCKER: %s  %s\n" stars what tags)
+     (when (and resolve-by (not (string-empty-p resolve-by)))
+       (format "DEADLINE: %s\n" (org-fractional-cto--active-timestamp resolve-by)))
+     ":PROPERTIES:\n"
+     (format ":BLOCKING: %s\n" link)
+     (when (and owner (not (string-empty-p owner)))
+       (format ":UNBLOCK_OWNER: %s\n" owner))
+     (format ":CREATED: %s\n" (org-fractional-cto--inactive-timestamp))
+     ":END:\n"
+     "\n*Root cause:* \n\n*Options:*\n- [ ] \n")))
+
+;;;###autoload
+(defun org-fractional-cto-block-at-point (what &optional owner resolve-by)
+  "File a BLOCKER against the action heading at point.
+Mirrors the `eb' capture, but pre-wired to the action under point: a new
+\[#A] BLOCKER entry is filed into this file's Blockers section with its BLOCKING
+property linking back to the action, and a back-reference is inserted under the
+action itself.
+
+WHAT describes what is blocked; OWNER (optional) is who can clear it; RESOLVE-BY
+\(optional) is a date string set as the blocker's DEADLINE."
+  (interactive
+   (list (read-string "What is blocked? " (org-fractional-cto--heading-title))
+         (read-string "Who can remove this blocker? ")
+         (when (y-or-n-p "Set a resolve-by deadline? ")
+           (org-read-date nil nil nil "Resolve by"))))
+  (org-fractional-cto--require-heading)
+  (when (string-empty-p (string-trim what))
+    (user-error "Describe what is blocked"))
+  (let* ((action-title (org-fractional-cto--heading-title))
+         (action-link (format "[[*%s][%s]]" action-title action-title)))
+    ;; File the blocker into the Blockers section.
+    (save-excursion
+      (let ((level (1+ (org-fractional-cto--goto-section "Blockers"))))
+        (org-end-of-subtree t t)
+        (unless (bolp) (insert "\n"))
+        (insert (org-fractional-cto--blocker-subtree
+                 level what owner resolve-by action-link))
+        (unless (bolp) (insert "\n"))))
+    ;; Leave a back-reference under the action.
+    (save-excursion
+      (org-back-to-heading t)
+      (org-end-of-meta-data t)
+      (insert (format "- Blocked by [[*BLOCKER: %s][BLOCKER: %s]]\n" what what)))
+    (message "Filed blocker against %S" action-title)))
+
+(provide 'org-fractional-cto-actions)
+
+;;; org-fractional-cto-actions.el ends here

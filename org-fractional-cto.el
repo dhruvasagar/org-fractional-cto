@@ -186,6 +186,7 @@ picked up automatically."
 (require 'org-fractional-cto-capture)
 (require 'org-fractional-cto-agenda)
 (require 'org-fractional-cto-scaffold)
+(require 'org-fractional-cto-actions)
 (require 'org-fractional-cto-doc)
 
 ;;;; Top-level commands and keymap
@@ -212,6 +213,8 @@ picked up automatically."
     (define-key map "k" #'org-fractional-cto-clear-active-client)
     (define-key map "d" #'org-fractional-cto-dashboard)
     (define-key map "w" #'org-fractional-cto-switch-client)
+    (define-key map "g" #'org-fractional-cto-delegate-at-point)
+    (define-key map "b" #'org-fractional-cto-block-at-point)
     (define-key map "h" #'org-fractional-cto-docs)
     map)
   "Keymap for `org-fractional-cto' commands.

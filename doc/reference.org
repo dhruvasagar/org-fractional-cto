@@ -60,6 +60,12 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 | Quarterly arch review              | =C-c c eA=    | <client>.org → Architecture Reviews        |
 | Scope change / SOW flag            | =C-c c ee=    | <client>.org → Scope Changes               |
 
+*** Act on an existing item
+| I need to...                          | Command                                    |
+|---------------------------------------+--------------------------------------------|
+| Delegate the action under my cursor   | =M-x org-fractional-cto-delegate-at-point= |
+| Raise a blocker against it            | =M-x org-fractional-cto-block-at-point=    |
+
 *** Look up / analyse
 | I need to...                               | Do this                                         |
 |--------------------------------------------+-------------------------------------------------|
@@ -140,10 +146,13 @@ dashboard and =C-c a m TAG= search on these.
 | =M-x org-fractional-cto-set-active-client= | Set active client               |
 | =M-x org-fractional-cto-dashboard=         | Dashboard for active client     |
 | =M-x org-fractional-cto-switch-client=     | Switch client + open dashboard  |
+| =M-x org-fractional-cto-delegate-at-point= | Delegate the heading at point   |
+| =M-x org-fractional-cto-block-at-point=    | Blocker against heading at point|
 
 Management commands run via =M-x= by default (no global prefix is claimed).
-They also live in =org-fractional-cto-command-map= (keys =n s k d w=); set
+They also live in =org-fractional-cto-command-map= (keys =n s k d w g b h=); set
 =org-fractional-cto-keymap-prefix= to bind it under a prefix of your choice.
+=g= and =b= act on the Org heading at point; the rest are session-level.
 
 ** File Organization
 
@@ -310,6 +319,24 @@ it (=UNBLOCK_OWNER=), root cause, options, escalation path, resolve-by deadline.
 /Priority:/ Created as =[#A] TODO=. Blockers are always top priority — they compound.
 /After capturing:/ Surfaces in =C-c a E= → "Blockers & Escalations". If unresolved by
 the deadline, escalate via the named path (standup → internal sync → client).
+
+**** Acting on an item that already exists (=delegate-at-point=, =block-at-point=)
+=ew=, =eg= and =eb= /create/ entries. Two interactive commands act on the Org
+heading already at point, so you never retype work that is already captured.
+
+- =M-x org-fractional-cto-delegate-at-point= (=g= in the command map) — the =eg=
+  gesture applied in place. Sets the heading to =WAITING=, adds the =DELEGATED=
+  tag, records =ASSIGNED_TO= and =DELEGATED_ON=, and =SCHEDULED=s your check-in;
+  optionally sets a delivery =DEADLINE=. The item moves to the dashboard's
+  "Delegated — Awaiting Response" block. An assignee is required.
+- =M-x org-fractional-cto-block-at-point= (=b= in the command map) — the =eb=
+  gesture applied in place. Files a =[#A]= blocker into the client's Blockers
+  section with =BLOCKING= linked back to the action, and inserts a
+  back-reference under the action. Optional resolve-by =DEADLINE=.
+
+/Discipline:/ reach for these when the work is already on a heading; reach for
+=eg= / =eb= when you are capturing something new. The back-link is an internal
+=[[*heading]]= link, so keep action headings distinctly named.
 
 **** =eW= — Weekly Review
 /Use:/ Friday, 15 minutes, before the week closes. Your delegation and team pulse review.
