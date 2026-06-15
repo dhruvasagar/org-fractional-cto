@@ -52,7 +52,10 @@
     ("Innovation Pipeline"    "INNOVATION")
     ("Scope Changes"          "SCOPE")
     ("Post-Mortems"           "POSTMORTEM")
-    ("Retrospectives"         "RETRO"))
+    ("Retrospectives"         "RETRO")
+    ("Pre-Sales Notes"        "PRESALES")
+    ("Research"               "RESEARCH")
+    ("Qualification"          "QUALIFICATION"))
   "Ordered (HEADING . SUBTAG) sections written into a new client hub file.")
 
 (defun org-fractional-cto--write-hub (file client-name tag)
