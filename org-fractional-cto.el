@@ -241,6 +241,8 @@ picked up automatically."
     (define-key map "k" #'org-fractional-cto-clear-active-client)
     (define-key map "d" #'org-fractional-cto-dashboard)
     (define-key map "w" #'org-fractional-cto-switch-client)
+    (define-key map "p" #'org-fractional-cto-new-prospect)
+    (define-key map "S" #'org-fractional-cto-set-stage)
     (define-key map "g" #'org-fractional-cto-delegate-at-point)
     (define-key map "b" #'org-fractional-cto-block-at-point)
     (define-key map "h" #'org-fractional-cto-docs)
@@ -255,6 +257,7 @@ Call once from your init file, after Org is available."
   (interactive)
   (org-fractional-cto-capture-install)
   (org-fractional-cto-agenda-install)
+  (org-fractional-cto-pipeline-install)
   (dolist (dir (org-fractional-cto-agenda-files))
     (add-to-list 'org-agenda-files dir t))
   (when org-fractional-cto-keymap-prefix

@@ -165,6 +165,24 @@
     (org-fractional-cto-pipeline-install)
     (should (assoc "P" org-agenda-custom-commands))))
 
+(ert-deftest ofc-command-map-has-prospect-bindings ()
+  (should (eq (lookup-key org-fractional-cto-command-map "p")
+              #'org-fractional-cto-new-prospect))
+  (should (eq (lookup-key org-fractional-cto-command-map "S")
+              #'org-fractional-cto-set-stage)))
+
+(ert-deftest ofc-setup-installs-pipeline ()
+  (let ((org-agenda-custom-commands nil)
+        (org-capture-templates nil)
+        (org-agenda-files nil)
+        (org-fractional-cto-clients-directory (make-temp-file "ofc-setupclients" t)))
+    (unwind-protect
+        (progn
+          (org-fractional-cto-setup)
+          (should (assoc org-fractional-cto-pipeline-key org-agenda-custom-commands))
+          (should (assoc org-fractional-cto-agenda-key org-agenda-custom-commands)))
+      (delete-directory org-fractional-cto-clients-directory t))))
+
 (provide 'org-fractional-cto-prospect-test)
 
 ;;; org-fractional-cto-prospect-test.el ends here
