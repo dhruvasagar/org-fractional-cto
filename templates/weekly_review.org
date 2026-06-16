@@ -1,4 +1,4 @@
-* WEEKLY REVIEW %^{Week ending}  :%(org-capture-get :ofc-client-tag):REVIEW:
+* WEEKLY REVIEW %^{Week ending}  :REVIEW:
 %U
 
 ** What shipped / completed this week

@@ -1,4 +1,4 @@
-* QUALIFICATION: %^{Company}  :%(org-capture-get :ofc-client-tag):QUALIFICATION:
+* QUALIFICATION: %^{Company}  :QUALIFICATION:
 %U
 
 ** Scorecard

@@ -28,10 +28,9 @@
 ;;; Code:
 
 (require 'org)
+(require 'org-agenda)
 (require 'seq)
 (require 'subr-x)
-
-(declare-function org-fractional-cto-client-tag "org-fractional-cto")
 
 ;;;; Small helpers
 
@@ -48,12 +47,16 @@
     (org-back-to-heading t)
     (org-get-heading t t t t)))
 
-(defun org-fractional-cto--buffer-client-tag ()
-  "Return the client tag derived from the current hub file, or nil.
-A client hub is DIRECTORY/<slug>/<slug>.org, so the file's base name is the
-slug; e.g. visiting acme.org yields \"ACME\"."
-  (when-let* ((file (buffer-file-name)))
-    (org-fractional-cto-client-tag (file-name-base file))))
+(defun org-fractional-cto--context-heading-title ()
+  "Return the heading title for the current context, or nil if unavailable.
+In an agenda buffer, read it from the entry the current line points to; in an
+Org buffer, read the heading at point.  Returns nil rather than signalling when
+point is not on a usable heading, so it is safe as an `interactive' default."
+  (ignore-errors
+    (if (derived-mode-p 'org-agenda-mode)
+        (org-agenda-with-point-at-orig-entry nil
+          (org-fractional-cto--heading-title))
+      (org-fractional-cto--heading-title))))
 
 (defun org-fractional-cto--inactive-timestamp ()
   "Return the current time as an inactive Org timestamp string."
@@ -81,6 +84,19 @@ is appended at end of buffer as a level-2 heading.  Returns the heading's level
     (forward-line -1)
     2))
 
+;;;; Agenda / buffer dispatch
+
+(defmacro org-fractional-cto--at-entry (&rest body)
+  "Evaluate BODY at the Org heading for the current context.
+In an agenda buffer, run BODY at the entry the line points to (via
+`org-agenda-with-point-at-orig-entry') and refresh the agenda; in an Org
+buffer run BODY directly."
+  (declare (indent 0) (debug t))
+  `(if (derived-mode-p 'org-agenda-mode)
+       (prog1 (org-agenda-with-point-at-orig-entry nil ,@body)
+         (ignore-errors (org-agenda-redo)))
+     (progn ,@body)))
+
 ;;;; Delegate an existing action
 
 ;;;###autoload
@@ -99,19 +115,20 @@ strings any Org date parser accepts (e.g. \"2026-07-01\")."
          (org-read-date nil nil nil "Check-in / follow-up")
          (when (y-or-n-p "Set an expected-delivery deadline? ")
            (org-read-date nil nil nil "Expected delivery"))))
-  (org-fractional-cto--require-heading)
   (when (string-empty-p (string-trim assignee))
     (user-error "An assignee is required to delegate"))
-  (save-excursion
-    (org-back-to-heading t)
-    (org-todo "WAITING")
-    (org-toggle-tag "DELEGATED" 'on)
-    (org-set-property "ASSIGNED_TO" assignee)
-    (org-set-property "DELEGATED_ON" (org-fractional-cto--inactive-timestamp))
-    (when (and check-in (not (string-empty-p check-in)))
-      (org-schedule nil check-in))
-    (when (and delivery (not (string-empty-p delivery)))
-      (org-deadline nil delivery)))
+  (org-fractional-cto--at-entry
+    (org-fractional-cto--require-heading)
+    (save-excursion
+      (org-back-to-heading t)
+      (org-todo "WAITING")
+      (org-toggle-tag "DELEGATED" 'on)
+      (org-set-property "ASSIGNED_TO" assignee)
+      (org-set-property "DELEGATED_ON" (org-fractional-cto--inactive-timestamp))
+      (when (and check-in (not (string-empty-p check-in)))
+        (org-schedule nil check-in))
+      (when (and delivery (not (string-empty-p delivery)))
+        (org-deadline nil delivery))))
   (message "Delegated to %s%s" assignee
            (if (and check-in (not (string-empty-p check-in)))
                (format " — check in %s" check-in) "")))
@@ -122,11 +139,9 @@ strings any Org date parser accepts (e.g. \"2026-07-01\")."
   "Return the text of a BLOCKER subtree at LEVEL stars.
 WHAT is what is blocked; OWNER can clear it; RESOLVE-BY (optional) becomes a
 DEADLINE; LINK is an Org link string stored in the BLOCKING property."
-  (let* ((stars (make-string level ?*))
-         (client-tag (org-fractional-cto--buffer-client-tag))
-         (tags (if client-tag (format ":%s:BLOCKER:" client-tag) ":BLOCKER:")))
+  (let* ((stars (make-string level ?*)))
     (concat
-     (format "%s TODO [#A] BLOCKER: %s  %s\n" stars what tags)
+     (format "%s TODO [#A] BLOCKER: %s  :BLOCKER:\n" stars what)
      (when (and resolve-by (not (string-empty-p resolve-by)))
        (format "DEADLINE: %s\n" (org-fractional-cto--active-timestamp resolve-by)))
      ":PROPERTIES:\n"
@@ -148,28 +163,31 @@ action itself.
 WHAT describes what is blocked; OWNER (optional) is who can clear it; RESOLVE-BY
 \(optional) is a date string set as the blocker's DEADLINE."
   (interactive
-   (list (read-string "What is blocked? " (org-fractional-cto--heading-title))
+   (list (read-string "What is blocked? " (org-fractional-cto--context-heading-title))
          (read-string "Who can remove this blocker? ")
          (when (y-or-n-p "Set a resolve-by deadline? ")
            (org-read-date nil nil nil "Resolve by"))))
-  (org-fractional-cto--require-heading)
   (when (string-empty-p (string-trim what))
     (user-error "Describe what is blocked"))
-  (let* ((action-title (org-fractional-cto--heading-title))
-         (action-link (format "[[*%s][%s]]" action-title action-title)))
-    ;; File the blocker into the Blockers section.
-    (save-excursion
-      (let ((level (1+ (org-fractional-cto--goto-section "Blockers"))))
-        (org-end-of-subtree t t)
-        (unless (bolp) (insert "\n"))
-        (insert (org-fractional-cto--blocker-subtree
-                 level what owner resolve-by action-link))
-        (unless (bolp) (insert "\n"))))
-    ;; Leave a back-reference under the action.
-    (save-excursion
-      (org-back-to-heading t)
-      (org-end-of-meta-data t)
-      (insert (format "- Blocked by [[*BLOCKER: %s][BLOCKER: %s]]\n" what what)))
+  (let ((action-title
+         (org-fractional-cto--at-entry
+           (org-fractional-cto--require-heading)
+           (let* ((title (org-fractional-cto--heading-title))
+                  (action-link (format "[[*%s][%s]]" title title)))
+             ;; File the blocker into the Blockers section.
+             (save-excursion
+               (let ((level (1+ (org-fractional-cto--goto-section "Blockers"))))
+                 (org-end-of-subtree t t)
+                 (unless (bolp) (insert "\n"))
+                 (insert (org-fractional-cto--blocker-subtree
+                          level what owner resolve-by action-link))
+                 (unless (bolp) (insert "\n"))))
+             ;; Leave a back-reference under the action.
+             (save-excursion
+               (org-back-to-heading t)
+               (org-end-of-meta-data t)
+               (insert (format "- Blocked by [[*BLOCKER: %s][BLOCKER: %s]]\n" what what)))
+             title))))
     (message "Filed blocker against %S" action-title)))
 
 (provide 'org-fractional-cto-actions)

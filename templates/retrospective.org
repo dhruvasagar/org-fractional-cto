@@ -1,4 +1,4 @@
-* RETROSPECTIVE %^{Sprint / period}  :%(org-capture-get :ofc-client-tag):RETRO:
+* RETROSPECTIVE %^{Sprint / period}  :RETRO:
 %U
 Facilitator: %^{Facilitator}
 Attendees: %^{Attendees}

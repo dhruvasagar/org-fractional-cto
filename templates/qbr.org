@@ -1,6 +1,6 @@
-* QBR: %^{Quarter e.g. Q3 2026} :ENGAGEMENT:QBR:
+* QBR: %^{Quarter e.g. Q3 2026} :QBR:
 %U
-Client: %^{Client}
+Client: %(org-capture-get :ofc-client-name)
 Attendees (Client): %^{Client attendees}
 Attendees (Us): %^{Our attendees}
 

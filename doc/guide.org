@@ -141,13 +141,19 @@ states:
 #+end_example
 
 (Note =INPROGRESS= has no hyphen — that is deliberate; see [[*Troubleshooting][Troubleshooting]].)
+This line is a convenience, not a requirement: =org-fractional-cto-setup= already
+registers the same keyword sequence into the global =org-todo-keywords=, so the
+states work in any buffer even before you open a hub. The per-file line just
+means a hub still cycles correctly on a machine where setup never ran.
 
-Below the top-level =* Acme Corp Engagement :ACME:= heading is one =**= section
+Below the top-level =* Acme Corp Engagement  :ACTIVE:= heading is one =**= section
 per capture type — =Actions=, =Delegations=, =Blockers=, =People=, =Commitments=,
-=Risks=, =Meeting Notes=, …, =Retrospectives= — each pre-tagged with the client
-tag plus its type tag (e.g. =** Delegations :ACME:DELEGATED:=). You do not edit
-these by hand; captures file into them. Seeing the whole engagement in one
-outline is the point — fold with =overview=, expand the section you need.
+=Risks=, =Meeting Notes=, …, =Retrospectives= — each tagged with only its type
+subtag (e.g. =** Delegations  :DELEGATED:=). The client identity is declared once
+at file level via =#+filetags: :ACME:= and is inherited by every heading — so
+captures never carry a redundant per-item client tag. You do not edit these by
+hand; captures file into them. Seeing the whole engagement in one outline is the
+point — fold with =overview=, expand the section you need.
 
 * Step 3b — Capture a prospect (pre-sales)
 
@@ -216,8 +222,10 @@ Capture an action. Press ~C-c c e w~:
 1. ~C-c c~ opens org-capture; =e= selects the engagement group; =w= selects
    *Action item*.
 2. You are prompted for the action text, then a deadline.
-3. Org files a =TODO= under Acme's =Actions= section, tagged =:ACME:=, stamped
-   with the creation time, and *clocks in* (the =ew= template sets =:clock-in=).
+3. Org files a =TODO= under Acme's =Actions= section, stamped with the creation
+   time, and *clocks in* (the =ew= template sets =:clock-in=). The client tag
+   =:ACME:= is inherited from =#+filetags= — it does not appear on the item itself.
+   The capture template also auto-fills the client display name (no =Client:= prompt).
 4. Finish with ~C-c C-c~ to file it (which also clocks out), or ~C-c C-k~ to
    abort.
 
@@ -270,8 +278,12 @@ captured:
   under the action itself, so the two sides point at each other.
 
 Both are bound to =g= and =b= in =org-fractional-cto-command-map= (see
-[[*Step 10 — The management commands][Step 10]]). Reach for them when the work is
-already on a heading; reach for =eg= / =eb= when you are capturing something new.
+[[*Step 10 — The management commands][Step 10]]). They can also be invoked
+*directly on an agenda line* — Evil users get =, g= (delegate) and =, b= (block)
+in the agenda's motion state; non-Evil users can set
+=org-fractional-cto-agenda-keymap-prefix= for a prefix key, or use =M-x=.
+Reach for these when the work is already on a heading; reach for =eg= / =eb= when
+you are capturing something new.
 
 ** Relationship & communication
 
@@ -325,8 +337,8 @@ by-product of working.
 
 * Step 8 — Read your dashboard
 
-With =acme= active, press ~C-c a E~ (or ~M-x org-fractional-cto-dashboard~). You
-get a single per-client board with six blocks, in this order:
+Press ~C-c a E~ (or ~M-x org-fractional-cto-dashboard~). You get a *global* board
+spanning all client files, with nine blocks, in this order:
 
 1. *Next 7 days* — scheduled items and deadlines from the hub.
 2. *Delegated — awaiting response* — everything =WAITING=, deadline-sorted.
@@ -337,18 +349,38 @@ get a single per-client board with six blocks, in this order:
    commitments filtered out so they are not double-listed.
 5. *Commitments* — promises made, by you or the client.
 6. *Active risks* — the risk register (the section container is skipped, so you
-   see the risks themselves, not the empty parent heading).
+   see the risks themselves, not the empty parent heading). A risk closed out
+   with =Status: Resolved= or =Mitigated= drops off the board; =Open= and
+   =Accepted= risks stay.
+7. *Open security findings* — =[SECURITY]= findings, with closed-out ones
+   (=Status: Resolved= or =Mitigated=) filtered out — the *same closed-set rule*
+   as risks.
+8. *Open tech debt* — every =[TECH DEBT]= item recorded for the client.
+9. *Scope changes — pending decisions* — =SCOPE CHANGE= entries sorted by their
+   "decision needed by" deadline, so a decision due beyond the seven-day agenda
+   window is still visible here.
+
+Blocks 6–9 are the *watch list*: severity-rated liabilities (risks, security
+findings, tech debt) and scope decisions that carry no =TODO= keyword and so
+would otherwise never appear in an action view.
 
 Because the dashboard is a *real Org agenda command*, not a bespoke function, it
 inherits the dispatcher's powers: refresh with =r=, filter with =/=, narrow by
-tag, export, and it is sticky-agenda aware. It stays per-client by computing
-=org-agenda-files= from the active client *each time it runs* — which is why
-=switch-client= can flip the whole board to another client instantly.
+tag, export, and it is sticky-agenda aware. The dashboard spans *all* client
+files. When an active client is set, the view opens pre-focused on that client
+via the native =org-agenda-tag-filter-preset=, and the =CATEGORY= column shows
+each entry's client. Use the agenda's native =/= key to widen, refocus on a
+different client, or clear the filter; there is no separate focus command.
+=org-fractional-cto-set-tag-inheritance= (on by default) ensures the inherited
+client filetag is visible to the filter.
+=M-x org-fractional-cto-switch-client= sets a different client active and
+re-opens the board pre-focused to it in one step.
 
 * Step 9 — Look across all clients
 
-The per-client dashboard is one view. For portfolio-wide questions, use the
-plain agenda dispatcher against the type tags every capture carries:
+With an active client the dashboard opens focused; clear the filter (=/= then
+=<RET>=) to go portfolio-wide without leaving the board. For raw cross-client
+lookups by type, use the plain agenda dispatcher:
 
 | Keys             | Shows                                        |
 |------------------+----------------------------------------------|
@@ -366,19 +398,20 @@ cross-client list.
 Five commands run the lifecycle. They are available via =M-x= and also live in
 =org-fractional-cto-command-map= under the keys shown:
 
-| Map key | Command                                  | Action                         |
-|---------+------------------------------------------+--------------------------------|
-| =n=     | =org-fractional-cto-new-client=          | New client (onboard)           |
-| =s=     | =org-fractional-cto-set-active-client=   | Set active client              |
-| =k=     | =org-fractional-cto-clear-active-client= | Clear active client            |
-| =d=     | =org-fractional-cto-dashboard=           | Dashboard for active client    |
-| =w=     | =org-fractional-cto-switch-client=       | Switch client + open dashboard |
-| =g=     | =org-fractional-cto-delegate-at-point=   | Delegate the action at point   |
-| =b=     | =org-fractional-cto-block-at-point=      | Blocker against action at point|
-| =h=     | =org-fractional-cto-docs=                | Open the manuals               |
+| Map key | Command                                  | Action                                           |
+|---------+------------------------------------------+--------------------------------------------------|
+| =n=     | =org-fractional-cto-new-client=          | New client (onboard)                             |
+| =s=     | =org-fractional-cto-set-active-client=   | Set active client                                |
+| =k=     | =org-fractional-cto-clear-active-client= | Clear active client                              |
+| =d=     | =org-fractional-cto-dashboard=           | Global dashboard (pre-filtered to active client) |
+| =w=     | =org-fractional-cto-switch-client=       | Switch client + open dashboard                   |
+| =g=     | =org-fractional-cto-delegate-at-point=   | Delegate the action at point                     |
+| =b=     | =org-fractional-cto-block-at-point=      | Blocker against action at point                  |
+| =h=     | =org-fractional-cto-docs=                | Open the manuals                                 |
 
-=g= and =b= act on the Org heading at point (see [[*Acting on an action that already exists][Step 7]]); the rest are
-session-level management commands.
+=g= and =b= act on the Org heading at point — both *from within a hub file* and
+*directly from an agenda line* (see [[*Acting on an action that already exists][Step 7]]); the rest are session-level management
+commands.
 
 The map is *not* bound to any prefix by default (=org-fractional-cto-keymap-prefix=
 is =nil=), because common prefixes like =C-c f= are already taken (Magit). Opt
@@ -393,14 +426,18 @@ in by setting the prefix *before* =setup=:
 Everything tunable lives in the =org-fractional-cto= customize group
 (~M-x customize-group RET org-fractional-cto~):
 
-| Variable                                | Default                   | Purpose                              |
-|-----------------------------------------+---------------------------+--------------------------------------|
-| =org-fractional-cto-clients-directory=  | =<org-directory>/clients= | Where engagements live               |
-| =org-fractional-cto-template-directory= | bundled =templates/=      | Capture template files               |
-| =org-fractional-cto-author=             | =user-full-name=          | =#+AUTHOR= in scaffolded files       |
-| =org-fractional-cto-agenda-key=         | ="E"                      | Dispatcher key for the dashboard     |
-| =org-fractional-cto-keymap-prefix=      | =nil=                     | Optional command-map prefix          |
-| =org-fractional-cto-dashboard-blocks=   | (6 blocks)                | The dashboard's agenda blocks        |
+| Variable                                  | Default                   | Purpose                                               |
+|-------------------------------------------+---------------------------+-------------------------------------------------------|
+| =org-fractional-cto-clients-directory=    | =<org-directory>/clients= | Where engagements live                                |
+| =org-fractional-cto-template-directory=   | bundled =templates/=      | Capture template files                                |
+| =org-fractional-cto-author=               | =user-full-name=          | =#+AUTHOR= in scaffolded files                        |
+| =org-fractional-cto-agenda-key=           | ="E"                      | Dispatcher key for the dashboard                      |
+| =org-fractional-cto-keymap-prefix=        | =nil=                     | Optional command-map prefix                           |
+| =org-fractional-cto-dashboard-blocks=     | (9 blocks)                | The dashboard's agenda blocks                         |
+| =org-fractional-cto-todo-keywords=        | (1 sequence)              | TODO keyword sequences the workflow registers globally |
+| =org-fractional-cto-todo-keyword-faces=   | (INPROGRESS face)         | Faces for workflow TODO keywords                      |
+| =org-fractional-cto-set-tag-inheritance=  | =t=                       | Enable inherited filetag filtering in the dashboard   |
+| =org-fractional-cto-agenda-keymap-prefix= | =nil=                     | Prefix key for at-point actions in agendas (non-Evil) |
 
 Two customisations you are most likely to want:
 
@@ -449,16 +486,20 @@ decision frameworks — is the job of [[file:playbook.org][playbook.org]]. Read 
   =org-fractional-cto-set-active-client= (or =switch-client=). This is expected
   behaviour, not a bug — it just means one extra keystroke per capture.
 
-- *An =INPROGRESS= task is missing from the dashboard's Open actions.* The
-  keyword must be exactly =INPROGRESS=, with *no hyphen*. Org's agenda match
-  language treats =-= as a boolean NOT, so a hyphenated keyword (=IN-PROGRESS=)
-  is parsed as "=IN= and not =PROGRESS=" and never matches. Scaffolded hubs use
-  the hyphen-free form; if you have an old hub, fix its =#+TODO= line and any
-  task states.
+- *An =INPROGRESS= task is missing from the dashboard's Open actions.* First
+  confirm =org-fractional-cto-setup= ran — it registers =INPROGRESS= globally, so
+  if it never ran (and the file lacks a =#+TODO= line) the state is unknown.
+  Second, the keyword must be exactly =INPROGRESS=, with *no hyphen*. Org's
+  agenda match language treats =-= as a boolean NOT, so a hyphenated keyword
+  (=IN-PROGRESS=) is parsed as "=IN= and not =PROGRESS=" and never matches.
+  Scaffolded hubs use the hyphen-free form; if you have an old hub, fix its
+  =#+TODO= line and any task states.
 
-- *The dashboard is empty or errors.* Confirm a client is active and that its
-  hub file exists. The dashboard scopes =org-agenda-files= to exactly the active
-  client's =<slug>.org=.
+- *The dashboard shows no entries for my client.* The dashboard now spans all
+  client files. If no active client is set, all clients appear unfiltered. Set
+  one with =M-x org-fractional-cto-set-active-client= to focus the board. If the
+  filter is not working, ensure =org-fractional-cto-set-tag-inheritance= is =t= (the
+  default) so the inherited client filetag is visible to the agenda filter.
 
 - *A standup capture inserts literal =%^{...}= / =%U= text.* You are on an old
   version where the standup was injected as a string. Update the package; the

@@ -100,6 +100,15 @@ yourself."
   :type '(choice (key-sequence :tag "Prefix") (const :tag "None" nil))
   :group 'org-fractional-cto)
 
+(defcustom org-fractional-cto-agenda-keymap-prefix nil
+  "Optional prefix key for `org-fractional-cto-agenda-command-map' in agendas.
+Bound in `org-agenda-mode-map' by `org-fractional-cto-setup' for non-Evil users.
+Default nil: reach the at-point actions via \\[execute-extended-command], or --
+under Evil -- the comma (`,') localleader (`, g' delegate, `, b' block).  Plain
+`,' is `org-agenda-priority' in vanilla agendas, so it is not overridden."
+  :type '(choice (key-sequence :tag "Prefix") (const :tag "None" nil))
+  :group 'org-fractional-cto)
+
 (defcustom org-fractional-cto-stages
   '("LEAD" "QUALIFIED" "ACTIVE" "LOST" "DORMANT")
   "Ordered engagement stages, carried as a tag on the engagement heading.
@@ -125,6 +134,37 @@ Exactly one is present at a time; `org-fractional-cto-set-stage' switches it."
 (defcustom org-fractional-cto-pipeline-key "P"
   "Dispatcher key, under `C-c a', for the cross-client pipeline view."
   :type 'string
+  :group 'org-fractional-cto)
+
+(defcustom org-fractional-cto-set-tag-inheritance t
+  "When non-nil, `org-fractional-cto-setup' enables agenda tag inheritance.
+Filetag-based client focus on the dashboard relies on inherited tags being
+visible to the agenda filter.  Set to nil to manage tag inheritance yourself."
+  :type 'boolean
+  :group 'org-fractional-cto)
+
+(defcustom org-fractional-cto-todo-keywords
+  '((sequence "TODO" "NEXT" "INPROGRESS" "WAITING" "|" "DONE" "CANCELLED"))
+  "TODO keyword sequences the workflow relies on.
+Merged into the global `org-todo-keywords' by `org-fractional-cto-setup' so
+that keywords such as INPROGRESS are recognised everywhere -- in agenda matches,
+the dashboard's \"Open actions\" block, and any Org buffer -- not only inside
+client hubs whose \"#+TODO:\" line happens to declare them.  This keeps the
+workflow self-contained: it does not depend on your personal Org configuration.
+
+A sequence is added only when it introduces a keyword Org does not already know,
+so re-running setup is idempotent and your own keyword definitions win.  Set to
+nil to manage TODO keywords entirely yourself."
+  :type 'sexp
+  :group 'org-fractional-cto)
+
+(defcustom org-fractional-cto-todo-keyword-faces
+  '(("INPROGRESS" . (:foreground "deep sky blue" :weight bold)))
+  "Faces for workflow-specific TODO keywords.
+Merged into `org-todo-keyword-faces' by `org-fractional-cto-setup'.  Only
+keywords without an existing face are added, so any face you have already
+defined is left untouched.  Set to nil to skip face installation."
+  :type 'sexp
   :group 'org-fractional-cto)
 
 ;;;; Core state and path helpers
@@ -163,6 +203,20 @@ skipped, matching `org-fractional-cto-agenda-files'."
   "Return the CONTEXT.md file for client SLUG."
   (expand-file-name (format "%s/CONTEXT.md" slug)
                     (org-fractional-cto--clients-dir)))
+
+(defun org-fractional-cto-client-name (slug)
+  "Return the display name for client SLUG.
+Read from the hub file's \"#+title:\" keyword; fall back to SLUG when the file
+is missing or carries no title."
+  (let ((file (org-fractional-cto-client-org-file slug)))
+    (or (and (file-readable-p file)
+             (with-temp-buffer
+               (insert-file-contents file)
+               (goto-char (point-min))
+               (let ((case-fold-search t))
+                 (when (re-search-forward "^#\\+title:[ \t]*\\(.+\\)$" nil t)
+                   (string-trim (match-string 1))))))
+        slug)))
 
 (defun org-fractional-cto-client-tag (slug)
   "Derive a valid Org tag from SLUG.
@@ -234,6 +288,11 @@ picked up automatically."
   (org-fractional-cto-set-active-client slug)
   (org-fractional-cto-dashboard))
 
+(declare-function evil-define-key* "evil-core")
+(declare-function org-fractional-cto-delegate-at-point "org-fractional-cto-actions")
+(declare-function org-fractional-cto-block-at-point "org-fractional-cto-actions")
+(defvar org-agenda-mode-map)
+
 (defvar org-fractional-cto-command-map
   (let ((map (make-sparse-keymap)))
     (define-key map "n" #'org-fractional-cto-new-client)
@@ -250,16 +309,78 @@ picked up automatically."
   "Keymap for `org-fractional-cto' commands.
 Bound under `org-fractional-cto-keymap-prefix' by `org-fractional-cto-setup'.")
 
+(defvar org-fractional-cto-agenda-command-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "g" #'org-fractional-cto-delegate-at-point)
+    (define-key map "b" #'org-fractional-cto-block-at-point)
+    map)
+  "Keymap of org-fractional-cto at-point actions for use inside agendas.")
+
+(defun org-fractional-cto-agenda-install-keys ()
+  "Bind the at-point actions in `org-agenda-mode-map'.
+Non-Evil: under `org-fractional-cto-agenda-keymap-prefix' if set.  Evil: under
+the comma localleader (`, g' / `, b') in the agenda's motion state, across all
+agenda buffers.  The commands no-op gracefully on non-hub entries."
+  (require 'org-agenda)
+  (when org-fractional-cto-agenda-keymap-prefix
+    (define-key org-agenda-mode-map
+                (kbd org-fractional-cto-agenda-keymap-prefix)
+                org-fractional-cto-agenda-command-map))
+  (with-eval-after-load 'evil
+    (evil-define-key* 'motion org-agenda-mode-map
+                      (kbd ", g") #'org-fractional-cto-delegate-at-point
+                      (kbd ", b") #'org-fractional-cto-block-at-point)))
+
+(defun org-fractional-cto--keyword-names (sequence)
+  "Return the bare keyword names in a `org-todo-keywords' SEQUENCE.
+Strips the type symbol (`sequence'/`type'), the \"|\" separator, and any
+fast-access or logging cookie -- so \"WAITING(w@/!)\" yields \"WAITING\"."
+  (seq-remove
+   (lambda (kw) (equal kw "|"))
+   (mapcar (lambda (kw) (car (split-string kw "(")))
+           (cdr sequence))))
+
+(defun org-fractional-cto--known-todo-keywords ()
+  "Return every TODO keyword currently known to `org-todo-keywords'."
+  (apply #'append
+         (mapcar #'org-fractional-cto--keyword-names org-todo-keywords)))
+
+(defun org-fractional-cto--install-todo-keywords ()
+  "Register the workflow's TODO keywords and faces globally, non-destructively.
+Each sequence in `org-fractional-cto-todo-keywords' is appended to
+`org-todo-keywords' only when it introduces a keyword Org does not already
+recognise, so existing definitions are never duplicated or overridden.  Missing
+keyword faces from `org-fractional-cto-todo-keyword-faces' are likewise merged
+into `org-todo-keyword-faces'.  Idempotent."
+  (let ((known (org-fractional-cto--known-todo-keywords)))
+    (dolist (sequence org-fractional-cto-todo-keywords)
+      (unless (seq-every-p (lambda (kw) (member kw known))
+                           (org-fractional-cto--keyword-names sequence))
+        (add-to-list 'org-todo-keywords sequence t)
+        (setq known (append known (org-fractional-cto--keyword-names sequence))))))
+  (dolist (face org-fractional-cto-todo-keyword-faces)
+    (unless (assoc (car face) org-todo-keyword-faces)
+      (add-to-list 'org-todo-keyword-faces face))))
+
+(defun org-fractional-cto--install-tag-inheritance ()
+  "Enable agenda tag inheritance when `org-fractional-cto-set-tag-inheritance'.
+Makes the inherited client filetag filterable in the dashboard."
+  (when org-fractional-cto-set-tag-inheritance
+    (setq org-agenda-use-tag-inheritance t)))
+
 ;;;###autoload
 (defun org-fractional-cto-setup ()
   "Install captures, the dashboard agenda command, and key bindings.
 Call once from your init file, after Org is available."
   (interactive)
+  (org-fractional-cto--install-todo-keywords)
+  (org-fractional-cto--install-tag-inheritance)
   (org-fractional-cto-capture-install)
   (org-fractional-cto-agenda-install)
   (org-fractional-cto-pipeline-install)
   (dolist (dir (org-fractional-cto-agenda-files))
     (add-to-list 'org-agenda-files dir t))
+  (org-fractional-cto-agenda-install-keys)
   (when org-fractional-cto-keymap-prefix
     (global-set-key (kbd org-fractional-cto-keymap-prefix)
                     org-fractional-cto-command-map)))

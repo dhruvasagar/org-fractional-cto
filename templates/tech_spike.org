@@ -1,6 +1,6 @@
-* SPIKE: %^{Question being investigated} :ENGAGEMENT:SPIKE:
+* SPIKE: %^{Question being investigated} :SPIKE:
 %U
-Client: %^{Client}
+Client: %(org-capture-get :ofc-client-name)
 Stream / Area: %^{Area}
 Time-box: %^{Time allocated|Half day|1 day|2 days|3 days}
 Triggered by: %^{What prompted this — decision needed, blocker, unknown risk}

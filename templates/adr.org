@@ -1,6 +1,6 @@
-* ADR: %^{Decision title} :ENGAGEMENT:ADR:
+* ADR: %^{Decision title} :ADR:
 %U
-Client: %^{Client}
+Client: %(org-capture-get :ofc-client-name)
 Status: %^{Status|Proposed|Accepted|Deprecated|Superseded}
 
 ** Context

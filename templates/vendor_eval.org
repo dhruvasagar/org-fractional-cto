@@ -1,6 +1,6 @@
-* VENDOR EVAL: %^{Vendor / Tool name} :ENGAGEMENT:VENDOR:
+* VENDOR EVAL: %^{Vendor / Tool name} :VENDOR:
 %U
-Client: %^{Client}
+Client: %(org-capture-get :ofc-client-name)
 Category: %^{Category|Integration|Platform|Analytics|Infrastructure|Security|Other}
 Evaluated by: %^{Your name}
 

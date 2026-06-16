@@ -1,6 +1,6 @@
-* STAKEHOLDER: %^{Full name} :ENGAGEMENT:STAKEHOLDER:
+* STAKEHOLDER: %^{Full name} :STAKEHOLDER:
 %U
-Client: %^{Client}
+Client: %(org-capture-get :ofc-client-name)
 Role / Title: %^{Role}
 Organisation: %^{Organisation}
 

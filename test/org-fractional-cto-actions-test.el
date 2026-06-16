@@ -8,9 +8,10 @@
 ;; ERT tests for `org-fractional-cto-delegate-at-point' and
 ;; `org-fractional-cto-block-at-point'.  Run with: make test
 ;;
-;; Each test runs inside a throwaway client hub on disk (named acme.org so the
-;; commands can derive the ACME client tag from the filename) and drives the
-;; commands non-interactively by passing their arguments directly.
+;; Each test runs inside a throwaway client hub on disk (named acme.org) that
+;; declares `#+filetags: :ACME:' — the commands derive the client tag from that
+;; file-level tag, not from the filename.  Tests drive commands non-interactively
+;; by passing their arguments directly.
 
 ;;; Code:
 
@@ -20,11 +21,12 @@
 (defconst ofc-test-hub "\
 #+TITLE: Acme Corp
 #+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED
+#+filetags: :ACME:
 
-* Acme Corp Engagement :ACME:
-** Actions :ACME:
-*** TODO Ship the thing :ACME:
-** Blockers :ACME:BLOCKER:
+* Acme Corp Engagement
+** Actions
+*** TODO Ship the thing
+** Blockers :BLOCKER:
 "
   "Minimal client hub used as the fixture for every test.")
 
@@ -70,7 +72,7 @@
     (org-fractional-cto-delegate-at-point "Alice" "2026-07-01" "2026-07-15")
     (ofc-test-goto "Ship the thing")
     (should (member "DELEGATED" (org-get-tags nil t)))
-    (should (member "ACME" (org-get-tags nil t)))
+    (should (member "ACME" (org-get-tags)))
     (should (equal (org-entry-get nil "ASSIGNED_TO") "Alice"))
     (should (string-match-p "\\`\\[[0-9]\\{4\\}-" (org-entry-get nil "DELEGATED_ON")))
     (should (string-match-p "2026-07-01" (org-entry-get nil "SCHEDULED")))
@@ -105,7 +107,7 @@
     (ofc-test-goto-blocker "Payments API down")
     (should (= (org-current-level) 3))
     (should (member "BLOCKER" (org-get-tags nil t)))
-    (should (member "ACME" (org-get-tags nil t)))
+    (should (member "ACME" (org-get-tags)))
     (should (string-match-p "\\[#A\\]" (org-get-heading)))))
 
 (ert-deftest ofc-block-links-back-to-action ()
@@ -144,6 +146,99 @@
     (goto-char (point-min))
     (should-error (org-fractional-cto-block-at-point "X" "Dave" nil)
                   :type 'user-error)))
+
+;;;; Agenda dispatch
+
+(ert-deftest ofc-delegate-at-point-from-agenda ()
+  "Delegating from an agenda line flips the source entry to WAITING."
+  (let* ((dir (make-temp-file "ofc-agtest" t))
+         (file (expand-file-name "acme.org" dir))
+         (org-agenda-files (list file)))
+    (unwind-protect
+        (progn
+          (with-temp-file file
+            (insert "#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED\n")
+            (insert "#+filetags: :ACME:\n\n")
+            (insert "* TODO Ship the thing\n"))
+          (org-todo-list)
+          (set-buffer org-agenda-buffer-name)
+          (goto-char (point-min))
+          (should (re-search-forward "Ship the thing" nil t))
+          (beginning-of-line)
+          (org-fractional-cto-delegate-at-point "Bob" "2026-07-01" nil)
+          (with-current-buffer (find-file-noselect file)
+            (goto-char (point-min))
+            (should (re-search-forward "^\\* WAITING Ship the thing" nil t))
+            (org-back-to-heading t)
+            (should (member "DELEGATED" (org-get-tags nil t)))))
+      (when (get-buffer org-agenda-buffer-name)
+        (kill-buffer org-agenda-buffer-name))
+      (dolist (b (buffer-list))
+        (when (and (buffer-file-name b)
+                   (string-prefix-p (file-truename dir)
+                                    (file-truename (buffer-file-name b))))
+          (with-current-buffer b (set-buffer-modified-p nil))
+          (kill-buffer b)))
+      (delete-directory dir t))))
+
+(ert-deftest ofc-context-heading-title-from-agenda ()
+  "The context heading-title helper reads the entry from an agenda line."
+  (let* ((dir (make-temp-file "ofc-cht" t))
+         (file (expand-file-name "acme.org" dir))
+         (org-agenda-files (list file)))
+    (unwind-protect
+        (progn
+          (with-temp-file file
+            (insert "#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED\n")
+            (insert "#+filetags: :ACME:\n\n")
+            (insert "* TODO Ship the thing\n"))
+          (org-todo-list)
+          (set-buffer org-agenda-buffer-name)
+          (goto-char (point-min))
+          (should (re-search-forward "Ship the thing" nil t))
+          (beginning-of-line)
+          (should (equal (org-fractional-cto--context-heading-title)
+                         "Ship the thing")))
+      (when (get-buffer org-agenda-buffer-name)
+        (kill-buffer org-agenda-buffer-name))
+      (dolist (b (buffer-list))
+        (when (and (buffer-file-name b)
+                   (string-prefix-p (file-truename dir)
+                                    (file-truename (buffer-file-name b))))
+          (with-current-buffer b (set-buffer-modified-p nil))
+          (kill-buffer b)))
+      (delete-directory dir t))))
+
+(ert-deftest ofc-block-at-point-from-agenda ()
+  "Blocking from an agenda line files a BLOCKER into the source hub."
+  (let* ((dir (make-temp-file "ofc-blkag" t))
+         (file (expand-file-name "acme.org" dir))
+         (org-agenda-files (list file)))
+    (unwind-protect
+        (progn
+          (with-temp-file file
+            (insert "#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED\n")
+            (insert "#+filetags: :ACME:\n\n")
+            (insert "* TODO Ship the thing\n")
+            (insert "** Blockers  :BLOCKER:\n"))
+          (org-todo-list)
+          (set-buffer org-agenda-buffer-name)
+          (goto-char (point-min))
+          (should (re-search-forward "Ship the thing" nil t))
+          (beginning-of-line)
+          (org-fractional-cto-block-at-point "Payments API down" "Dave" nil)
+          (with-current-buffer (find-file-noselect file)
+            (goto-char (point-min))
+            (should (re-search-forward "BLOCKER: Payments API down" nil t))))
+      (when (get-buffer org-agenda-buffer-name)
+        (kill-buffer org-agenda-buffer-name))
+      (dolist (b (buffer-list))
+        (when (and (buffer-file-name b)
+                   (string-prefix-p (file-truename dir)
+                                    (file-truename (buffer-file-name b))))
+          (with-current-buffer b (set-buffer-modified-p nil))
+          (kill-buffer b)))
+      (delete-directory dir t))))
 
 (provide 'org-fractional-cto-actions-test)
 

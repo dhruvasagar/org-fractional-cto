@@ -182,7 +182,7 @@ Quick Lookup — "I need to@dots{}"
 
 Legend
 
-* keywords (client files)::
+* keywords::
 * Engagement stages (tag on the engagement heading)::
 * Priorities::
 * Type tags::
@@ -493,13 +493,19 @@ states:
 @end example
 
 (Note @samp{INPROGRESS} has no hyphen — that is deliberate; see @ref{Troubleshooting}.)
+This line is a convenience, not a requirement: @samp{org-fractional-cto-setup} already
+registers the same keyword sequence into the global @samp{org-todo-keywords}, so the
+states work in any buffer even before you open a hub. The per-file line just
+means a hub still cycles correctly on a machine where setup never ran.
 
-Below the top-level @samp{* Acme Corp Engagement :ACME:} heading is one @samp{**} section
+Below the top-level @samp{* Acme Corp Engagement  :ACTIVE:} heading is one @samp{**} section
 per capture type — @samp{Actions}, @samp{Delegations}, @samp{Blockers}, @samp{People}, @samp{Commitments},
-@samp{Risks}, @samp{Meeting Notes}, …, @samp{Retrospectives} — each pre-tagged with the client
-tag plus its type tag (e.g. @samp{** Delegations :ACME:DELEGATED:}). You do not edit
-these by hand; captures file into them. Seeing the whole engagement in one
-outline is the point — fold with @samp{overview}, expand the section you need.
+@samp{Risks}, @samp{Meeting Notes}, …, @samp{Retrospectives} — each tagged with only its type
+subtag (e.g. @samp{** Delegations  :DELEGATED:}). The client identity is declared once
+at file level via @samp{#+filetags: :ACME:} and is inherited by every heading — so
+captures never carry a redundant per-item client tag. You do not edit these by
+hand; captures file into them. Seeing the whole engagement in one outline is the
+point — fold with @samp{overview}, expand the section you need.
 
 @node Step 3b — Capture a prospect (pre-sales)
 @section Step 3b — Capture a prospect (pre-sales)
@@ -599,8 +605,10 @@ Capture an action. Press @code{C-c c e w}:
 @item
 You are prompted for the action text, then a deadline.
 @item
-Org files a @samp{TODO} under Acme's @samp{Actions} section, tagged @samp{:ACME:}, stamped
-with the creation time, and @strong{clocks in} (the @samp{ew} template sets @samp{:clock-in}).
+Org files a @samp{TODO} under Acme's @samp{Actions} section, stamped with the creation
+time, and @strong{clocks in} (the @samp{ew} template sets @samp{:clock-in}). The client tag
+@samp{:ACME:} is inherited from @samp{#+filetags} — it does not appear on the item itself.
+The capture template also auto-fills the client display name (no @samp{Client:} prompt).
 @item
 Finish with @code{C-c C-c} to file it (which also clocks out), or @code{C-c C-k} to
 abort.
@@ -697,8 +705,12 @@ under the action itself, so the two sides point at each other.
 @end itemize
 
 Both are bound to @samp{g} and @samp{b} in @samp{org-fractional-cto-command-map} (see
-@ref{Step 10 — The management commands, , Step 10}). Reach for them when the work is
-already on a heading; reach for @samp{eg} / @samp{eb} when you are capturing something new.
+@ref{Step 10 — The management commands, , Step 10}). They can also be invoked
+@strong{directly on an agenda line} — Evil users get @samp{, g} (delegate) and @samp{, b} (block)
+in the agenda's motion state; non-Evil users can set
+@samp{org-fractional-cto-agenda-keymap-prefix} for a prefix key, or use @samp{M-x}.
+Reach for these when the work is already on a heading; reach for @samp{eg} / @samp{eb} when
+you are capturing something new.
 
 @node Relationship & communication
 @subsection Relationship & communication
@@ -839,8 +851,8 @@ by-product of working.
 @node Step 8 — Read your dashboard
 @section Step 8 — Read your dashboard
 
-With @samp{acme} active, press @code{C-c a E} (or @code{M-x org-fractional-cto-dashboard}). You
-get a single per-client board with six blocks, in this order:
+Press @code{C-c a E} (or @code{M-x org-fractional-cto-dashboard}). You get a @strong{global} board
+spanning all client files, with nine blocks, in this order:
 
 @enumerate
 @item
@@ -858,20 +870,43 @@ commitments filtered out so they are not double-listed.
 @strong{Commitments} — promises made, by you or the client.
 @item
 @strong{Active risks} — the risk register (the section container is skipped, so you
-see the risks themselves, not the empty parent heading).
+see the risks themselves, not the empty parent heading). A risk closed out
+with @samp{Status: Resolved} or @samp{Mitigated} drops off the board; @samp{Open} and
+@samp{Accepted} risks stay.
+@item
+@strong{Open security findings} — @samp{[SECURITY]} findings, with closed-out ones
+(@samp{Status: Resolved} or @samp{Mitigated}) filtered out — the @strong{same closed-set rule}
+as risks.
+@item
+@strong{Open tech debt} — every @samp{[TECH DEBT]} item recorded for the client.
+@item
+@strong{Scope changes — pending decisions} — @samp{SCOPE CHANGE} entries sorted by their
+"decision needed by" deadline, so a decision due beyond the seven-day agenda
+window is still visible here.
 @end enumerate
+
+Blocks 6–9 are the @strong{watch list}: severity-rated liabilities (risks, security
+findings, tech debt) and scope decisions that carry no @samp{TODO} keyword and so
+would otherwise never appear in an action view.
 
 Because the dashboard is a @strong{real Org agenda command}, not a bespoke function, it
 inherits the dispatcher's powers: refresh with @samp{r}, filter with @samp{/}, narrow by
-tag, export, and it is sticky-agenda aware. It stays per-client by computing
-@samp{org-agenda-files} from the active client @strong{each time it runs} — which is why
-@samp{switch-client} can flip the whole board to another client instantly.
+tag, export, and it is sticky-agenda aware. The dashboard spans @strong{all} client
+files. When an active client is set, the view opens pre-focused on that client
+via the native @samp{org-agenda-tag-filter-preset}, and the @samp{CATEGORY} column shows
+each entry's client. Use the agenda's native @samp{/} key to widen, refocus on a
+different client, or clear the filter; there is no separate focus command.
+@samp{org-fractional-cto-set-tag-inheritance} (on by default) ensures the inherited
+client filetag is visible to the filter.
+@samp{M-x org-fractional-cto-switch-client} sets a different client active and
+re-opens the board pre-focused to it in one step.
 
 @node Step 9 — Look across all clients
 @section Step 9 — Look across all clients
 
-The per-client dashboard is one view. For portfolio-wide questions, use the
-plain agenda dispatcher against the type tags every capture carries:
+With an active client the dashboard opens focused; clear the filter (@samp{/} then
+@samp{<RET>}) to go portfolio-wide without leaving the board. For raw cross-client
+lookups by type, use the plain agenda dispatcher:
 
 @multitable {aaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
 @headitem Keys
@@ -896,7 +931,7 @@ cross-client list.
 Five commands run the lifecycle. They are available via @samp{M-x} and also live in
 @samp{org-fractional-cto-command-map} under the keys shown:
 
-@multitable {aaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@multitable {aaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
 @headitem Map key
 @tab Command
 @tab Action
@@ -911,7 +946,7 @@ Five commands run the lifecycle. They are available via @samp{M-x} and also live
 @tab Clear active client
 @item @samp{d}
 @tab @samp{org-fractional-cto-dashboard}
-@tab Dashboard for active client
+@tab Global dashboard (pre-filtered to active client)
 @item @samp{w}
 @tab @samp{org-fractional-cto-switch-client}
 @tab Switch client + open dashboard
@@ -926,8 +961,9 @@ Five commands run the lifecycle. They are available via @samp{M-x} and also live
 @tab Open the manuals
 @end multitable
 
-@samp{g} and @samp{b} act on the Org heading at point (see @ref{Acting on an action that already exists, , Step 7}); the rest are
-session-level management commands.
+@samp{g} and @samp{b} act on the Org heading at point — both @strong{from within a hub file} and
+@strong{directly from an agenda line} (see @ref{Acting on an action that already exists, , Step 7}); the rest are session-level management
+commands.
 
 The map is @strong{not} bound to any prefix by default (@samp{org-fractional-cto-keymap-prefix}
 is @samp{nil}), because common prefixes like @samp{C-c f} are already taken (Magit). Opt
@@ -943,7 +979,7 @@ in by setting the prefix @strong{before} @samp{setup}:
 Everything tunable lives in the @samp{org-fractional-cto} customize group
 (@code{M-x customize-group RET org-fractional-cto}):
 
-@multitable {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@multitable {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
 @headitem Variable
 @tab Default
 @tab Purpose
@@ -963,8 +999,20 @@ Everything tunable lives in the @samp{org-fractional-cto} customize group
 @tab @samp{nil}
 @tab Optional command-map prefix
 @item @samp{org-fractional-cto-dashboard-blocks}
-@tab (6 blocks)
+@tab (9 blocks)
 @tab The dashboard's agenda blocks
+@item @samp{org-fractional-cto-todo-keywords}
+@tab (1 sequence)
+@tab TODO keyword sequences the workflow registers globally
+@item @samp{org-fractional-cto-todo-keyword-faces}
+@tab (INPROGRESS face)
+@tab Faces for workflow TODO keywords
+@item @samp{org-fractional-cto-set-tag-inheritance}
+@tab @samp{t}
+@tab Enable inherited filetag filtering in the dashboard
+@item @samp{org-fractional-cto-agenda-keymap-prefix}
+@tab @samp{nil}
+@tab Prefix key for at-point actions in agendas (non-Evil)
 @end multitable
 
 Two customisations you are most likely to want:
@@ -1033,17 +1081,21 @@ decision frameworks — is the job of @uref{playbook.org, playbook.org}. Read it
 behaviour, not a bug — it just means one extra keystroke per capture.
 
 @item
-@strong{An @samp{INPROGRESS} task is missing from the dashboard's Open actions.} The
-keyword must be exactly @samp{INPROGRESS}, with @strong{no hyphen}. Org's agenda match
-language treats @samp{-} as a boolean NOT, so a hyphenated keyword (@samp{IN-PROGRESS})
-is parsed as "@samp{IN} and not @samp{PROGRESS}" and never matches. Scaffolded hubs use
-the hyphen-free form; if you have an old hub, fix its @samp{#+TODO} line and any
-task states.
+@strong{An @samp{INPROGRESS} task is missing from the dashboard's Open actions.} First
+confirm @samp{org-fractional-cto-setup} ran — it registers @samp{INPROGRESS} globally, so
+if it never ran (and the file lacks a @samp{#+TODO} line) the state is unknown.
+Second, the keyword must be exactly @samp{INPROGRESS}, with @strong{no hyphen}. Org's
+agenda match language treats @samp{-} as a boolean NOT, so a hyphenated keyword
+(@samp{IN-PROGRESS}) is parsed as "@samp{IN} and not @samp{PROGRESS}" and never matches.
+Scaffolded hubs use the hyphen-free form; if you have an old hub, fix its
+@samp{#+TODO} line and any task states.
 
 @item
-@strong{The dashboard is empty or errors.} Confirm a client is active and that its
-hub file exists. The dashboard scopes @samp{org-agenda-files} to exactly the active
-client's @samp{<slug>.org}.
+@strong{The dashboard shows no entries for my client.} The dashboard now spans all
+client files. If no active client is set, all clients appear unfiltered. Set
+one with @samp{M-x org-fractional-cto-set-active-client} to focus the board. If the
+filter is not working, ensure @samp{org-fractional-cto-set-tag-inheritance} is @samp{t} (the
+default) so the inherited client filetag is visible to the agenda filter.
 
 @item
 @strong{A standup capture inserts literal @samp{%^@{...@}} / @samp{%U} text.} You are on an old
@@ -1505,7 +1557,7 @@ Check every WAITING item: has the owner responded? Is the deadline at risk?
 @item
 Ping directly (don't wait for standup) for anything due within 2 days
 @item
-@samp{C-c A} → "Delegated — Awaiting Response" block is your inbox
+@code{C-c a E} → "Delegated — Awaiting Response" block is your inbox
 @item
 Rule: nothing WAITING goes more than one week without a check-in
 @end itemize
@@ -1801,7 +1853,7 @@ Run @samp{/setup-matt-pocock-skills} once per repo
 @item
 Active client set: @samp{M-x org-fractional-cto-set-active-client}
 @item
-Agenda dashboard tested: @samp{C-c A} → should open client dashboard
+Agenda dashboard tested: @code{C-c a E} → should open the global dashboard
 @item
 Capture tested: @samp{C-c c ew} → should file to client's Actions section
 @item
@@ -2131,11 +2183,11 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 @node Look up / analyse
 @subsection Look up / analyse
 
-@multitable {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@multitable {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
 @headitem I need to@dots{}
 @tab Do this
 @item Client dashboard (actions, delegations)
-@tab @samp{C-c a E} → select client
+@tab @samp{C-c a E} (global; pre-filtered to active client if set)
 @item Delegated items awaiting response
 @tab @samp{C-c a E} → "Delegated — Awaiting Response" block
 @item Blockers & escalations
@@ -2146,6 +2198,12 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 @tab @samp{C-c a E} → "Commitments" block
 @item Active risks
 @tab @samp{C-c a E} → "Active Risks" block
+@item Open security findings
+@tab @samp{C-c a E} → "Open Security Findings" block
+@item Open tech debt
+@tab @samp{C-c a E} → "Open Tech Debt" block
+@item Pending scope decisions
+@tab @samp{C-c a E} → "Scope Changes — Pending Decisions"
 @item Set active client (avoid repeated prompts)
 @tab @samp{M-x org-fractional-cto-set-active-client}
 @item Clear active client
@@ -2176,17 +2234,20 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 @section Legend
 
 @menu
-* keywords (client files)::
+* keywords::
 * Engagement stages (tag on the engagement heading)::
 * Priorities::
 * Type tags::
 * Key bindings::
 @end menu
 
-@node keywords (client files)
-@subsection @strong{TODO} keywords (client files)
+@node keywords
+@subsection @strong{TODO} keywords
 
-Client hubs declare: @samp{#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED}.
+@samp{org-fractional-cto-setup} registers these globally (via @samp{org-todo-keywords}), so
+they work in every buffer without touching your personal Org config; client hubs
+also declare them locally with @samp{#+TODO: TODO NEXT INPROGRESS WAITING | DONE
+CANCELLED}. Customize via @samp{org-fractional-cto-todo-keywords}.
 
 @multitable {aaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
 @headitem Keyword
@@ -2211,8 +2272,10 @@ and feeds the dashboard's @strong{Delegated} block.
 @node Engagement stages (tag on the engagement heading)
 @subsection Engagement stages (tag on the engagement heading)
 
-One stage tag sits on the top @samp{* … Engagement} heading and is inherited by the
-whole tree. Switch it with @samp{M-x org-fractional-cto-set-stage}.
+One stage tag sits on the top @samp{* … Engagement} heading (e.g. @samp{:ACTIVE:}) and is
+inherited by the whole tree. The @strong{client} identity tag (e.g. @samp{:ACME:}) is
+declared at the file level via @samp{#+filetags}, not on the engagement heading.
+Switch it with @samp{M-x org-fractional-cto-set-stage}.
 
 @multitable {aaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
 @headitem Stage
@@ -2247,8 +2310,10 @@ all clients, one line per prospect.
 @node Type tags
 @subsection Type tags
 
-Every capture carries the client tag (e.g. @samp{:ACME:}) plus a @strong{type tag}. The
-dashboard and @samp{C-c a m TAG} search on these.
+Every capture carries a @strong{type tag}. The client identity is inherited from the
+hub's @samp{#+filetags} line (e.g. @samp{#+filetags: :ACME:}) rather than being repeated
+on individual headings or items. The dashboard and @samp{C-c a m TAG} search on these
+type tags.
 
 @multitable {aaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
 @headitem Tag
@@ -2312,7 +2377,7 @@ dashboard and @samp{C-c a m TAG} search on these.
 @item @code{C-c c e<key>}
 @tab Capture (see @ref{Capture Templates — Complete Reference, , capture reference})
 @item @code{C-c a E}
-@tab Active-client dashboard
+@tab Global dashboard (pre-filtered to active client)
 @item @code{C-c a m TAG}
 @tab Match a type tag across all clients
 @item @samp{M-x org-fractional-cto-new-client}
@@ -2320,7 +2385,7 @@ dashboard and @samp{C-c a m TAG} search on these.
 @item @samp{M-x org-fractional-cto-set-active-client}
 @tab Set active client
 @item @samp{M-x org-fractional-cto-dashboard}
-@tab Dashboard for active client
+@tab Global dashboard (pre-filtered to active client)
 @item @samp{M-x org-fractional-cto-switch-client}
 @tab Switch client + open dashboard
 @item @samp{M-x org-fractional-cto-new-prospect}
@@ -2340,7 +2405,19 @@ dashboard and @samp{C-c a m TAG} search on these.
 Management commands run via @samp{M-x} by default (no global prefix is claimed).
 They also live in @samp{org-fractional-cto-command-map} (keys @samp{n s k d w p S g b h}); set
 @samp{org-fractional-cto-keymap-prefix} to bind it under a prefix of your choice.
-@samp{g} and @samp{b} act on the Org heading at point; the rest are session-level.
+
+@samp{g} (@samp{org-fractional-cto-delegate-at-point}) and @samp{b}
+(@samp{org-fractional-cto-block-at-point}) act on the Org heading at point — both
+from within a hub file and @strong{directly from any Org agenda line}:
+
+@itemize
+@item
+@strong{Evil users}: `, g` (delegate) and `, b` (block) in the agenda's motion state
+— no extra configuration needed.
+@item
+@strong{Non-Evil users}: set @samp{org-fractional-cto-agenda-keymap-prefix} to a prefix key
+(e.g. @samp{"C-c C-'"}) for prefix access; otherwise reach them via @samp{M-x}.
+@end itemize
 
 @node File Organization
 @section File Organization
@@ -2404,10 +2481,13 @@ applies, but client work bypasses it entirely.
 
 @enumerate
 @item
-@strong{Agenda dashboard} — @samp{C-c a E} opens the active client's dashboard: 7-day agenda,
-delegated items awaiting response, blockers & escalations, open actions,
-commitments with deadlines, active risks. This is the daily starting point.
-(If no active client is set, it prompts you to pick one.)
+@strong{Agenda dashboard} — @samp{C-c a E} opens the @strong{global} dashboard spanning all
+clients: 7-day agenda, delegated items awaiting response, blockers & escalations,
+open actions, commitments with deadlines, active risks, security findings, tech
+debt, and pending scope decisions. This is the daily starting point. When an
+active client is set, the view opens pre-focused on that client via the native
+tag filter (@samp{CATEGORY} column shows each entry's client). Use @samp{/} to widen,
+refocus, or clear the filter.
 @item
 @strong{Browse by section} — @samp{C-x C-f <client>.org} then navigate headings (@samp{C-c C-n/p}
 to move between headings, @samp{S-TAB} to collapse/expand). Each section contains
@@ -2428,7 +2508,8 @@ all captures of that type in reverse-chronological order.
 All engagement templates use the pattern: @samp{C-c c e<key>}. Captures file @strong{directly}
 to the relevant section of the active client's @samp{<client>.org} (set the active
 client with @samp{M-x org-fractional-cto-set-active-client} to avoid being prompted each time).
-Clocked entries start the org-clock automatically.
+The client display name is auto-filled from the hub's @samp{#+title} — no @samp{Client:}
+prompt appears. Clocked entries start the org-clock automatically.
 
 @menu
 * Relationship & Communication Templates::
@@ -2754,7 +2835,9 @@ Prioritise at the next architecture session. Debt that isn't visible isn't manag
 
 @emph{Use:} Any security or compliance observation — immediately when found.
 @emph{Fields:} Finding description, severity, area (PCI/GDPR/API/Auth/Data/Infra),
-current status (Open/Mitigated/Accepted), recommended action, owner.
+current status (Open/Mitigated/Resolved/Accepted), recommended action, owner.
+Closed-out findings (Resolved/Mitigated) drop off the dashboard's "Open security
+findings" block — the same rule as the risk register.
 @emph{Rule:} Critical findings surface to the internal sync before end of day.
 High findings surface within 48 hours. Never downgrade severity to avoid a
 difficult conversation.
@@ -2966,13 +3049,13 @@ Essential keybindings:
 
 Your operational dashboard. Key views:
 
-@multitable {aaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@multitable {aaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
 @headitem Key
 @tab View
 @item @samp{C-c a a}
 @tab Day/week agenda — deadlines, scheduled items (all files)
 @item @samp{C-c a E}
-@tab ★ Active client dashboard — delegated, blockers, actions, commitments, risks, 7-day agenda
+@tab ★ Global dashboard (9 blocks) — spans all clients; pre-focused to active client when set; use @samp{/} to widen or refocus
 @item @samp{C-c a t}
 @tab All TODO items across all agenda files
 @item @samp{C-c a m TAGNAME}
@@ -2982,12 +3065,15 @@ Your operational dashboard. Key views:
 @end multitable
 
 @samp{C-c a E} is a first-class Org agenda command (so it exports, filters with @samp{/},
-refreshes with @samp{r}, etc.). It builds the dashboard dynamically for whichever
-client is active (or prompts you to pick one) — no per-client agenda config to
-maintain; new clients work the moment @samp{org-fractional-cto-new-client} scaffolds
-them. Blocks, in order: 7-day agenda → Delegated (WAITING) → Blockers → Open
-Actions → Commitments → Active Risks. @samp{M-x org-fractional-cto-switch-client}
-switches client and opens it.
+refreshes with @samp{r}, etc.). It spans @strong{all} client files; when an active client is
+set the view opens pre-focused to it via @samp{org-agenda-tag-filter-preset} — the
+@samp{CATEGORY} column shows each entry's client. Use @samp{/} to widen, refocus, or clear
+the filter; there is no separate focus command. New clients work the moment
+@samp{org-fractional-cto-new-client} scaffolds them — no per-client agenda config to
+maintain. Blocks, in order: 7-day agenda → Delegated (WAITING) → Blockers → Open
+Actions → Commitments → Active Risks → Open Security Findings → Open Tech Debt →
+Scope Changes. @samp{M-x org-fractional-cto-switch-client} switches client and opens
+it.
 
 @node org-clock
 @subsection org-clock
@@ -3260,7 +3346,7 @@ gstack is global (@samp{~/.claude/skills/gstack}) — no per-client install.
 @item
 Active client set: @samp{M-x org-fractional-cto-set-active-client}
 @item
-Agenda tested: @samp{C-c a E} → should open client dashboard
+Agenda tested: @samp{C-c a E} → should open the global dashboard (pre-focused on the active client)
 @item
 Capture tested: @samp{C-c c ew} → should file to @samp{acme.org} Actions section
 @item

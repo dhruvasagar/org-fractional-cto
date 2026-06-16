@@ -1,4 +1,4 @@
-* STANDUP %^{Date|%<%Y-%m-%d>}  :%(org-capture-get :ofc-client-tag):STANDUP:
+* STANDUP %^{Date|%<%Y-%m-%d>}  :STANDUP:
 %U
 
 ** Stream 1 — Lead: (TBD)

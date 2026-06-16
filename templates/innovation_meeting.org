@@ -1,6 +1,6 @@
-* INNOVATION MEETING %^{Date|%<%Y-%m-%d>} :ENGAGEMENT:INNOVATION:MEETING:
+* INNOVATION MEETING %^{Date|%<%Y-%m-%d>} :INNOVATION:MEETING:
 %U
-Client: %^{Client}
+Client: %(org-capture-get :ofc-client-name)
 Attendees: %^{Attendees}
 Session context: %^{What triggered or framed this session}
 

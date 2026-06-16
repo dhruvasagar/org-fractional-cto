@@ -66,27 +66,28 @@
 (defun org-fractional-cto--write-hub (file client-name tag stage)
   "Write the operational hub FILE for CLIENT-NAME tagged TAG at STAGE.
 STAGE is a string from `org-fractional-cto-stages' placed on the engagement
-heading alongside TAG."
+heading; TAG is written as the file's `#+filetags'."
   (with-temp-file file
     (insert (format "#+title: %s\n" client-name))
     (insert (format "#+AUTHOR: %s\n" org-fractional-cto-author))
     (insert "#+STARTUP: overview\n")
     (insert "#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED\n")
+    (insert (format "#+filetags: :%s:\n" tag))
     (insert "#+OPTIONS: date:nil\n\n")
-    (insert (format "* %s Engagement  :%s:%s:\n" client-name tag stage))
+    (insert (format "* %s Engagement  :%s:\n" client-name stage))
     (insert (format ":PROPERTIES:\n:ID:       %s-OPS\n:CATEGORY: %s\n:END:\n\n"
                     tag client-name))
     (insert "See [[file:CONTEXT.md][CONTEXT.md]] for domain vocabulary, key people, and priorities.\n\n")
     (dolist (section org-fractional-cto-sections)
       (let ((heading (car section)) (subtag (cadr section)))
         (if (string-empty-p subtag)
-            (insert (format "** %s  :%s:\n\n" heading tag))
-          (insert (format "** %s  :%s:%s:\n\n" heading tag subtag)))))))
+            (insert (format "** %s\n\n" heading))
+          (insert (format "** %s  :%s:\n\n" heading subtag)))))))
 
-(defun org-fractional-cto--write-standup (file tag)
-  "Write a per-client standup template FILE tagged TAG."
+(defun org-fractional-cto--write-standup (file)
+  "Write a per-client standup template FILE."
   (with-temp-file file
-    (insert (format "* STANDUP %%^{Date|%%<%%Y-%%m-%%d>}  :%s:STANDUP:\n%%U\n\n" tag))
+    (insert "* STANDUP %^{Date|%<%Y-%m-%d>}  :STANDUP:\n%U\n\n")
     (dotimes (i 6)
       (insert (format "** Stream %d — Lead: (TBD)\n- Shipped: %%?\n- Next:\n- Blockers:\n\n"
                       (1+ i))))
@@ -142,7 +143,7 @@ Writes the hub, standup, and CONTEXT.md, registers the directory with
       (user-error "Aborted"))
     (make-directory dir t)
     (org-fractional-cto--write-hub hub client-name tag stage)
-    (org-fractional-cto--write-standup standup tag)
+    (org-fractional-cto--write-standup standup)
     (org-fractional-cto--write-context context client-name slug)
     (dolist (d (org-fractional-cto-agenda-files))
       (add-to-list 'org-agenda-files d t))

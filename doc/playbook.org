@@ -214,7 +214,7 @@ decisions under pressure.
 - =C-c c eW= — weekly review capture
 - Check every WAITING item: has the owner responded? Is the deadline at risk?
 - Ping directly (don't wait for standup) for anything due within 2 days
-- =C-c A= → "Delegated — Awaiting Response" block is your inbox
+- ~C-c a E~ → "Delegated — Awaiting Response" block is your inbox
 - Rule: nothing WAITING goes more than one week without a check-in
 
 *Weekly — Internal sync (Hat: Engagement Director)*
@@ -351,7 +351,7 @@ Load this at the start of every Claude Code session on that account.
 *** First week checklist
 - [ ] =org-fractional-cto-new-client= run; CONTEXT.md populated
 - [ ] Active client set: =M-x org-fractional-cto-set-active-client=
-- [ ] Agenda dashboard tested: =C-c A= → should open client dashboard
+- [ ] Agenda dashboard tested: ~C-c a E~ → should open the global dashboard
 - [ ] Capture tested: =C-c c ew= → should file to client's Actions section
 - [ ] =/grill-me= run before first client conversation
 - [ ] Stakeholders captured: =C-c c ep= for all known key contacts
