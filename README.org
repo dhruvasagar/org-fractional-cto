@@ -17,7 +17,8 @@ the Org scaffolding to do all of it without leaving Emacs.
 Three moving parts, one workflow:
 
 1. *Onboarding* — =org-fractional-cto-new-client= scaffolds a complete
-   per-client workspace in seconds (operational hub, standup, context file), or
+   per-client workspace in seconds (operational hub, a =templates/= folder of
+   per-client capture templates, and a context file), or
    =org-fractional-cto-new-prospect= does the same for a pre-sales lead.
 2. *Capture* — a single =e= prefix (~C-c c e ...~) routes every kind of note —
    pre-sales calls, research, discovery, ADRs, risks, commitments, delegated
@@ -47,8 +48,12 @@ every capture and the dashboard follow it. Switch clients with one command.
   =org-agenda-tag-filter-preset=. The =CATEGORY= column shows each entry's client.
 - *Captures file directly into the client hub*, not into a refile inbox. Open
   =<client>.org= and the whole engagement is there, organised by section.
-- *Templates are bundled and overridable.* Everything ships with the package;
-  point =org-fractional-cto-template-directory= at your own folder to customise.
+- *Templates are per-client and overridable.* Every capture template ships with
+  the package and is copied into each client's =templates/= folder at
+  onboarding. A capture uses the client's =templates/<name>.org= if present, else
+  the bundled template — so edit one client's copy to tailor a capture for that
+  engagement, or point =org-fractional-cto-template-directory= at your own folder
+  to change the defaults for every client.
 
 * Installation
 
@@ -115,17 +120,59 @@ a file under a client's =templates/= to tailor it for that client. The folder is
 not scanned by the agenda. See [[*Customisation][Customisation]] for details.
 
 The operational hub declares the client identity once as a file-level tag, so it
-is inherited by every heading in the file rather than repeated:
+is inherited by every heading in the file rather than repeated. Onboarding
+generates the whole file — header, engagement heading, and one empty section per
+capture type, each pre-tagged with its type subtag:
 
 #+begin_example
+#+title: Acme Corp
+#+AUTHOR: Your Name
+#+STARTUP: overview
+#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED
 #+filetags: :ACME:
-...
+#+OPTIONS: date:nil
+
 * Acme Corp Engagement  :ACTIVE:
+:PROPERTIES:
+:ID:       ACME-OPS
+:CATEGORY: Acme Corp
+:END:
+
+See [[file:CONTEXT.md][CONTEXT.md]] for domain vocabulary, key people, and priorities.
+
+** Actions
 ** Delegations  :DELEGATED:
+** Blockers  :BLOCKER:
+** People  :PEOPLE:
+** Weekly Reviews  :REVIEW:
+** Commitments  :COMMITMENT:
 ** Risks  :RISK:
+** Meeting Notes  :MEETING:
+** Standup Notes  :STANDUP:
+** Internal Syncs  :INTERNAL:
+** Discovery Sessions  :DISCOVERY:
+** Stakeholder Profiles  :STAKEHOLDER:
+** Architecture Decisions  :ADR:
+** Architecture Reviews  :ARCHREVIEW:
+** Vendor Evaluations  :VENDOR:
+** Technical Debt  :TECHDEBT:
+** Security Findings  :SECURITY:
+** Health Checks  :HEALTH:
+** QBRs  :QBR:
+** Innovation Pipeline  :INNOVATION:
+** Scope Changes  :SCOPE:
+** Post-Mortems  :POSTMORTEM:
+** Retrospectives  :RETRO:
+** Pre-Sales Notes  :PRESALES:
+** Research  :RESEARCH:
+** Qualification  :QUALIFICATION:
 #+end_example
 
-The client tag is never repeated per-heading; Org's tag inheritance propagates it.
+The =* … Engagement= heading carries the *stage* tag (=:ACTIVE:= here) and an
+=:ID:= / =:CATEGORY:= drawer — the =CATEGORY= is what the dashboard's category
+column shows. Every =**= section is created empty, ready to receive captures.
+The client tag (=:ACME:=) is never repeated per-heading; Org's tag inheritance
+propagates it from =#+filetags= to every section and captured item.
 Existing hubs can be migrated to this layout with =M-x org-fractional-cto-upgrade-hub=.
 
 The hub's sections, the capture targets, and the dashboard all agree by
