@@ -23,6 +23,7 @@
 (declare-function org-fractional-cto-client-standup-file "org-fractional-cto")
 (declare-function org-fractional-cto--template "org-fractional-cto")
 (declare-function org-fractional-cto-client-name "org-fractional-cto")
+(declare-function org-fractional-cto-client-template-file "org-fractional-cto")
 
 ;;;; Capture-time helpers
 
@@ -92,12 +93,26 @@ than reading a slug the target has not stored yet."
   "Return a capture target function that files under HEADING."
   (lambda () (org-fractional-cto--capture-to-heading heading)))
 
+(defun org-fractional-cto--resolve-template-file (name)
+  "Return a filesystem path for template NAME.
+Prefer the active client's override at <clients-dir>/<slug>/templates/NAME;
+otherwise fall back to the bundled template.  The slug is obtained (and
+memoised) via `org-fractional-cto--capture-client-slug', so this works whether
+it runs at template-resolution time or later."
+  (let* ((slug (org-fractional-cto--capture-client-slug))
+         (override (and slug (org-fractional-cto-client-template-file slug name))))
+    (if (and override (file-exists-p override))
+        override
+      (org-fractional-cto--template name))))
+
 (defun org-fractional-cto--file (filename)
-  "Return a capture-template thunk yielding the contents of bundled FILENAME.
-Use it in the (function ...) template position; the contents are read at
-capture time so Org expands the file's %-escapes."
+  "Return a capture-template thunk yielding the contents of template FILENAME.
+Resolves FILENAME through `org-fractional-cto--resolve-template-file' so a
+per-client override under <slug>/templates/ wins over the bundled copy.  Used
+in the (function ...) template position; contents are read at capture time so
+Org expands the file's %-escapes."
   (lambda () (org-fractional-cto--file-contents
-              (org-fractional-cto--template filename))))
+              (org-fractional-cto--resolve-template-file filename))))
 
 ;;;; The templates
 

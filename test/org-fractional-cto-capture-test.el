@@ -129,6 +129,21 @@ pins that ordering down with a prompt-free template."
       (let ((filled (org-capture-fill-template tmpl)))
         (should (string-match-p "MEETING Acme Corp" filled))))))
 
+(ert-deftest ofc-resolve-template-prefers-client-override ()
+  "The resolver returns the client's templates/<name> when it exists."
+  (ofc-capture-test-with-client
+    (let ((override (org-fractional-cto-client-template-file "acme" "stakeholder.org")))
+      (make-directory (file-name-directory override) t)
+      (with-temp-file override (insert "* OVERRIDDEN STAKEHOLDER\n"))
+      (should (equal (org-fractional-cto--resolve-template-file "stakeholder.org")
+                     override)))))
+
+(ert-deftest ofc-resolve-template-falls-back-to-bundled ()
+  "With no client override, the resolver returns the bundled path."
+  (ofc-capture-test-with-client
+    (should (equal (org-fractional-cto--resolve-template-file "stakeholder.org")
+                   (org-fractional-cto--template "stakeholder.org")))))
+
 (provide 'org-fractional-cto-capture-test)
 
 ;;; org-fractional-cto-capture-test.el ends here
