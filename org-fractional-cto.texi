@@ -1163,11 +1163,25 @@ heading rather than a sub-heading. Preserve that placement when you edit a
 per-client clock-in template.
 
 @strong{Existing clients.} Clients created before this feature have no @samp{templates/}
-folder; they keep working via the bundled fallback. To adopt overrides, re-run
-@samp{M-x org-fractional-cto-new-client} (or @samp{new-prospect}) for the client — it
-copies any missing templates without clobbering files you have edited. If you
-previously tailored a flat @samp{<slug>/standup.org}, move it to
+folder; they keep working via the bundled templates — nothing breaks.
+
+To adopt per-client overrides for an existing client, create the @samp{templates/}
+directory under that client and copy in the bundled templates you want to
+customise. The quickest way to copy them all is to evaluate, in a scratch
+buffer, @code{(org-fractional-cto--copy-templates "<slug>")} — this copies the
+bundled set into @samp{<slug>/templates/}, skipping any files already there (it never
+touches your hub or @samp{CONTEXT.md}). Alternatively, copy the bundled
+@samp{templates/*.org} files in by hand.
+
+If you had previously edited a flat @samp{<slug>/standup.org}, move it to
 @samp{<slug>/templates/standup.org}.
+
+@strong{Do not re-run @samp{org-fractional-cto-new-client} on an existing client to get
+templates.} @samp{new-client} rewrites the client's hub (@samp{<slug>.org}, which holds all
+your captured notes) and its @samp{CONTEXT.md}, so running it on an active client
+would overwrite that data — it is guarded only by a yes/no prompt. Use the
+@samp{org-fractional-cto--copy-templates} path above, which only ever adds missing
+template files.
 
 @node Override every template globally
 @subsection Override every template globally
@@ -2768,10 +2782,18 @@ file under that client's @samp{templates/} — e.g. rename the standup streams i
 special handling; there is no flat @samp{<slug>/standup.org} fallback.
 
 Clients created before this feature have no @samp{templates/} folder and keep working
-via the bundled fallback. To adopt overrides, re-run onboarding for the client
-(it copies missing templates without clobbering edited files), or copy the
-bundled templates in by hand; move any previously-edited flat
-@samp{<slug>/standup.org} to @samp{<slug>/templates/standup.org}.
+via the bundled fallback — nothing breaks. To adopt overrides for such a client,
+create its @samp{templates/} directory and copy in the bundled templates you want to
+customise. The quickest way to copy them all is to evaluate, in a scratch buffer,
+@code{(org-fractional-cto--copy-templates "<slug>")} — it copies the bundled set into
+@samp{<slug>/templates/}, skipping any files already there, and never touches your hub
+or @samp{CONTEXT.md}. Or copy the bundled @samp{templates/*.org} files in by hand. If you
+previously edited a flat @samp{<slug>/standup.org}, move it to
+@samp{<slug>/templates/standup.org}.
+
+@strong{Do NOT} re-run @samp{M-x org-fractional-cto-new-client} on an existing client just to
+get templates: it rewrites the hub and @samp{CONTEXT.md} and would overwrite your
+captured notes.
 
 @strong{Clock-in convention.} Templates that clock in keep their @samp{%?} cursor marker in
 the @strong{top entry body} — above the first @samp{**} sub-heading — so Org clocks the
@@ -2813,8 +2835,6 @@ funding, people, or technology context.
 @emph{Fields:} Topic, area (Company/Market/Competitor/Tech stack/People/Funding/Other),
 source / link.
 @emph{Structure:} Finding | Implication | Follow-up (checkbox).
-@emph{Note:} This template is inline (no separate file template); the entry is
-self-contained.
 
 @node @samp{eF} — Fit / Qualification
 @subsubsection @samp{eF} — Fit / Qualification
@@ -2922,7 +2942,6 @@ reachable via @samp{C-c a m}).
 @emph{Fields:} Date (defaults to today's date).
 @emph{Structure:} Funnel metrics table (Metric / Value / vs. Last Week / Notes) |
 Observations | Actions Triggered (checkboxes).
-@emph{Note:} This template is inline (no separate file template).
 
 @node @samp{eq} — QBR (Quarterly Business Review)
 @subsubsection @samp{eq} — QBR (Quarterly Business Review)

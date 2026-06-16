@@ -533,11 +533,25 @@ heading rather than a sub-heading. Preserve that placement when you edit a
 per-client clock-in template.
 
 *Existing clients.* Clients created before this feature have no =templates/=
-folder; they keep working via the bundled fallback. To adopt overrides, re-run
-=M-x org-fractional-cto-new-client= (or =new-prospect=) for the client — it
-copies any missing templates without clobbering files you have edited. If you
-previously tailored a flat =<slug>/standup.org=, move it to
+folder; they keep working via the bundled templates — nothing breaks.
+
+To adopt per-client overrides for an existing client, create the =templates/=
+directory under that client and copy in the bundled templates you want to
+customise. The quickest way to copy them all is to evaluate, in a scratch
+buffer, ~(org-fractional-cto--copy-templates "<slug>")~ — this copies the
+bundled set into =<slug>/templates/=, skipping any files already there (it never
+touches your hub or =CONTEXT.md=). Alternatively, copy the bundled
+=templates/*.org= files in by hand.
+
+If you had previously edited a flat =<slug>/standup.org=, move it to
 =<slug>/templates/standup.org=.
+
+*Do not re-run =org-fractional-cto-new-client= on an existing client to get
+templates.* =new-client= rewrites the client's hub (=<slug>.org=, which holds all
+your captured notes) and its =CONTEXT.md=, so running it on an active client
+would overwrite that data — it is guarded only by a yes/no prompt. Use the
+=org-fractional-cto--copy-templates= path above, which only ever adds missing
+template files.
 
 ** Override every template globally
 

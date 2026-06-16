@@ -319,10 +319,18 @@ file under that client's =templates/= — e.g. rename the standup streams in
 special handling; there is no flat =<slug>/standup.org= fallback.
 
 Clients created before this feature have no =templates/= folder and keep working
-via the bundled fallback. To adopt overrides, re-run onboarding for the client
-(it copies missing templates without clobbering edited files), or copy the
-bundled templates in by hand; move any previously-edited flat
-=<slug>/standup.org= to =<slug>/templates/standup.org=.
+via the bundled fallback — nothing breaks. To adopt overrides for such a client,
+create its =templates/= directory and copy in the bundled templates you want to
+customise. The quickest way to copy them all is to evaluate, in a scratch buffer,
+~(org-fractional-cto--copy-templates "<slug>")~ — it copies the bundled set into
+=<slug>/templates/=, skipping any files already there, and never touches your hub
+or =CONTEXT.md=. Or copy the bundled =templates/*.org= files in by hand. If you
+previously edited a flat =<slug>/standup.org=, move it to
+=<slug>/templates/standup.org=.
+
+*Do NOT* re-run =M-x org-fractional-cto-new-client= on an existing client just to
+get templates: it rewrites the hub and =CONTEXT.md= and would overwrite your
+captured notes.
 
 *Clock-in convention.* Templates that clock in keep their =%?= cursor marker in
 the *top entry body* — above the first =**= sub-heading — so Org clocks the
@@ -353,8 +361,6 @@ funding, people, or technology context.
 /Fields:/ Topic, area (Company/Market/Competitor/Tech stack/People/Funding/Other),
 source / link.
 /Structure:/ Finding | Implication | Follow-up (checkbox).
-/Note:/ This template is inline (no separate file template); the entry is
-self-contained.
 
 **** =eF= — Fit / Qualification
 /Use:/ After the first pre-sales call, once you have enough signal to score
@@ -434,7 +440,6 @@ reachable via =C-c a m=).
 /Fields:/ Date (defaults to today's date).
 /Structure:/ Funnel metrics table (Metric / Value / vs. Last Week / Notes) |
 Observations | Actions Triggered (checkboxes).
-/Note:/ This template is inline (no separate file template).
 
 **** =eq= — QBR (Quarterly Business Review)
 /Use:/ Quarterly formal checkpoint with client stakeholders.

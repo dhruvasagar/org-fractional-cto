@@ -90,6 +90,8 @@ heading; TAG is written as the file's `#+filetags'."
   "Copy every bundled template into client SLUG's templates/ directory.
 Existing files are left untouched so re-running never clobbers edits.  Standup
 is just one of the copied files -- it gets no special handling."
+  ;; "x.org" is a throwaway name; we only want each directory via
+  ;; file-name-directory.
   (let* ((dest (file-name-directory
                 (org-fractional-cto-client-template-file slug "x.org")))
          (src  (file-name-directory (org-fractional-cto--template "x.org"))))

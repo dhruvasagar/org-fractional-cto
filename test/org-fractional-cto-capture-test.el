@@ -106,7 +106,11 @@ or removed."
                       "innovation_meeting.org" "internal_sync.org"
                       "presales_call.org" "qbr.org" "qualification.org"
                       "retrospective.org" "stakeholder.org" "standup.org"
-                      "tech_spike.org" "vendor_eval.org" "weekly_review.org"))
+                      "tech_spike.org" "vendor_eval.org" "weekly_review.org"
+                      "research.org" "action.org" "person.org" "commitment.org"
+                      "health_check.org" "metrics.org" "risk.org"
+                      "scope_change.org" "post_mortem.org" "quick_decision.org"
+                      "tech_debt.org" "security.org" "innovation_idea.org"))
     (should (file-exists-p (org-fractional-cto--template filename)))))
 
 (ert-deftest ofc-client-name-fills-after-target-runs ()
@@ -189,6 +193,15 @@ so Org clocks the entry's main heading rather than a sub-heading."
       (should cursor)
       (should subheading)
       (should (< cursor subheading)))))
+
+(ert-deftest ofc-resolve-template-falls-back-with-no-active-client ()
+  "With no active client and no override on disk, the resolver returns the
+bundled template (after a single client selection prompt)."
+  (ofc-capture-test-with-client
+    (let ((org-fractional-cto-active-client nil))
+      (cl-letf (((symbol-function 'completing-read) (lambda (&rest _) "acme")))
+        (should (equal (org-fractional-cto--resolve-template-file "stakeholder.org")
+                       (org-fractional-cto--template "stakeholder.org")))))))
 
 (provide 'org-fractional-cto-capture-test)
 
