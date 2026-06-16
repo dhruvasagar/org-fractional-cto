@@ -18,7 +18,8 @@
 ;; It bundles three things into one opinionated workflow:
 ;;
 ;;   1. Onboarding   -- `org-fractional-cto-new-client' scaffolds a complete
-;;                      per-client workspace (operational hub, standup, context).
+;;                      per-client workspace (operational hub, capture templates,
+;;                      context).
 ;;   2. Capture      -- a single `e' capture prefix (`C-c c e ...') routes every
 ;;                      kind of note -- discovery, ADRs, risks, commitments,
 ;;                      delegated tasks, blockers, retrospectives, QBRs, and
@@ -61,8 +62,8 @@
 (defcustom org-fractional-cto-clients-directory
   (expand-file-name "clients" (or (bound-and-true-p org-directory) "~/org"))
   "Directory holding one sub-directory per client engagement.
-Each client lives in DIRECTORY/<slug>/ and owns <slug>.org, standup.org,
-and CONTEXT.md."
+Each client lives in DIRECTORY/<slug>/ and owns <slug>.org, CONTEXT.md, and a
+templates/ subdirectory of per-client capture templates."
   :type 'directory
   :group 'org-fractional-cto)
 
@@ -199,11 +200,6 @@ skipped, matching `org-fractional-cto-agenda-files'."
 NAME is a bundled template filename such as \"risk.org\"; the override lives
 under the client's `templates/' subdirectory."
   (expand-file-name (format "%s/templates/%s" slug name)
-                    (org-fractional-cto--clients-dir)))
-
-(defun org-fractional-cto-client-standup-file (slug)
-  "Return the standup template file for client SLUG."
-  (expand-file-name (format "%s/standup.org" slug)
                     (org-fractional-cto--clients-dir)))
 
 (defun org-fractional-cto-client-context-file (slug)
