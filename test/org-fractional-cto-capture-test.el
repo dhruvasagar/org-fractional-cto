@@ -95,6 +95,40 @@ The selection is also memoised so it happens only once per capture."
         (should (equal (org-fractional-cto--capture-client-slug) "acme"))
         (should (= prompts 1))))))
 
+;;;; Audit: file/string templates that embed the client name
+
+(ert-deftest ofc-every-file-template-exists ()
+  "Every (function ... --file FN) capture template points at a real file.
+Guards against a template entry referencing a bundled file that was renamed
+or removed."
+  (dolist (filename '("adr.org" "arch_review.org" "blocker.org"
+                      "client_meeting.org" "delegation.org" "discovery.org"
+                      "innovation_meeting.org" "internal_sync.org"
+                      "presales_call.org" "qbr.org" "qualification.org"
+                      "retrospective.org" "stakeholder.org" "standup.org"
+                      "tech_spike.org" "vendor_eval.org" "weekly_review.org"))
+    (should (file-exists-p (org-fractional-cto--template filename)))))
+
+(ert-deftest ofc-client-name-fills-after-target-runs ()
+  "%(org-capture-get :ofc-client-name) resolves to the client display name.
+Unlike the standup's file-selection decision (made when the template function
+runs, before the target), a %(...) escape is evaluated by
+`org-capture-fill-template' AFTER the target has stored :ofc-client-name --
+so the meeting/ADR/etc. templates that print the client name are safe.  This
+pins that ordering down with a prompt-free template."
+  (ofc-capture-test-with-client
+    ;; Give the hub a #+title so the display name differs from the slug.
+    (with-temp-file (org-fractional-cto-client-org-file "acme")
+      (insert "#+title: Acme Corp\n#+filetags: :ACME:\n\n* Acme Corp Engagement\n** Meeting Notes\n"))
+    (let ((tmpl "* MEETING %(org-capture-get :ofc-client-name)\n"))
+      ;; Template is resolved first (here it is a literal string); then the
+      ;; target runs and stores the client name...
+      (funcall (org-fractional-cto--target "Meeting Notes"))
+      (should (equal (org-capture-get :ofc-client-name) "Acme Corp"))
+      ;; ...and only now does the %(...) escape get evaluated.
+      (let ((filled (org-capture-fill-template tmpl)))
+        (should (string-match-p "MEETING Acme Corp" filled))))))
+
 (provide 'org-fractional-cto-capture-test)
 
 ;;; org-fractional-cto-capture-test.el ends here
