@@ -83,14 +83,10 @@ SLUG comes from the memoised `org-fractional-cto--capture-client-slug'."
 ### Onboarding
 
 `org-fractional-cto--scaffold` gains a call to `--copy-templates`.
-`--write-standup` is removed; standup arrives as one of the copied files. New
-clients therefore get a full, editable `templates/` directory.
-
-The bundled `templates/standup.org` becomes the single source of truth for the
-standup template. Its current 3-stream form is kept as the default (the user
-adds streams per-client by editing the copy); the 6-stream behaviour that lived
-only in `--write-standup` is not preserved, since per-client editing supersedes
-a fixed default.
+`--write-standup` is removed; standup arrives as one of the copied files, with
+no special handling. New clients get a full, editable `templates/` directory.
+The bundled `templates/standup.org` is the single source of truth for the
+standup default, exactly as every other template's bundled file is for its own.
 
 ### Externalizing inline templates
 
