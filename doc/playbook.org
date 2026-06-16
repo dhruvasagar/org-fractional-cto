@@ -171,6 +171,10 @@ a forcing function tend to optimise for comfort over correctness.
 - [ ] Engineering standards baseline: what varies across teams that should be standardised
 - [ ] Security posture assessment (run =/cso= from gstack)
 
+Risks and security findings each carry a =Status:= field. Marking an item
+=Resolved= or =Mitigated= drops it from the =C-c a E= dashboard; reviewing
+and closing items is part of the Phase 3 cadence.
+
 *** Build vs. Buy decision frame
 Before recommending build:
 1. Does a commercial solution exist that solves 80%+ of the problem?
@@ -214,14 +218,19 @@ decisions under pressure.
 - =C-c c eW= — weekly review capture
 - Check every WAITING item: has the owner responded? Is the deadline at risk?
 - Ping directly (don't wait for standup) for anything due within 2 days
-- ~C-c a E~ → "Delegated — Awaiting Response" block is your inbox
+- ~C-c a E~ opens the global engagement dashboard (all clients, pre-focused on the
+  active client; press =/= to widen) — the "Delegated — awaiting response" block
+  is your inbox within it
+- Evil users: with point on an agenda line, =, g= delegates and =, b= files a
+  blocker without leaving the agenda
 - Rule: nothing WAITING goes more than one week without a check-in
 
 *Weekly — Internal sync (Hat: Engagement Director)*
 - Monday, before any client-facing communication that week
 - Template: =C-c c ei=
 - Topics: delegation status, commitments vs. reality gap, blockers to escalate,
-  risk register updates, client comms review
+  risk register updates (close =Resolved=/=Mitigated= items to clear the dashboard),
+  client comms review
 - Rule: nothing surfaces to the client that hasn't been through this sync first
 
 *Weekly — Client sync (Hat: Engagement Director)*
@@ -300,8 +309,10 @@ value — not sales pushes. The best expansions feel like the client's idea.
 - The client asks a question that reveals a problem outside current scope
 
 *** Scope change discipline
-Any work identified outside the current SOW must be captured immediately (=C-c c e=)
+Any work identified outside the current SOW must be captured immediately (=C-c c ee=)
 and brought through the internal sync before any client conversation about it.
+Captured scope changes surface in the =C-c a E= "Scope changes — pending decisions"
+block, making them visible at each internal sync.
 Never agree to out-of-scope work in a client meeting — "let me come back to you on
 what that would look like" is always the right answer in the room.
 
@@ -322,9 +333,9 @@ In Emacs: =M-x org-fractional-cto-new-client=
 - Enter the client slug (lowercase, no spaces, e.g. "acme")
 
 This automatically creates:
-- =roam/clients/acme/acme.org= with all standard sections (Actions, Delegations, Blockers, People, etc.)
-- =roam/clients/acme/standup.org= with stream-based standup template
-- =roam/clients/acme/CONTEXT.md= pre-populated with all section headers
+- =<clients-directory>/acme/acme.org= with all standard sections (Actions, Delegations, Blockers, People, etc.)
+- =<clients-directory>/acme/standup.org= with stream-based standup template
+- =<clients-directory>/acme/CONTEXT.md= pre-populated with all section headers
 - Adds the client directory to =org-agenda-files= automatically
 
 Then: set this session's active client:
@@ -361,8 +372,9 @@ Load this at the start of every Claude Code session on that account.
 
 ** Reference: All Capture Templates
 
-All engagement captures use the =e= prefix. File-based templates live in:
-=roam/templates/engagement/=. Active client must be set (=M-x org-fractional-cto-set-active-client=)
+All engagement captures use the =e= prefix. File-based templates live in the
+package's bundled =templates/= directory (configurable via
+=org-fractional-cto-template-directory=). Active client must be set (=M-x org-fractional-cto-set-active-client=)
 or you will be prompted on each capture.
 
 *** Relationship & Communication

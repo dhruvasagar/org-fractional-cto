@@ -168,6 +168,7 @@ Reference
 * Legend::
 * File Organization::
 * Capture Templates — Complete Reference::
+* Customisation::
 * Operating Rhythms — Day by Day::
 * The Hat Model in Practice::
 * Tools Reference::
@@ -195,10 +196,17 @@ File Organization
 
 Capture Templates — Complete Reference
 
+* Pre-Sales & Pipeline Templates::
 * Relationship & Communication Templates::
 * Action Tracking & Delegation Templates::
 * Risk & Delivery Templates::
 * Technical Templates::
+
+Pre-Sales & Pipeline Templates
+
+* @samp{el} — Pre-Sales Call / Lead Intake::
+* @samp{eo} — Research Note::
+* @samp{eF} — Fit / Qualification::
 
 Relationship & Communication Templates
 
@@ -208,6 +216,7 @@ Relationship & Communication Templates
 * @samp{ep} — Stakeholder Profile::
 * @samp{ec} — Commitment Captured::
 * @samp{eh} — Client Health Check::
+* @samp{eM} — Metrics Snapshot::
 * @samp{eq} — QBR (Quarterly Business Review)::
 
 Action Tracking & Delegation Templates
@@ -229,6 +238,7 @@ Risk & Delivery Templates
 Technical Templates
 
 * @samp{ed} — Discovery Session::
+* @samp{ek} — Tech Spike::
 * @samp{ea} — Architecture Decision Record (ADR)::
 * @samp{eA} — Architecture Health Review::
 * @samp{ev} — Vendor / Tool Evaluation::
@@ -377,18 +387,36 @@ Or manually:
 (org-fractional-cto-setup)
 @end lisp
 
-@samp{org-fractional-cto-setup} does three things: installs the @samp{e} capture group,
-registers the dashboard agenda command, and adds your existing client
-directories to @samp{org-agenda-files}. It is @strong{idempotent} — safe to run again any
-time (e.g. after you edit @samp{org-fractional-cto-dashboard-blocks}). Re-running
-refreshes the captures and the dashboard in place rather than duplicating them,
-so @code{M-x org-fractional-cto-setup} is the way to apply config changes without
-restarting Emacs.
+@samp{org-fractional-cto-setup} does the following on every run:
+
+@itemize
+@item
+Installs the @samp{e} capture group.
+@item
+Registers the dashboard (@samp{E}) and prospect pipeline (@samp{P}) agenda commands.
+@item
+Adds your existing client directories to @samp{org-agenda-files}.
+@item
+Registers the workflow's TODO keywords (@samp{TODO NEXT INPROGRESS WAITING …})
+into the global @samp{org-todo-keywords} and their keyword faces.
+@item
+Enables agenda tag inheritance (@samp{org-agenda-use-tag-inheritance}) so the
+inherited client @samp{#+filetags} tag is filterable.
+@item
+Wires the at-point action keybindings (Evil @samp{, g} / @samp{, b} in agendas and the
+optional non-Evil @samp{org-fractional-cto-agenda-keymap-prefix}).
+@end itemize
+
+It is @strong{idempotent} — safe to run again any time (e.g. after you edit
+@samp{org-fractional-cto-dashboard-blocks}). Re-running refreshes the captures and
+the dashboard in place rather than duplicating them, so @code{M-x
+org-fractional-cto-setup} is the way to apply config changes without restarting
+Emacs.
 
 @node Verify
 @subsection Verify
 
-Three quick checks before you create anything:
+Four quick checks before you create anything:
 
 @enumerate
 @item
@@ -399,9 +427,12 @@ Three quick checks before you create anything:
 @item
 @strong{Captures are installed.} Press @code{C-c c}. You should see
 @samp{e   Engagement (select client)} in the menu. (Press @samp{C-g} to dismiss.)
+@item
+@strong{Pipeline is registered.} Press @code{C-c a}. The dispatcher should also list:
+@samp{P   Fractional CTO — prospect pipeline}. (Press @samp{q} to dismiss.)
 @end enumerate
 
-If all three pass, the package is live.
+If all four pass, the package is live.
 
 @node Step 2 — The two concepts you will lean on
 @section Step 2 — The two concepts you will lean on
@@ -537,19 +568,28 @@ here too, so your pre-sales follow-ups land on the dashboard like any work.
 @end itemize
 
 As the prospect advances, move the stage with @samp{M-x org-fractional-cto-set-stage}
-(@samp{LEAD} → @samp{QUALIFIED} → @samp{ACTIVE} when you win, or @samp{LOST}). Across all clients,
-@samp{C-c a P} shows the whole pipeline — every @samp{LEAD} / @samp{QUALIFIED} engagement, one
-line each.
+(@samp{LEAD} → @samp{QUALIFIED} → @samp{ACTIVE} when you win, @samp{LOST} to close it out, or
+@samp{DORMANT} to park it without losing the record). Across all clients, @samp{C-c a P}
+shows the whole pipeline — every @samp{LEAD} / @samp{QUALIFIED} engagement, one line each.
 
 If you have hubs created before stages existed, run @samp{M-x
-org-fractional-cto-upgrade-hub} on each to add the new sections and an @samp{ACTIVE}
-stage tag.
+org-fractional-cto-upgrade-hub} on each. It: adds a @samp{#+filetags: :SLUG:} line
+(the client tag at file level), strips any now-redundant per-heading client tag
+from every heading, appends any missing sections from the current section list,
+and ensures the engagement heading carries a stage tag (defaulting to @samp{ACTIVE}).
+The command is idempotent — safe to run more than once.
 
 @node Step 4 — Fill in CONTEXTmd
 @section Step 4 — Fill in CONTEXT.md
 
+@strong{Note:} This step describes the @samp{new-client} path, where @samp{CONTEXT.md} opens
+automatically after onboarding. If you used @samp{new-prospect} (Step 3b) instead,
+the pre-sales call capture opened first; fill @samp{CONTEXT.md} at your earliest
+convenience (find it at @samp{acme/CONTEXT.md}) and then skip to Step 6 — the
+prospect is already set active.
+
 @samp{CONTEXT.md} is the human (and AI) brief for the engagement. It opens
-automatically after onboarding, pre-populated with section headers:
+automatically after @samp{new-client}, pre-populated with section headers:
 
 @itemize
 @item
@@ -571,6 +611,9 @@ travels into any tool.
 
 @node Step 5 — Set the active client
 @section Step 5 — Set the active client
+
+@strong{Note:} This step applies to the @samp{new-client} path. If you used @samp{new-prospect}
+(Step 3b), the client was set active automatically — you can skip this step.
 
 Back from @samp{CONTEXT.md}:
 
@@ -608,7 +651,10 @@ You are prompted for the action text, then a deadline.
 Org files a @samp{TODO} under Acme's @samp{Actions} section, stamped with the creation
 time, and @strong{clocks in} (the @samp{ew} template sets @samp{:clock-in}). The client tag
 @samp{:ACME:} is inherited from @samp{#+filetags} — it does not appear on the item itself.
-The capture template also auto-fills the client display name (no @samp{Client:} prompt).
+Because an active client is set, you are routed straight to Acme's hub — no
+client-selection prompt. (Richer templates such as meeting or QBR captures that
+have a @samp{Client:} field additionally auto-fill the client display name; the action
+template has no such field.)
 @item
 Finish with @code{C-c C-c} to file it (which also clocks out), or @code{C-c C-k} to
 abort.
@@ -706,11 +752,30 @@ under the action itself, so the two sides point at each other.
 
 Both are bound to @samp{g} and @samp{b} in @samp{org-fractional-cto-command-map} (see
 @ref{Step 10 — The management commands, , Step 10}). They can also be invoked
-@strong{directly on an agenda line} — Evil users get @samp{, g} (delegate) and @samp{, b} (block)
-in the agenda's motion state; non-Evil users can set
-@samp{org-fractional-cto-agenda-keymap-prefix} for a prefix key, or use @samp{M-x}.
-Reach for these when the work is already on a heading; reach for @samp{eg} / @samp{eb} when
-you are capturing something new.
+@strong{directly on an agenda line}:
+
+@enumerate
+@item
+Open the dashboard (@code{C-c a E}) and move point to a line for an action you
+want to delegate.
+@item
+Press @samp{, g} (Evil motion state) — or your configured non-Evil prefix followed
+by @samp{g}, or @samp{M-x org-fractional-cto-delegate-at-point}.
+@item
+You are prompted for the assignee, a check-in date (@samp{SCHEDULED}), and an
+optional delivery deadline. The entry flips to @samp{WAITING} / @samp{DELEGATED} in the
+source hub and moves from @strong{Open actions} to @strong{Delegated — awaiting response} on
+the next agenda refresh (@samp{r}).
+@end enumerate
+
+For a blocker: press @samp{, b} (or prefix @samp{b} / @samp{M-x org-fractional-cto-block-at-point})
+on an agenda line. A @samp{[#A]} blocker is filed into the client's @strong{Blockers} section
+with a @samp{BLOCKING} back-reference to the action, and the action gains a reciprocal
+link. The blocker appears in the @strong{Blockers & escalations} block immediately after
+refresh.
+
+Reach for these agenda-line shortcuts when the work is already captured; reach
+for @samp{eg} / @samp{eb} when you are capturing something new.
 
 @node Relationship & communication
 @subsection Relationship & communication
@@ -889,13 +954,36 @@ Blocks 6–9 are the @strong{watch list}: severity-rated liabilities (risks, sec
 findings, tech debt) and scope decisions that carry no @samp{TODO} keyword and so
 would otherwise never appear in an action view.
 
+@node Closing out a risk or security finding
+@subsubsection Closing out a risk or security finding
+
+To remove a risk or security finding from the board, jump to its heading (press
+@samp{RET} or @samp{TAB} on the agenda line to visit the source entry) and change its
+@samp{Status:} line to @samp{Resolved} or @samp{Mitigated}. On the next dashboard refresh (@samp{r}),
+the entry leaves the @strong{Active risks} or @strong{Open security findings} block. Entries
+with @samp{Status: Open} or @samp{Status: Accepted} remain visible.
+
+@node Filtering the dashboard to one client
+@subsubsection Filtering the dashboard to one client
+
 Because the dashboard is a @strong{real Org agenda command}, not a bespoke function, it
 inherits the dispatcher's powers: refresh with @samp{r}, filter with @samp{/}, narrow by
 tag, export, and it is sticky-agenda aware. The dashboard spans @strong{all} client
 files. When an active client is set, the view opens pre-focused on that client
 via the native @samp{org-agenda-tag-filter-preset}, and the @samp{CATEGORY} column shows
-each entry's client. Use the agenda's native @samp{/} key to widen, refocus on a
-different client, or clear the filter; there is no separate focus command.
+each entry's client display name. For example, with @samp{acme} active:
+
+@itemize
+@item
+The agenda header line shows @samp{[+ACME]} and every entry's @samp{CATEGORY} column
+reads @samp{Acme Corp}.
+@item
+To widen to all clients: press @samp{/}, clear the filter input, and press @samp{RET}.
+@item
+To refocus on a different client (e.g. Beta Inc with slug @samp{beta}): press @samp{/},
+type @samp{+BETA}, then press @samp{RET}. The board narrows to Beta's entries.
+@end itemize
+
 @samp{org-fractional-cto-set-tag-inheritance} (on by default) ensures the inherited
 client filetag is visible to the filter.
 @samp{M-x org-fractional-cto-switch-client} sets a different client active and
@@ -928,8 +1016,8 @@ cross-client list.
 @node Step 10 — The management commands
 @section Step 10 — The management commands
 
-Five commands run the lifecycle. They are available via @samp{M-x} and also live in
-@samp{org-fractional-cto-command-map} under the keys shown:
+The management commands live in @samp{org-fractional-cto-command-map}. They are
+available via @samp{M-x} and also bound under the keys shown:
 
 @multitable {aaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
 @headitem Map key
@@ -950,6 +1038,12 @@ Five commands run the lifecycle. They are available via @samp{M-x} and also live
 @item @samp{w}
 @tab @samp{org-fractional-cto-switch-client}
 @tab Switch client + open dashboard
+@item @samp{p}
+@tab @samp{org-fractional-cto-new-prospect}
+@tab New prospect (LEAD stage, sets active)
+@item @samp{S}
+@tab @samp{org-fractional-cto-set-stage}
+@tab Set engagement stage on active client's hub
 @item @samp{g}
 @tab @samp{org-fractional-cto-delegate-at-point}
 @tab Delegate the action at point
@@ -993,7 +1087,7 @@ Everything tunable lives in the @samp{org-fractional-cto} customize group
 @tab @samp{user-full-name}
 @tab @samp{#+AUTHOR} in scaffolded files
 @item @samp{org-fractional-cto-agenda-key}
-@tab ="E"
+@tab @samp{"E"}
 @tab Dispatcher key for the dashboard
 @item @samp{org-fractional-cto-keymap-prefix}
 @tab @samp{nil}
@@ -1013,6 +1107,21 @@ Everything tunable lives in the @samp{org-fractional-cto} customize group
 @item @samp{org-fractional-cto-agenda-keymap-prefix}
 @tab @samp{nil}
 @tab Prefix key for at-point actions in agendas (non-Evil)
+@item @samp{org-fractional-cto-stages}
+@tab (5 stages)
+@tab Ordered list of valid engagement stages
+@item @samp{org-fractional-cto-default-stage}
+@tab @samp{"ACTIVE"}
+@tab Stage applied by @samp{new-client}
+@item @samp{org-fractional-cto-lead-stage}
+@tab @samp{"LEAD"}
+@tab Stage applied by @samp{new-prospect}
+@item @samp{org-fractional-cto-pipeline-stages}
+@tab @samp{"LEAD\vert@{@}QUALIFIED"}
+@tab Tag-match expression for the pipeline agenda view
+@item @samp{org-fractional-cto-pipeline-key}
+@tab @samp{"P"}
+@tab Dispatcher key for the prospect pipeline
 @end multitable
 
 Two customisations you are most likely to want:
@@ -1110,6 +1219,23 @@ re-run it — it is idempotent.
 @item
 @strong{I changed config but nothing updated.} Re-run @code{M-x org-fractional-cto-setup}.
 It refreshes captures and the dashboard in place; no restart needed.
+
+@item
+@strong{Filtering by client shows other clients' entries (or nothing).} The dashboard
+filter relies on the inherited @samp{#+filetags} client tag being visible to the Org
+agenda. Ensure @samp{org-fractional-cto-set-tag-inheritance} is @samp{t} (the default) and
+that @samp{org-fractional-cto-setup} has run — it sets @samp{org-agenda-use-tag-inheritance}
+to @samp{t}. If you set the variable to @samp{nil} to manage tag inheritance yourself, you
+must enable it globally or the filter will silently match nothing.
+
+@item
+@strong{The agenda at-point prefix does nothing.} Set
+@samp{org-fractional-cto-agenda-keymap-prefix} to your chosen prefix key @strong{before}
+calling @samp{org-fractional-cto-setup}, then re-run @code{M-x org-fractional-cto-setup}.
+Also verify the chosen prefix does not shadow an existing agenda binding (e.g.
+@samp{s} is already bound in @samp{org-agenda-mode-map} as @samp{org-agenda-schedule}).  If you
+use Evil, the comma localleader (@samp{, g} / @samp{, b}) is wired automatically by setup
+and does not require a prefix.
 @end itemize
 
 @node Where to go next
@@ -1467,6 +1593,10 @@ Engineering standards baseline: what varies across teams that should be standard
 Security posture assessment (run @samp{/cso} from gstack)
 @end itemize
 
+Risks and security findings each carry a @samp{Status:} field. Marking an item
+@samp{Resolved} or @samp{Mitigated} drops it from the @samp{C-c a E} dashboard; reviewing
+and closing items is part of the Phase 3 cadence.
+
 @node Build vs Buy decision frame
 @subsection Build vs. Buy decision frame
 
@@ -1557,7 +1687,12 @@ Check every WAITING item: has the owner responded? Is the deadline at risk?
 @item
 Ping directly (don't wait for standup) for anything due within 2 days
 @item
-@code{C-c a E} → "Delegated — Awaiting Response" block is your inbox
+@code{C-c a E} opens the global engagement dashboard (all clients, pre-focused on the
+active client; press @samp{/} to widen) — the "Delegated — awaiting response" block
+is your inbox within it
+@item
+Evil users: with point on an agenda line, @samp{, g} delegates and @samp{, b} files a
+blocker without leaving the agenda
 @item
 Rule: nothing WAITING goes more than one week without a check-in
 @end itemize
@@ -1570,7 +1705,8 @@ Monday, before any client-facing communication that week
 Template: @samp{C-c c ei}
 @item
 Topics: delegation status, commitments vs. reality gap, blockers to escalate,
-risk register updates, client comms review
+risk register updates (close @samp{Resolved=/=Mitigated} items to clear the dashboard),
+client comms review
 @item
 Rule: nothing surfaces to the client that hasn't been through this sync first
 @end itemize
@@ -1747,8 +1883,10 @@ The client asks a question that reveals a problem outside current scope
 @node Scope change discipline
 @subsection Scope change discipline
 
-Any work identified outside the current SOW must be captured immediately (@samp{C-c c e})
+Any work identified outside the current SOW must be captured immediately (@samp{C-c c ee})
 and brought through the internal sync before any client conversation about it.
+Captured scope changes surface in the @samp{C-c a E} "Scope changes — pending decisions"
+block, making them visible at each internal sync.
 Never agree to out-of-scope work in a client meeting — "let me come back to you on
 what that would look like" is always the right answer in the room.
 
@@ -1792,11 +1930,11 @@ Enter the client slug (lowercase, no spaces, e.g. "acme")
 This automatically creates:
 @itemize
 @item
-@samp{roam/clients/acme/acme.org} with all standard sections (Actions, Delegations, Blockers, People, etc.)
+@samp{<clients-directory>/acme/acme.org} with all standard sections (Actions, Delegations, Blockers, People, etc.)
 @item
-@samp{roam/clients/acme/standup.org} with stream-based standup template
+@samp{<clients-directory>/acme/standup.org} with stream-based standup template
 @item
-@samp{roam/clients/acme/CONTEXT.md} pre-populated with all section headers
+@samp{<clients-directory>/acme/CONTEXT.md} pre-populated with all section headers
 @item
 Adds the client directory to @samp{org-agenda-files} automatically
 @end itemize
@@ -1871,8 +2009,9 @@ First client sync scheduled
 @node Reference All Capture Templates
 @section Reference: All Capture Templates
 
-All engagement captures use the @samp{e} prefix. File-based templates live in:
-@samp{roam/templates/engagement/}. Active client must be set (@samp{M-x org-fractional-cto-set-active-client})
+All engagement captures use the @samp{e} prefix. File-based templates live in the
+package's bundled @samp{templates/} directory (configurable via
+@samp{org-fractional-cto-template-directory}). Active client must be set (@samp{M-x org-fractional-cto-set-active-client})
 or you will be prompted on each capture.
 
 @menu
@@ -2046,6 +2185,7 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 * Legend::
 * File Organization::
 * Capture Templates — Complete Reference::
+* Customisation::
 * Operating Rhythms — Day by Day::
 * The Hat Model in Practice::
 * Tools Reference::
@@ -2189,7 +2329,7 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 @item Client dashboard (actions, delegations)
 @tab @samp{C-c a E} (global; pre-filtered to active client if set)
 @item Delegated items awaiting response
-@tab @samp{C-c a E} → "Delegated — Awaiting Response" block
+@tab @samp{C-c a E} → "Delegated — awaiting response" block
 @item Blockers & escalations
 @tab @samp{C-c a E} → "Blockers & Escalations" block
 @item All open TODOs for this client
@@ -2315,7 +2455,7 @@ hub's @samp{#+filetags} line (e.g. @samp{#+filetags: :ACME:}) rather than being 
 on individual headings or items. The dashboard and @samp{C-c a m TAG} search on these
 type tags.
 
-@multitable {aaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@multitable {aaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
 @headitem Tag
 @tab Section / capture
 @item @samp{DELEGATED}
@@ -2341,7 +2481,9 @@ type tags.
 @item @samp{STAKEHOLDER}
 @tab Stakeholder Profiles (@samp{ep})
 @item @samp{ADR}
-@tab Architecture Decisions (@samp{ea}, @samp{eD})
+@tab Architecture Decisions section tag (@samp{ea})
+@item @samp{DECISION}
+@tab Architecture Decisions → Quick decision item tag (@samp{eD})
 @item @samp{ARCHREVIEW}
 @tab Architecture Reviews (@samp{eA})
 @item @samp{VENDOR}
@@ -2351,7 +2493,9 @@ type tags.
 @item @samp{SECURITY}
 @tab Security Findings (@samp{ex})
 @item @samp{HEALTH}
-@tab Health Checks (@samp{eh}, @samp{eM})
+@tab Health Checks section tag (@samp{eh})
+@item @samp{METRICS}
+@tab Health Checks → Metrics snapshot item tag (@samp{eM})
 @item @samp{QBR}
 @tab QBRs (@samp{eq})
 @item @samp{INNOVATION}
@@ -2369,6 +2513,12 @@ type tags.
 @item @samp{QUALIFICATION}
 @tab Qualification (@samp{eF})
 @end multitable
+
+Some captures file under a typed section but stamp the item with their own
+distinct tag: @samp{eD} (quick decision) files under Architecture Decisions but
+carries @samp{:DECISION:}; @samp{eM} (metrics snapshot) files under Health Checks but
+carries @samp{:METRICS:}.  Both are reachable directly via @samp{C-c a m DECISION} /
+@samp{C-c a m METRICS}, and also via the section tag through inheritance.
 
 @node Key bindings
 @subsection Key bindings
@@ -2396,15 +2546,35 @@ type tags.
 @tab Upgrade an old hub in place
 @item @samp{C-c a P}
 @tab Prospect pipeline (all leads)
+@item @samp{M-x org-fractional-cto-pipeline}
+@tab Prospect pipeline (same as @samp{C-c a P})
 @item @samp{M-x org-fractional-cto-delegate-at-point}
 @tab Delegate the heading at point
 @item @samp{M-x org-fractional-cto-block-at-point}
 @tab Blocker against heading at point
+@item @samp{M-x org-fractional-cto-docs}
+@tab Open docs dispatcher (guide/playbook/reference/info)
+@item @samp{M-x org-fractional-cto-guide}
+@tab Open the step-by-step user guide
+@item @samp{M-x org-fractional-cto-playbook}
+@tab Open the engagement playbook
+@item @samp{M-x org-fractional-cto-reference}
+@tab Open this reference guide
+@item @samp{M-x org-fractional-cto-info}
+@tab Open the combined Info manual
 @end multitable
 
 Management commands run via @samp{M-x} by default (no global prefix is claimed).
 They also live in @samp{org-fractional-cto-command-map} (keys @samp{n s k d w p S g b h}); set
-@samp{org-fractional-cto-keymap-prefix} to bind it under a prefix of your choice.
+@samp{org-fractional-cto-keymap-prefix} to bind it under a prefix of your choice.  The
+@samp{h} key in the command map opens @samp{org-fractional-cto-docs}.
+
+@samp{org-fractional-cto-upgrade-hub} migrates a hub file that was created before the
+current version of the package. It adds a @samp{#+filetags:} line (client identity tag),
+strips any per-heading client tags that are now redundant, appends any section
+headings missing from the current scaffold, and ensures the engagement heading
+carries a valid stage tag. The command is idempotent — running it more than once
+on the same file is safe. Select the client when prompted.
 
 @samp{g} (@samp{org-fractional-cto-delegate-at-point}) and @samp{b}
 (@samp{org-fractional-cto-block-at-point}) act on the Org heading at point — both
@@ -2512,11 +2682,66 @@ The client display name is auto-filled from the hub's @samp{#+title} — no @sam
 prompt appears. Clocked entries start the org-clock automatically.
 
 @menu
+* Pre-Sales & Pipeline Templates::
 * Relationship & Communication Templates::
 * Action Tracking & Delegation Templates::
 * Risk & Delivery Templates::
 * Technical Templates::
 @end menu
+
+@node Pre-Sales & Pipeline Templates
+@subsection Pre-Sales & Pipeline Templates
+
+@menu
+* @samp{el} — Pre-Sales Call / Lead Intake::
+* @samp{eo} — Research Note::
+* @samp{eF} — Fit / Qualification::
+@end menu
+
+@node @samp{el} — Pre-Sales Call / Lead Intake
+@subsubsection @samp{el} — Pre-Sales Call / Lead Intake
+
+@emph{Use:} Capturing the first call or meeting with a prospect before any engagement
+is agreed. One entry per call.
+@emph{Clock:} Yes.
+@emph{Target:} @samp{<client>.org} → Pre-Sales Notes.
+@emph{Tag:} @samp{:PRESALES:}
+@emph{Fields:} Company / contact, how the lead came in (Source / referral),
+attendees; budget signal (Strong/Some/Unclear/None), timeline
+(Urgent/This quarter/Exploratory/Unknown), decision-maker(s).
+@emph{Structure:} The Ask | Pain Points / Triggers | Current State (as heard) |
+Signals | Next Step (checkbox with date).
+@emph{After capturing:} Run @samp{eF} (qualification) to score the fit before spending
+more time.
+
+@node @samp{eo} — Research Note
+@subsubsection @samp{eo} — Research Note
+
+@emph{Use:} Any research conducted about a prospect or client — market, competitor,
+funding, people, or technology context.
+@emph{Target:} @samp{<client>.org} → Research.
+@emph{Tag:} @samp{:RESEARCH:}
+@emph{Fields:} Topic, area (Company/Market/Competitor/Tech stack/People/Funding/Other),
+source / link.
+@emph{Structure:} Finding | Implication | Follow-up (checkbox).
+@emph{Note:} This template is inline (no separate file template); the entry is
+self-contained.
+
+@node @samp{eF} — Fit / Qualification
+@subsubsection @samp{eF} — Fit / Qualification
+
+@emph{Use:} After the first pre-sales call, once you have enough signal to score
+the opportunity. One qualification entry per prospect.
+@emph{Clock:} Yes.
+@emph{Target:} @samp{<client>.org} → Qualification.
+@emph{Tag:} @samp{:QUALIFICATION:}
+@emph{Fields:} Company name.
+@emph{Structure:} BANT-style scorecard table (Need/Budget/Authority/Timing/Technical
+fit/Strategic fit, each rated High/Med/Low) | Risks / Red Flags | Verdict
+(Pursue/Hold/Pass) | Rationale | If Pursue — prep notes for the first discovery
+session (@samp{ed}).
+@emph{After capturing:} Set the prospect's stage with @samp{M-x org-fractional-cto-set-stage}.
+Passed prospects move to @samp{QUALIFIED}; passes are marked @samp{LOST}.
 
 @node Relationship & Communication Templates
 @subsection Relationship & Communication Templates
@@ -2528,6 +2753,7 @@ prompt appears. Clocked entries start the org-clock automatically.
 * @samp{ep} — Stakeholder Profile::
 * @samp{ec} — Commitment Captured::
 * @samp{eh} — Client Health Check::
+* @samp{eM} — Metrics Snapshot::
 * @samp{eq} — QBR (Quarterly Business Review)::
 @end menu
 
@@ -2595,6 +2821,20 @@ love to see in the next 30 days?
 @emph{After capturing:} Act on one specific thing from their feedback before next month.
 The pattern of not acting on feedback is invisible until it's too late.
 
+@node @samp{eM} — Metrics Snapshot
+@subsubsection @samp{eM} — Metrics Snapshot
+
+@emph{Use:} Capturing a point-in-time funnel or KPI snapshot — typically weekly or at
+any review milestone. Distinct from @samp{eh} (health check), which is qualitative and
+sent to the client; this is a quantitative capture you own internally.
+@emph{Target:} @samp{<client>.org} → Health Checks.
+@emph{Tag:} @samp{:METRICS:} (note: the item carries @samp{METRICS}, not @samp{HEALTH}; both are
+reachable via @samp{C-c a m}).
+@emph{Fields:} Date (defaults to today's date).
+@emph{Structure:} Funnel metrics table (Metric / Value / vs. Last Week / Notes) |
+Observations | Actions Triggered (checkboxes).
+@emph{Note:} This template is inline (no separate file template).
+
 @node @samp{eq} — QBR (Quarterly Business Review)
 @subsubsection @samp{eq} — QBR (Quarterly Business Review)
 
@@ -2638,7 +2878,7 @@ a vendor from a strategic partner.
 your check-in date (@samp{SCHEDULED}), success criteria.
 @emph{Why WAITING:} The entry is created in the @samp{WAITING} state, not @samp{TODO}. This separates
 "things I owe" from "things I'm owed" — they surface in the dedicated
-"Delegated — Awaiting Response" block of @samp{C-c a E}.
+"Delegated — awaiting response" block of @samp{C-c a E}.
 @emph{After capturing:} The @samp{SCHEDULED} date is your follow-up trigger. If the check-in
 passes with no update, escalate. Review every WAITING item at the Friday weekly review.
 @emph{Discipline:} Delegation without a check-in date is hoping, not managing. Always set one.
@@ -2665,7 +2905,7 @@ heading already at point, so you never retype work that is already captured.
 gesture applied in place. Sets the heading to @samp{WAITING}, adds the @samp{DELEGATED}
 tag, records @samp{ASSIGNED_TO} and @samp{DELEGATED_ON}, and @samp{SCHEDULED=s your check-in;
   optionally sets a delivery =DEADLINE}. The item moves to the dashboard's
-"Delegated — Awaiting Response" block. An assignee is required.
+"Delegated — awaiting response" block. An assignee is required.
 @item
 @samp{M-x org-fractional-cto-block-at-point} (@samp{b} in the command map) — the @samp{eb}
 gesture applied in place. Files a @samp{[#A]} blocker into the client's Blockers
@@ -2717,9 +2957,12 @@ keep those current as the team changes.
 
 @emph{Use:} Any new risk to the engagement or delivery — technical or otherwise.
 Capture immediately when identified; don't wait for the next sync.
-@emph{Fields:} Description, likelihood (High/Medium/Low), impact (High/Medium/Low), owner, mitigation.
+@emph{Fields:} Description, status (Open/Mitigated/Resolved/Accepted), likelihood
+(High/Medium/Low), impact (High/Medium/Low), owner, mitigation.
 @emph{After capturing:} Add to the risk register in the master discovery doc. Review
-at every internal sync. A risk that sits in refile.org is not managed.
+at every internal sync. A risk that sits in refile.org is not managed. Risks
+whose status is @samp{Resolved} or @samp{Mitigated} drop off the dashboard's "Active
+risks" block — the same rule as security findings.
 
 @node @samp{ee} — Scope Change / Out-of-Scope Flag
 @subsubsection @samp{ee} — Scope Change / Out-of-Scope Flag
@@ -2762,6 +3005,7 @@ not "who dropped this?" The retro is for improving how the team works, not assig
 
 @menu
 * @samp{ed} — Discovery Session::
+* @samp{ek} — Tech Spike::
 * @samp{ea} — Architecture Decision Record (ADR)::
 * @samp{eA} — Architecture Health Review::
 * @samp{ev} — Vendor / Tool Evaluation::
@@ -2783,6 +3027,26 @@ Follow-up actions.
 @emph{Before the session:} Run @samp{/grill-me} (mattpocock/skills) to surface your assumptions.
 @emph{After the session:} Refile immediately. Update cross-cutting sections of the master
 discovery doc. Run a synthesis pass after every 2–3 sessions.
+
+@node @samp{ek} — Tech Spike
+@subsubsection @samp{ek} — Tech Spike
+
+@emph{Use:} A time-boxed investigation to answer a specific technical question before
+committing to a decision or implementation. Distinct from @samp{ed} (discovery session),
+which maps a stream broadly; a spike targets a single unknown with a defined
+time-box and a concrete recommendation as output.
+@emph{Clock:} Yes.
+@emph{Target:} @samp{<client>.org} → Discovery Sessions (same section as @samp{ed}).
+@emph{Tag:} @samp{:SPIKE:} (carried on the item; sections also inherit @samp{:DISCOVERY:}).
+@emph{Fields:} Question being investigated, stream / area, time-box
+(Half day/1 day/2 days/3 days), triggered by (decision needed, blocker, unknown
+risk), client (auto-filled).
+@emph{Structure:} Hypothesis | Approach | Findings (What Is True / What Is Uncertain /
+What Is False) | Unknowns Remaining | Recommendation
+(Build/Buy/Defer/Spike further/Escalate/No action) | Technical Specs / Evidence
+(code block) | References & Links | Follow-up Actions table.
+@emph{After capturing:} Recommendation should translate into an @samp{ea} ADR or a
+prioritised action item. A spike with no decision output is an incomplete spike.
 
 @node @samp{ea} — Architecture Decision Record (ADR)
 @subsubsection @samp{ea} — Architecture Decision Record (ADR)
@@ -2825,7 +3089,7 @@ Anything that touches customer PII → scrutinise the vendor's data handling ter
 
 @emph{Use:} Immediately when you identify tech debt — during discovery, code review,
 architecture sessions, or standups.
-@emph{Fields:} Description, area (Frontend/Backend/Infra/Integration/Data/Security),
+@emph{Fields:} Description, area (Frontend/Backend/Infrastructure/Integration/Data/Security),
 severity (Critical/High/Medium/Low), discovery context, impact if unaddressed.
 @emph{After capturing:} Add to the tech debt register in the master discovery doc.
 Prioritise at the next architecture session. Debt that isn't visible isn't managed.
@@ -2834,7 +3098,7 @@ Prioritise at the next architecture session. Debt that isn't visible isn't manag
 @subsubsection @samp{ex} — Security Finding
 
 @emph{Use:} Any security or compliance observation — immediately when found.
-@emph{Fields:} Finding description, severity, area (PCI/GDPR/API/Auth/Data/Infra),
+@emph{Fields:} Finding description, severity, area (PCI/GDPR/API/Auth/Data/Infrastructure),
 current status (Open/Mitigated/Resolved/Accepted), recommended action, owner.
 Closed-out findings (Resolved/Mitigated) drop off the dashboard's "Open security
 findings" block — the same rule as the risk register.
@@ -2847,11 +3111,72 @@ difficult conversation.
 
 @emph{Use:} Any time you spot something that could be done better, smarter, or that the
 client doesn't yet know is possible. Capture without filtering — evaluate later.
-@emph{Fields:} Title, category (AI/ML / Data / Platform / Integration / Music Tech / Other).
+@emph{Fields:} Title, category (AI/ML / Data / Platform / Integration / Other).
 @emph{Structure:} The opportunity (business framing first) | The technology | Why now /
 why this client | Rough effort | Next step.
 @emph{Pipeline review:} Monthly — select one idea to develop into a brief. Present the
 best one at each QBR as the "Strategic Recommendation."
+
+@node Customisation
+@section Customisation
+
+All package variables are @samp{defcustom=s. Set them before calling
+=org-fractional-cto-setup}, or customise interactively via @samp{M-x customize-group
+RET org-fractional-cto RET}.
+
+@multitable {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Variable
+@tab Default
+@tab Purpose
+@item @samp{org-fractional-cto-clients-directory}
+@tab @samp{<org-directory>/clients}
+@tab Root directory holding one sub-dir per client
+@item @samp{org-fractional-cto-template-directory}
+@tab @samp{<package-dir>/templates}
+@tab Bundled capture templates; override by pointing at your own directory
+@item @samp{org-fractional-cto-author}
+@tab @samp{user-full-name}
+@tab @samp{#+AUTHOR} inserted in scaffolded hub files
+@item @samp{org-fractional-cto-agenda-key}
+@tab @samp{"E"}
+@tab Dispatcher key under @samp{C-c a} for the client dashboard
+@item @samp{org-fractional-cto-keymap-prefix}
+@tab @samp{nil}
+@tab Optional prefix to bind @samp{org-fractional-cto-command-map} globally
+@item @samp{org-fractional-cto-agenda-keymap-prefix}
+@tab @samp{nil}
+@tab Optional prefix for at-point actions in @samp{org-agenda-mode-map}
+@item @samp{org-fractional-cto-stages}
+@tab @samp{LEAD QUALIFIED ACTIVE LOST DORMANT}
+@tab Ordered list of valid engagement stage tags
+@item @samp{org-fractional-cto-default-stage}
+@tab @samp{"ACTIVE"}
+@tab Stage applied by @samp{new-client}
+@item @samp{org-fractional-cto-lead-stage}
+@tab @samp{"LEAD"}
+@tab Stage applied by @samp{new-prospect}
+@item @samp{org-fractional-cto-pipeline-stages}
+@tab @code{"LEAD\vert@{@}QUALIFIED"}
+@tab Tag-match expression selecting prospects for the pipeline view
+@item @samp{org-fractional-cto-pipeline-key}
+@tab @samp{"P"}
+@tab Dispatcher key under @samp{C-c a} for the prospect pipeline view
+@item @samp{org-fractional-cto-set-tag-inheritance}
+@tab @samp{t}
+@tab Enable agenda tag inheritance (required for filetag-based client focus)
+@item @samp{org-fractional-cto-todo-keywords}
+@tab @samp{TODO NEXT INPROGRESS WAITING} | @samp{DONE CANCELLED}
+@tab TODO keyword sequence merged globally
+@item @samp{org-fractional-cto-todo-keyword-faces}
+@tab @samp{INPROGRESS → deep sky blue bold}
+@tab Keyword faces merged non-destructively into @samp{org-todo-keyword-faces}
+@item @samp{org-fractional-cto-dashboard-blocks}
+@tab 9 blocks (agenda → delegated → blockers → …)
+@tab The agenda series composing the @samp{C-c a E} dashboard; reorder or extend freely
+@item @samp{org-fractional-cto-doc-directory}
+@tab @samp{<package-dir>/doc}
+@tab Directory holding the bundled documentation sources
+@end multitable
 
 @node Operating Rhythms — Day by Day
 @section Operating Rhythms — Day by Day
@@ -3119,7 +3444,7 @@ up to 9 levels deep (configured in @samp{init-org.el}).
 @subsection org-roam
 
 The long-form note graph. Discovery docs and role plans are org-roam nodes (they
-have @samp{:ID:} properties and live in @samp{roam/}).
+have @samp{:ID:} properties).
 
 @multitable {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
 @headitem Key (default / Doom)
@@ -3198,9 +3523,9 @@ Setup: run @samp{/setup-matt-pocock-skills} once per repo.
 @tab Codifies the pattern into a reusable skill
 @end multitable
 
-The @samp{CONTEXT.md} file (@samp{roam/clients/<client>/CONTEXT.md}) is the domain glossary
-for a client. Load it at the start of every Claude Code session on that account.
-It stops you from re-explaining domain vocabulary every session.
+The @samp{CONTEXT.md} file (@samp{<clients-directory>/<client>/CONTEXT.md}) is the domain
+glossary for a client. Load it at the start of every Claude Code session on that
+account. It stops you from re-explaining domain vocabulary every session.
 
 @node gstack (garrytan/gstack)
 @subsection gstack (garrytan/gstack)
@@ -3276,11 +3601,11 @@ Enter the client slug (lowercase, no spaces — e.g. "acme")
 This creates in one step:
 @itemize
 @item
-@samp{roam/clients/acme/acme.org} — operational hub with all standard sections
+@samp{<clients-directory>/acme/acme.org} — operational hub with all standard sections
 @item
-@samp{roam/clients/acme/standup.org} — standup template with stream slots
+@samp{<clients-directory>/acme/standup.org} — standup template with stream slots
 @item
-@samp{roam/clients/acme/CONTEXT.md} — context file opened immediately for editing
+@samp{<clients-directory>/acme/CONTEXT.md} — context file opened immediately for editing
 @item
 Registers the client in @samp{org-agenda-files} automatically (no reload needed)
 @end itemize

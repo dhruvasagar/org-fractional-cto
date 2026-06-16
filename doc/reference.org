@@ -75,7 +75,7 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 | I need to...                            | Do this                                                  |
 |-----------------------------------------+----------------------------------------------------------|
 | Client dashboard (actions, delegations) | =C-c a E= (global; pre-filtered to active client if set) |
-| Delegated items awaiting response       | =C-c a E= → "Delegated — Awaiting Response" block         |
+| Delegated items awaiting response       | =C-c a E= → "Delegated — awaiting response" block         |
 | Blockers & escalations                  | =C-c a E= → "Blockers & Escalations" block               |
 | All open TODOs for this client          | =C-c a E= → "Open Actions" block                         |
 | Open commitments                        | =C-c a E= → "Commitments" block                          |
@@ -157,12 +157,14 @@ type tags.
 | =INTERNAL=    | Internal Syncs (=ei=)        |
 | =DISCOVERY=   | Discovery / Tech spike (=ed=, =ek=) |
 | =STAKEHOLDER= | Stakeholder Profiles (=ep=)  |
-| =ADR=         | Architecture Decisions (=ea=, =eD=) |
-| =ARCHREVIEW=  | Architecture Reviews (=eA=)  |
-| =VENDOR=      | Vendor Evaluations (=ev=)    |
-| =TECHDEBT=    | Technical Debt (=et=)        |
-| =SECURITY=    | Security Findings (=ex=)     |
-| =HEALTH=      | Health Checks (=eh=, =eM=)   |
+| =ADR=         | Architecture Decisions section tag (=ea=)               |
+| =DECISION=    | Architecture Decisions → Quick decision item tag (=eD=) |
+| =ARCHREVIEW=  | Architecture Reviews (=eA=)                             |
+| =VENDOR=      | Vendor Evaluations (=ev=)                               |
+| =TECHDEBT=    | Technical Debt (=et=)                                   |
+| =SECURITY=    | Security Findings (=ex=)                                |
+| =HEALTH=      | Health Checks section tag (=eh=)                        |
+| =METRICS=     | Health Checks → Metrics snapshot item tag (=eM=)        |
 | =QBR=         | QBRs (=eq=)                  |
 | =INNOVATION=  | Innovation Pipeline (=en=, =eI=) |
 | =SCOPE=       | Scope Changes (=ee=)         |
@@ -171,6 +173,12 @@ type tags.
 | =PRESALES=      | Pre-Sales Notes (=el=)        |
 | =RESEARCH=      | Research (=eo=)               |
 | =QUALIFICATION= | Qualification (=eF=)          |
+
+Some captures file under a typed section but stamp the item with their own
+distinct tag: =eD= (quick decision) files under Architecture Decisions but
+carries =:DECISION:=; =eM= (metrics snapshot) files under Health Checks but
+carries =:METRICS:=.  Both are reachable directly via =C-c a m DECISION= /
+=C-c a m METRICS=, and also via the section tag through inheritance.
 
 *** Key bindings
 | ~C-c c e<key>~ | Capture (see [[*Capture Templates — Complete Reference][capture reference]]) |
@@ -183,13 +191,27 @@ type tags.
 | =M-x org-fractional-cto-new-prospect=      | New prospect (LEAD stage)                        |
 | =M-x org-fractional-cto-set-stage=         | Set engagement stage                             |
 | =M-x org-fractional-cto-upgrade-hub=       | Upgrade an old hub in place                      |
-| =C-c a P=                                  | Prospect pipeline (all leads)   |
-| =M-x org-fractional-cto-delegate-at-point= | Delegate the heading at point   |
-| =M-x org-fractional-cto-block-at-point=    | Blocker against heading at point|
+| =C-c a P=                                  | Prospect pipeline (all leads)                    |
+| =M-x org-fractional-cto-pipeline=          | Prospect pipeline (same as =C-c a P=)            |
+| =M-x org-fractional-cto-delegate-at-point= | Delegate the heading at point                    |
+| =M-x org-fractional-cto-block-at-point=    | Blocker against heading at point                 |
+| =M-x org-fractional-cto-docs=             | Open docs dispatcher (guide/playbook/reference/info) |
+| =M-x org-fractional-cto-guide=            | Open the step-by-step user guide                 |
+| =M-x org-fractional-cto-playbook=         | Open the engagement playbook                     |
+| =M-x org-fractional-cto-reference=        | Open this reference guide                        |
+| =M-x org-fractional-cto-info=             | Open the combined Info manual                    |
 
 Management commands run via =M-x= by default (no global prefix is claimed).
 They also live in =org-fractional-cto-command-map= (keys =n s k d w p S g b h=); set
-=org-fractional-cto-keymap-prefix= to bind it under a prefix of your choice.
+=org-fractional-cto-keymap-prefix= to bind it under a prefix of your choice.  The
+=h= key in the command map opens =org-fractional-cto-docs=.
+
+=org-fractional-cto-upgrade-hub= migrates a hub file that was created before the
+current version of the package. It adds a =#+filetags:= line (client identity tag),
+strips any per-heading client tags that are now redundant, appends any section
+headings missing from the current scaffold, and ensures the engagement heading
+carries a valid stage tag. The command is idempotent — running it more than once
+on the same file is safe. Select the client when prompted.
 
 =g= (=org-fractional-cto-delegate-at-point=) and =b=
 (=org-fractional-cto-block-at-point=) act on the Org heading at point — both
@@ -276,6 +298,47 @@ client with =M-x org-fractional-cto-set-active-client= to avoid being prompted e
 The client display name is auto-filled from the hub's =#+title= — no =Client:=
 prompt appears. Clocked entries start the org-clock automatically.
 
+*** Pre-Sales & Pipeline Templates
+
+**** =el= — Pre-Sales Call / Lead Intake
+/Use:/ Capturing the first call or meeting with a prospect before any engagement
+is agreed. One entry per call.
+/Clock:/ Yes.
+/Target:/ =<client>.org= → Pre-Sales Notes.
+/Tag:/ =:PRESALES:=
+/Fields:/ Company / contact, how the lead came in (Source / referral),
+attendees; budget signal (Strong/Some/Unclear/None), timeline
+(Urgent/This quarter/Exploratory/Unknown), decision-maker(s).
+/Structure:/ The Ask | Pain Points / Triggers | Current State (as heard) |
+Signals | Next Step (checkbox with date).
+/After capturing:/ Run =eF= (qualification) to score the fit before spending
+more time.
+
+**** =eo= — Research Note
+/Use:/ Any research conducted about a prospect or client — market, competitor,
+funding, people, or technology context.
+/Target:/ =<client>.org= → Research.
+/Tag:/ =:RESEARCH:=
+/Fields:/ Topic, area (Company/Market/Competitor/Tech stack/People/Funding/Other),
+source / link.
+/Structure:/ Finding | Implication | Follow-up (checkbox).
+/Note:/ This template is inline (no separate file template); the entry is
+self-contained.
+
+**** =eF= — Fit / Qualification
+/Use:/ After the first pre-sales call, once you have enough signal to score
+the opportunity. One qualification entry per prospect.
+/Clock:/ Yes.
+/Target:/ =<client>.org= → Qualification.
+/Tag:/ =:QUALIFICATION:=
+/Fields:/ Company name.
+/Structure:/ BANT-style scorecard table (Need/Budget/Authority/Timing/Technical
+fit/Strategic fit, each rated High/Med/Low) | Risks / Red Flags | Verdict
+(Pursue/Hold/Pass) | Rationale | If Pursue — prep notes for the first discovery
+session (=ed=).
+/After capturing:/ Set the prospect's stage with =M-x org-fractional-cto-set-stage=.
+Passed prospects move to =QUALIFIED=; passes are marked =LOST=.
+
 *** Relationship & Communication Templates
 
 **** =es= — Standup Notes
@@ -330,6 +393,18 @@ love to see in the next 30 days?
 /After capturing:/ Act on one specific thing from their feedback before next month.
 The pattern of not acting on feedback is invisible until it's too late.
 
+**** =eM= — Metrics Snapshot
+/Use:/ Capturing a point-in-time funnel or KPI snapshot — typically weekly or at
+any review milestone. Distinct from =eh= (health check), which is qualitative and
+sent to the client; this is a quantitative capture you own internally.
+/Target:/ =<client>.org= → Health Checks.
+/Tag:/ =:METRICS:= (note: the item carries =METRICS=, not =HEALTH=; both are
+reachable via =C-c a m=).
+/Fields:/ Date (defaults to today's date).
+/Structure:/ Funnel metrics table (Metric / Value / vs. Last Week / Notes) |
+Observations | Actions Triggered (checkboxes).
+/Note:/ This template is inline (no separate file template).
+
 **** =eq= — QBR (Quarterly Business Review)
 /Use:/ Quarterly formal checkpoint with client stakeholders.
 /Clock:/ Yes.
@@ -357,7 +432,7 @@ a vendor from a strategic partner.
 your check-in date (=SCHEDULED=), success criteria.
 /Why WAITING:/ The entry is created in the =WAITING= state, not =TODO=. This separates
 "things I owe" from "things I'm owed" — they surface in the dedicated
-"Delegated — Awaiting Response" block of =C-c a E=.
+"Delegated — awaiting response" block of =C-c a E=.
 /After capturing:/ The =SCHEDULED= date is your follow-up trigger. If the check-in
 passes with no update, escalate. Review every WAITING item at the Friday weekly review.
 /Discipline:/ Delegation without a check-in date is hoping, not managing. Always set one.
@@ -378,7 +453,7 @@ heading already at point, so you never retype work that is already captured.
   gesture applied in place. Sets the heading to =WAITING=, adds the =DELEGATED=
   tag, records =ASSIGNED_TO= and =DELEGATED_ON=, and =SCHEDULED=s your check-in;
   optionally sets a delivery =DEADLINE=. The item moves to the dashboard's
-  "Delegated — Awaiting Response" block. An assignee is required.
+  "Delegated — awaiting response" block. An assignee is required.
 - =M-x org-fractional-cto-block-at-point= (=b= in the command map) — the =eb=
   gesture applied in place. Files a =[#A]= blocker into the client's Blockers
   section with =BLOCKING= linked back to the action, and inserts a
@@ -414,9 +489,12 @@ keep those current as the team changes.
 **** =er= — Risk Item
 /Use:/ Any new risk to the engagement or delivery — technical or otherwise.
 Capture immediately when identified; don't wait for the next sync.
-/Fields:/ Description, likelihood (High/Medium/Low), impact (High/Medium/Low), owner, mitigation.
+/Fields:/ Description, status (Open/Mitigated/Resolved/Accepted), likelihood
+(High/Medium/Low), impact (High/Medium/Low), owner, mitigation.
 /After capturing:/ Add to the risk register in the master discovery doc. Review
-at every internal sync. A risk that sits in refile.org is not managed.
+at every internal sync. A risk that sits in refile.org is not managed. Risks
+whose status is =Resolved= or =Mitigated= drop off the dashboard's "Active
+risks" block — the same rule as security findings.
 
 **** =ee= — Scope Change / Out-of-Scope Flag
 /Use:/ Any time you identify work that is outside the current SOW, or the client
@@ -462,6 +540,24 @@ Follow-up actions.
 /After the session:/ Refile immediately. Update cross-cutting sections of the master
 discovery doc. Run a synthesis pass after every 2–3 sessions.
 
+**** =ek= — Tech Spike
+/Use:/ A time-boxed investigation to answer a specific technical question before
+committing to a decision or implementation. Distinct from =ed= (discovery session),
+which maps a stream broadly; a spike targets a single unknown with a defined
+time-box and a concrete recommendation as output.
+/Clock:/ Yes.
+/Target:/ =<client>.org= → Discovery Sessions (same section as =ed=).
+/Tag:/ =:SPIKE:= (carried on the item; sections also inherit =:DISCOVERY:=).
+/Fields:/ Question being investigated, stream / area, time-box
+(Half day/1 day/2 days/3 days), triggered by (decision needed, blocker, unknown
+risk), client (auto-filled).
+/Structure:/ Hypothesis | Approach | Findings (What Is True / What Is Uncertain /
+What Is False) | Unknowns Remaining | Recommendation
+(Build/Buy/Defer/Spike further/Escalate/No action) | Technical Specs / Evidence
+(code block) | References & Links | Follow-up Actions table.
+/After capturing:/ Recommendation should translate into an =ea= ADR or a
+prioritised action item. A spike with no decision output is an incomplete spike.
+
 **** =ea= — Architecture Decision Record (ADR)
 /Use:/ Any significant technology or architecture decision — things that are hard to
 reverse, affect multiple streams, or have long-term cost implications.
@@ -495,14 +591,14 @@ Anything that touches customer PII → scrutinise the vendor's data handling ter
 **** =et= — Technical Debt Item
 /Use:/ Immediately when you identify tech debt — during discovery, code review,
 architecture sessions, or standups.
-/Fields:/ Description, area (Frontend/Backend/Infra/Integration/Data/Security),
+/Fields:/ Description, area (Frontend/Backend/Infrastructure/Integration/Data/Security),
 severity (Critical/High/Medium/Low), discovery context, impact if unaddressed.
 /After capturing:/ Add to the tech debt register in the master discovery doc.
 Prioritise at the next architecture session. Debt that isn't visible isn't managed.
 
 **** =ex= — Security Finding
 /Use:/ Any security or compliance observation — immediately when found.
-/Fields:/ Finding description, severity, area (PCI/GDPR/API/Auth/Data/Infra),
+/Fields:/ Finding description, severity, area (PCI/GDPR/API/Auth/Data/Infrastructure),
 current status (Open/Mitigated/Resolved/Accepted), recommended action, owner.
 Closed-out findings (Resolved/Mitigated) drop off the dashboard's "Open security
 findings" block — the same rule as the risk register.
@@ -513,11 +609,36 @@ difficult conversation.
 **** =en= — Innovation Pipeline Idea
 /Use:/ Any time you spot something that could be done better, smarter, or that the
 client doesn't yet know is possible. Capture without filtering — evaluate later.
-/Fields:/ Title, category (AI/ML / Data / Platform / Integration / Music Tech / Other).
+/Fields:/ Title, category (AI/ML / Data / Platform / Integration / Other).
 /Structure:/ The opportunity (business framing first) | The technology | Why now /
 why this client | Rough effort | Next step.
 /Pipeline review:/ Monthly — select one idea to develop into a brief. Present the
 best one at each QBR as the "Strategic Recommendation."
+
+** Customisation
+
+All package variables are =defcustom=s. Set them before calling
+=org-fractional-cto-setup=, or customise interactively via =M-x customize-group
+RET org-fractional-cto RET=.
+
+| Variable                                     | Default                                       | Purpose                                                                        |
+|----------------------------------------------+-----------------------------------------------+--------------------------------------------------------------------------------|
+| =org-fractional-cto-clients-directory=       | =<org-directory>/clients=                     | Root directory holding one sub-dir per client                                  |
+| =org-fractional-cto-template-directory=      | =<package-dir>/templates=                     | Bundled capture templates; override by pointing at your own directory          |
+| =org-fractional-cto-author=                  | =user-full-name=                              | =#+AUTHOR= inserted in scaffolded hub files                                    |
+| =org-fractional-cto-agenda-key=              | ="E"=                                         | Dispatcher key under =C-c a= for the client dashboard                         |
+| =org-fractional-cto-keymap-prefix=           | =nil=                                         | Optional prefix to bind =org-fractional-cto-command-map= globally              |
+| =org-fractional-cto-agenda-keymap-prefix=    | =nil=                                         | Optional prefix for at-point actions in =org-agenda-mode-map=                  |
+| =org-fractional-cto-stages=                  | =LEAD QUALIFIED ACTIVE LOST DORMANT=          | Ordered list of valid engagement stage tags                                    |
+| =org-fractional-cto-default-stage=           | ="ACTIVE"=                                    | Stage applied by =new-client=                                                  |
+| =org-fractional-cto-lead-stage=              | ="LEAD"=                                      | Stage applied by =new-prospect=                                                |
+| =org-fractional-cto-pipeline-stages=         | ~"LEAD\vert{}QUALIFIED"~                      | Tag-match expression selecting prospects for the pipeline view                 |
+| =org-fractional-cto-pipeline-key=            | ="P"=                                         | Dispatcher key under =C-c a= for the prospect pipeline view                   |
+| =org-fractional-cto-set-tag-inheritance=     | =t=                                           | Enable agenda tag inheritance (required for filetag-based client focus)        |
+| =org-fractional-cto-todo-keywords=           | =TODO NEXT INPROGRESS WAITING= \vert{} =DONE CANCELLED= | TODO keyword sequence merged globally                              |
+| =org-fractional-cto-todo-keyword-faces=      | =INPROGRESS → deep sky blue bold=             | Keyword faces merged non-destructively into =org-todo-keyword-faces=           |
+| =org-fractional-cto-dashboard-blocks=        | 9 blocks (agenda → delegated → blockers → …) | The agenda series composing the =C-c a E= dashboard; reorder or extend freely |
+| =org-fractional-cto-doc-directory=           | =<package-dir>/doc=                           | Directory holding the bundled documentation sources                            |
 
 ** Operating Rhythms — Day by Day
 
@@ -703,7 +824,7 @@ up to 9 levels deep (configured in =init-org.el=).
 *** org-roam
 
 The long-form note graph. Discovery docs and role plans are org-roam nodes (they
-have =:ID:= properties and live in =roam/=).
+have =:ID:= properties).
 
 | Key (default / Doom) | Action |
 |---------------------+--------|
@@ -747,9 +868,9 @@ Setup: run =/setup-matt-pocock-skills= once per repo.
 | =/to-issues=       | PRD exists                            | Breaks it into discrete trackable issues                        |
 | =/write-a-skill=   | New repeatable pattern identified     | Codifies the pattern into a reusable skill                      |
 
-The =CONTEXT.md= file (=roam/clients/<client>/CONTEXT.md=) is the domain glossary
-for a client. Load it at the start of every Claude Code session on that account.
-It stops you from re-explaining domain vocabulary every session.
+The =CONTEXT.md= file (=<clients-directory>/<client>/CONTEXT.md=) is the domain
+glossary for a client. Load it at the start of every Claude Code session on that
+account. It stops you from re-explaining domain vocabulary every session.
 
 *** gstack (garrytan/gstack)
 
@@ -784,9 +905,9 @@ In Emacs: =M-x org-fractional-cto-new-client=
 2. Enter the client slug (lowercase, no spaces — e.g. "acme")
 
 This creates in one step:
-- =roam/clients/acme/acme.org= — operational hub with all standard sections
-- =roam/clients/acme/standup.org= — standup template with stream slots
-- =roam/clients/acme/CONTEXT.md= — context file opened immediately for editing
+- =<clients-directory>/acme/acme.org= — operational hub with all standard sections
+- =<clients-directory>/acme/standup.org= — standup template with stream slots
+- =<clients-directory>/acme/CONTEXT.md= — context file opened immediately for editing
 - Registers the client in =org-agenda-files= automatically (no reload needed)
 
 *** Step 2 — Fill CONTEXT.md
