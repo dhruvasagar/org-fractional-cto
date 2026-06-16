@@ -42,7 +42,7 @@ no bespoke per-template special-casing.
 | Drift management | **None (YAGNI).** Copied templates are the client's to edit; bundled improvements do not propagate. |
 | Existing clients | **No migration code.** They fall through to bundled templates. User manually moves any edited `<slug>/standup.org` → `<slug>/templates/standup.org`. |
 | `upgrade-hub` changes | **None.** It is hub-only and orthogonal; confirmed no references to standup/templates. |
-| Inline templates | **Externalize all 12 to files**, so every capture is overridable. |
+| Inline templates | **Externalize all 13 to files**, so every capture is overridable. |
 | Standup duplication | **Collapse to one source.** Delete `--write-standup`; onboarding copies the bundled `templates/standup.org` like any other template. |
 
 ## Architecture
@@ -90,7 +90,7 @@ standup default, exactly as every other template's bundled file is for its own.
 
 ### Externalizing inline templates
 
-The 12 inline-string templates move to bundled files **verbatim** — identical
+The 13 inline-string templates move to bundled files **verbatim** — identical
 `%^{…}`, `%U`, `%?`, `%a` escapes — so capture output is byte-for-byte
 unchanged; only the source location moves. New bundled files and their `e`
 keys:
@@ -109,9 +109,10 @@ keys:
 | `eD` | Quick decision | `quick_decision.org` |
 | `et` | Tech debt item | `tech_debt.org` |
 | `ex` | Security finding | `security.org` |
+| `en` | Innovation idea (single) | `innovation_idea.org` |
 
-Result: all 28 templates are file-based and overridable; the capture `.el`
-shrinks to a uniform list of `(--file …)` entries.
+Result: all 30 capture templates are file-based and overridable; the capture
+`.el` shrinks to a uniform list of `(--file …)` entries.
 
 ## Data flow
 
@@ -151,7 +152,7 @@ C-c c e<key>
 
 - **Resolver:** per-client override wins; with no override, falls back to
   bundled; with no active client + bundled present, still resolves.
-- **Regression snapshot (critical):** each of the 12 externalized files equals
+- **Regression snapshot (critical):** each of the 13 externalized files equals
   the previous inline string, guaranteeing identical capture output. Encode the
   old strings as fixtures and assert file contents match.
 - **Onboarding:** after `new-client`, `<slug>/templates/` exists and contains
