@@ -5,15 +5,15 @@
 
 ;;; Commentary:
 
-;; ERT tests for the `e' capture group, focused on the standup template's
-;; per-client resolution.  Run with: make test
+;; ERT tests for the `e' capture group: the generic per-client template
+;; resolver, the client-slug memoisation, and the standup capture (now just a
+;; plain file template).  Run with: make test
 ;;
-;; The standup capture must use the client's edited <slug>/standup.org rather
-;; than the bundled generic template.  Regression guard: Org resolves a
-;; (function ...) template via `org-capture-get-template' BEFORE it runs the
-;; target function, so the template cannot read a slug the target has not
-;; stashed yet -- both must route through
-;; `org-fractional-cto--capture-client-slug'.
+;; Resolution: a per-client <slug>/templates/<name> override wins over the
+;; bundled template.  Org resolves a (function ...) template via
+;; `org-capture-get-template' BEFORE it runs the target function, so the
+;; resolver selects the client itself via `org-fractional-cto--capture-client-slug'
+;; rather than reading a slug the target has not stashed yet.
 
 ;;; Code:
 
@@ -37,38 +37,38 @@ Binds a clean capture plist and clears any active client / session state."
            ,@body)
        (delete-directory org-fractional-cto-clients-directory t))))
 
-(ert-deftest ofc-standup-template-uses-per-client-file ()
-  "The standup template returns the client's edited standup.org, not the bundle."
+(ert-deftest ofc-standup-uses-per-client-override ()
+  "The es standup template returns the client's templates/standup.org.
+Calls the --file thunk with an empty capture plist, mirroring Org's order
+\(template resolved before the target stores the slug), so this also guards
+that the thunk resolves lazily at call time rather than at definition time."
   (ofc-capture-test-with-client
-    (let ((standup (org-fractional-cto-client-standup-file "acme")))
-      (with-temp-file standup
-        (insert "* STANDUP CLIENT-SPECIFIC MARKER\n** Payments stream\n"))
-      (let ((result (org-fractional-cto--standup-template)))
-        (should (string-match-p "CLIENT-SPECIFIC MARKER" result))))))
+    (should (null (org-capture-get :ofc-client-slug)))
+    (let ((override (org-fractional-cto-client-template-file "acme" "standup.org")))
+      (make-directory (file-name-directory override) t)
+      (with-temp-file override (insert "* STANDUP CLIENT-SPECIFIC MARKER\n"))
+      (let ((result (funcall (org-fractional-cto--file "standup.org"))))
+        (should (string-match-p "CLIENT-SPECIFIC MARKER" result))
+        (should (equal (org-capture-get :ofc-client-slug) "acme"))))))
 
-(ert-deftest ofc-standup-template-falls-back-to-bundle ()
-  "With no per-client standup.org on disk, the bundled template is used."
+(ert-deftest ofc-standup-falls-back-to-bundle ()
+  "With no override, the es standup template uses the bundled standup.org."
   (ofc-capture-test-with-client
-    ;; No standup.org written under the client dir.
-    (let ((result (org-fractional-cto--standup-template))
+    (let ((result (funcall (org-fractional-cto--file "standup.org")))
           (bundled (org-fractional-cto--file-contents
                     (org-fractional-cto--template "standup.org"))))
       (should (string= result bundled)))))
 
-(ert-deftest ofc-standup-template-resolves-slug-before-target ()
-  "Template resolves the client itself when the target has not run yet.
-Mirrors Org's real order: `org-capture-get-template' runs before
-`org-capture-set-target-location'.  With an empty plist (no :ofc-client-slug),
-the template must still pick up the active client's file."
-  (ofc-capture-test-with-client
-    (should (null (org-capture-get :ofc-client-slug)))
-    (let ((standup (org-fractional-cto-client-standup-file "acme")))
-      (with-temp-file standup
-        (insert "* STANDUP EARLY-RESOLUTION MARKER\n"))
-      (let ((result (org-fractional-cto--standup-template)))
-        (should (string-match-p "EARLY-RESOLUTION MARKER" result))
-        ;; ...and the helper memoised the choice into the plist.
-        (should (equal (org-capture-get :ofc-client-slug) "acme"))))))
+(ert-deftest ofc-standup-entry-is-a-plain-file-template ()
+  "The es entry resolves like any other file template (no special function)."
+  (let* ((templates (org-fractional-cto-capture-templates))
+         (entry (seq-find (lambda (tpl) (equal (car-safe tpl) "es")) templates))
+         (template-form (nth 4 entry)))
+    ;; (function <thunk>) where the thunk is the --file closure, not the old
+    ;; named org-fractional-cto--standup-template symbol.
+    (should (eq (car template-form) 'function))
+    (should (functionp (cadr template-form)))
+    (should-not (eq (cadr template-form) 'org-fractional-cto--standup-template))))
 
 (ert-deftest ofc-capture-client-slug-memoises ()
   "The slug helper selects once and reuses the stored value thereafter."

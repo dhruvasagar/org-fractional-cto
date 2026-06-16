@@ -20,7 +20,6 @@
 (declare-function org-fractional-cto--select-client "org-fractional-cto")
 (declare-function org-fractional-cto-client-tag "org-fractional-cto")
 (declare-function org-fractional-cto-client-org-file "org-fractional-cto")
-(declare-function org-fractional-cto-client-standup-file "org-fractional-cto")
 (declare-function org-fractional-cto--template "org-fractional-cto")
 (declare-function org-fractional-cto-client-name "org-fractional-cto")
 (declare-function org-fractional-cto-client-template-file "org-fractional-cto")
@@ -70,22 +69,6 @@ Org re-scans so the standup's %^{...}, %U and %? escapes expand normally."
   (with-temp-buffer
     (insert-file-contents path)
     (buffer-string)))
-
-(defun org-fractional-cto--standup-template ()
-  "Return the active client's standup.org contents, or the bundled fallback.
-Used as a (function ...) capture template so Org re-scans and expands the
-%-escapes in the returned text -- unlike a %(sexp) escape, whose result Org
-would insert verbatim, leaving any nested %^{...}, %U or %? inert.
-
-This runs before the target function (see `org-capture-get-template'), so it
-selects the client itself via `org-fractional-cto--capture-client-slug' rather
-than reading a slug the target has not stored yet."
-  (let* ((slug (org-fractional-cto--capture-client-slug))
-         (file (and slug (org-fractional-cto-client-standup-file slug))))
-    (org-fractional-cto--file-contents
-     (if (and file (file-exists-p file))
-         file
-       (org-fractional-cto--template "standup.org")))))
 
 ;;;; Template helpers
 
@@ -163,7 +146,7 @@ Org expands the file's %-escapes."
      :clock-in t :clock-resume t)
     ("es" "Standup" entry
      (function ,(org-fractional-cto--target "Standup Notes"))
-     (function org-fractional-cto--standup-template)
+     (function ,(org-fractional-cto--file "standup.org"))
      :clock-in t :clock-resume t)
     ("ec" "Commitment" entry
      (function ,(org-fractional-cto--target "Commitments"))
