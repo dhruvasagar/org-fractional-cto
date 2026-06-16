@@ -1,8 +1,9 @@
 * STANDUP %^{Date|%<%Y-%m-%d>}  :STANDUP:
 %U
+%?
 
 ** Stream 1 — Lead: (TBD)
-- Shipped: %?
+- Shipped:
 - Next:
 - Blockers:
 

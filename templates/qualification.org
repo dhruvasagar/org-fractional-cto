@@ -1,5 +1,6 @@
 * QUALIFICATION: %^{Company}  :QUALIFICATION:
 %U
+%?
 
 ** Scorecard
 | Dimension          | Read (High/Med/Low) | Notes |
@@ -18,7 +19,6 @@
 %^{Verdict|Pursue|Hold|Pass}
 
 ** Rationale
-%?
 
 ** If Pursue — Prep for Discovery
 - [ ] What to validate in the first deep discovery (ed):

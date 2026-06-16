@@ -3,12 +3,12 @@
 Client: %(org-capture-get :ofc-client-name)
 Conducted by: %^{Your name}
 Teams / streams reviewed: %^{Teams reviewed}
+%?
 
 ** Scalability
 - Current platform limits:
 - Projected bottlenecks at scale:
 - Third-party / platform ceilings:
-%?
 
 ** Maintainability
 - Code complexity hotspots:

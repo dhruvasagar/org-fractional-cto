@@ -3,13 +3,12 @@
 Client: %(org-capture-get :ofc-client-name)
 Attendees (Client): %^{Client attendees}
 Attendees (Us): %^{Our attendees}
+%?
 
 ** What We Delivered This Quarter
 | Deliverable | Business Impact | Status |
 |-------------+-----------------+--------|
 |             |                 |        |
-
-%?
 
 ** Business Impact Achieved
 (Translate delivery into business language — what did the client gain?)

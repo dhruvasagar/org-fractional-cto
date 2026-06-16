@@ -3,13 +3,13 @@
 Client: %(org-capture-get :ofc-client-name)
 Role / Title: %^{Role}
 Organisation: %^{Organisation}
+%?
 
 ** Decision & Influence
 Role in decisions: %^{Type|Decision Maker|Influencer|Technical Evaluator|Champion|Blocker}
 
 ** What Success Looks Like to Them
 (Not the project's success — their personal definition of a win)
-%?
 
 ** Key Priorities & Concerns
 

@@ -3,6 +3,7 @@
 Client: %(org-capture-get :ofc-client-name)
 Attendees: %^{Attendees}
 Session context: %^{What triggered or framed this session}
+%?
 
 ** Summary Table
 | # | Idea | Category | Effort | Business Case | Status |
@@ -19,7 +20,6 @@ Effort: %^{Effort|Low|Medium|High}
 
 **** The Opportunity
 (Business framing first — what problem does this solve or what value does it create?)
-%?
 
 **** The Technology
 (What would need to be built or integrated?)

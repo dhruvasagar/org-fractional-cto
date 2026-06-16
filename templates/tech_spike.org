@@ -4,10 +4,10 @@ Client: %(org-capture-get :ofc-client-name)
 Stream / Area: %^{Area}
 Time-box: %^{Time allocated|Half day|1 day|2 days|3 days}
 Triggered by: %^{What prompted this — decision needed, blocker, unknown risk}
+%?
 
 ** Hypothesis
 What do you expect to find or confirm?
-%?
 
 ** Approach
 What steps did you take? What did you look at?

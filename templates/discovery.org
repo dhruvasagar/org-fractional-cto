@@ -4,10 +4,10 @@ Client: %(org-capture-get :ofc-client-name)
 Attendees: %^{Attendees}
 Focus area: %^{Focus|PM|Frontend|Backend|Auth|Payments|Data|DevOps|QA|Integration|AI|Other}
 Stream: %^{Work stream or product area}
+%?
 
 ** Context: What This Team / Role Does
 (Scope, responsibility, where they sit in the broader system)
-%?
 
 ** Active Workstreams & Current Priorities
 | Workstream | Status | Owner | Due |

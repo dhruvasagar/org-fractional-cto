@@ -172,6 +172,24 @@ the fixtures, so every bundled template ends in exactly one newline)."
       (should (file-exists-p path))
       (should (string= expected (org-fractional-cto--file-contents path))))))
 
+(ert-deftest ofc-clock-in-templates-cursor-in-top-entry ()
+  "Clock-in capture templates place %? in the top entry, before any sub-heading,
+so Org clocks the entry's main heading rather than a sub-heading."
+  ;; The 15 templates whose capture entry carries `:clock-in t'.  When a new
+  ;; clock-in template is added, extend this list so its %? placement is guarded.
+  (dolist (name '("presales_call.org" "qualification.org" "weekly_review.org"
+                  "client_meeting.org" "internal_sync.org" "standup.org"
+                  "stakeholder.org" "qbr.org" "retrospective.org"
+                  "discovery.org" "tech_spike.org" "adr.org"
+                  "arch_review.org" "vendor_eval.org" "innovation_meeting.org"))
+    (let* ((body (org-fractional-cto--file-contents
+                  (org-fractional-cto--template name)))
+           (cursor (string-match "%\\?" body))
+           (subheading (string-match "^\\*\\*+ " body)))
+      (should cursor)
+      (should subheading)
+      (should (< cursor subheading)))))
+
 (provide 'org-fractional-cto-capture-test)
 
 ;;; org-fractional-cto-capture-test.el ends here

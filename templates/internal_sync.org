@@ -1,6 +1,7 @@
 * MEETING Internal Sync %^{Date|%<%Y-%m-%d>} :INTERNAL:
 %U
 Client: %(org-capture-get :ofc-client-name)
+%?
 
 ** Commitments vs. Reality Gap
 | Commitment | Promised By | Status | Gap? |
@@ -8,7 +9,7 @@ Client: %(org-capture-get :ofc-client-name)
 |            |             |        |      |
 
 ** Blockers to Escalate
-- [ ] %?
+- [ ]
 
 ** Risk Register Updates
 - [ ]

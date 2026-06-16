@@ -2,10 +2,10 @@
 %U
 Source / referral: %^{How did this come in}
 Attendees: %^{Who was on the call}
+%?
 
 ** The Ask
 (What are they actually asking for? In their words.)
-%?
 
 ** Pain Points / Triggers
 (What's driving this now? What hurts today?)

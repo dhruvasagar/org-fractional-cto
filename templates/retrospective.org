@@ -2,6 +2,7 @@
 %U
 Facilitator: %^{Facilitator}
 Attendees: %^{Attendees}
+%?
 
 ** Sprint Goals vs. Actuals
 | Goal | Committed | Delivered | Notes |
@@ -10,7 +11,7 @@ Attendees: %^{Attendees}
 
 ** What Went Well
 (Keep doing — name people, call out wins)
-- %?
+-
 
 ** What Didn't Go Well
 (Process problems, not blame — focus on the system)

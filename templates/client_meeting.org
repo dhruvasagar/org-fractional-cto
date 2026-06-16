@@ -2,9 +2,9 @@
 %U
 Attendees (Client): %^{Client attendees}
 Attendees (Us): %^{Our attendees}
+%?
 
 ** Agenda / Context
-%?
 
 ** Discussion
 

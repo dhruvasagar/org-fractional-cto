@@ -1,8 +1,9 @@
 * WEEKLY REVIEW %^{Week ending}  :REVIEW:
 %U
+%?
 
 ** What shipped / completed this week
-- %?
+-
 
 ** What slipped and why
 -
