@@ -1,0 +1,13 @@
+* DECISION: %^{Decision} :DECISION:
+%U
+Made by: %^{Who}
+Context: %^{What prompted this}
+
+** Decision
+%?
+
+** Rationale
+
+** Alternatives Rejected
+
+** Revisit if

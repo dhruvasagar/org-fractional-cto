@@ -110,7 +110,7 @@ Org expands the file's %-escapes."
      :clock-in t :clock-resume t)
     ("eo" "Research note" entry
      (function ,(org-fractional-cto--target "Research"))
-     "* RESEARCH: %^{Topic} :RESEARCH:\n%U\nArea: %^{Area|Company|Market|Competitor|Tech stack|People|Funding|Other}\nSource: %^{Source / link}\n\n** Finding\n%?\n\n** Implication\n\n** Follow-up\n- [ ]\n")
+     (function ,(org-fractional-cto--file "research.org")))
     ("eF" "Fit / qualification" entry
      (function ,(org-fractional-cto--target "Qualification"))
      (function ,(org-fractional-cto--file "qualification.org"))
@@ -119,7 +119,7 @@ Org expands the file's %-escapes."
     ;; -- Action tracking & delegation -------------------------------------
     ("ew" "Action item" entry
      (function ,(org-fractional-cto--target "Actions"))
-     "* TODO %^{Action}\nDEADLINE: %^{Due}t\n%U\n%?"
+     (function ,(org-fractional-cto--file "action.org"))
      :clock-in t :clock-resume t)
     ("eg" "Delegate action (WAITING)" entry
      (function ,(org-fractional-cto--target "Delegations"))
@@ -133,7 +133,7 @@ Org expands the file's %-escapes."
      :clock-in t :clock-resume t)
     ("eP" "Person / team member note" entry
      (function ,(org-fractional-cto--target "People"))
-     "* %^{Name} — %^{Role / Stream} :PEOPLE:\n%U\n:PROPERTIES:\n:STREAM: %^{Stream}\n:END:\n%?")
+     (function ,(org-fractional-cto--file "person.org")))
 
     ;; -- Relationship & communication -------------------------------------
     ("em" "Client meeting" entry
@@ -150,7 +150,7 @@ Org expands the file's %-escapes."
      :clock-in t :clock-resume t)
     ("ec" "Commitment" entry
      (function ,(org-fractional-cto--target "Commitments"))
-     "* TODO [COMMITMENT] %^{Commitment} :COMMITMENT:\nDEADLINE: %^{Due date}t\nOwner (internal): %^{Owner}\n%U\nContext: %a\n"
+     (function ,(org-fractional-cto--file "commitment.org"))
      :clock-in t :clock-resume t)
     ("ep" "Stakeholder profile" entry
      (function ,(org-fractional-cto--target "Stakeholder Profiles"))
@@ -158,10 +158,10 @@ Org expands the file's %-escapes."
      :clock-in t :clock-resume t)
     ("eh" "Client health check" entry
      (function ,(org-fractional-cto--target "Health Checks"))
-     "* CLIENT HEALTH CHECK %^{Month} %^{Year} :HEALTH:\n%U\n\n** Pulse Questions\n1. What's working well?\n2. What would you change?\n3. What would you love to see in the next 30 days?\n\n** Their Responses\n%?\n\n** Analysis\n- One thing to improve:\n- One thing to double down on:\n\n** Actions\n- [ ]\n")
+     (function ,(org-fractional-cto--file "health_check.org")))
     ("eM" "Metrics snapshot" entry
      (function ,(org-fractional-cto--target "Health Checks"))
-     "* METRICS %^{Date|%<%Y-%m-%d>} :METRICS:\n%U\n\n** Funnel\n| Metric | Value | vs. Last Week | Notes |\n|--------+-------+---------------+-------|\n|        |       |               |       |\n\n** Observations\n%?\n\n** Actions Triggered\n- [ ]\n")
+     (function ,(org-fractional-cto--file "metrics.org")))
     ("eq" "QBR" entry
      (function ,(org-fractional-cto--target "QBRs"))
      (function ,(org-fractional-cto--file "qbr.org"))
@@ -170,13 +170,13 @@ Org expands the file's %-escapes."
     ;; -- Risk & delivery --------------------------------------------------
     ("er" "Risk" entry
      (function ,(org-fractional-cto--target "Risks"))
-     "* [RISK] %^{Risk} :RISK:\n%U\nStatus: %^{Status|Open|Mitigated|Resolved|Accepted}\nLikelihood: %^{Likelihood|High|Medium|Low}\nImpact: %^{Impact|High|Medium|Low}\nOwner: %^{Owner}\nMitigation: %?\n")
+     (function ,(org-fractional-cto--file "risk.org")))
     ("ee" "Scope change" entry
      (function ,(org-fractional-cto--target "Scope Changes"))
-     "* SCOPE CHANGE: %^{Description} :SCOPE:\n%U\nIdentified by: %^{Who}\nSOW status: %^{Status|Out of scope|In scope|Grey area}\n\n** What Changed\n%?\n\n** Business Impact\n\n** Recommended Action\n%^{Action|Add to SOW|Decline|Defer|Investigate}\n\n** Commercial Impact\nSOW amendment needed? %^{SOW|Yes|No|TBD}\nDEADLINE: %^{Decision needed by}t\n")
+     (function ,(org-fractional-cto--file "scope_change.org")))
     ("ef" "Post-mortem" entry
      (function ,(org-fractional-cto--target "Post-Mortems"))
-     "* POST-MORTEM: %^{Incident title} :POSTMORTEM:\n%U\nDate: %^{Incident date}\nSeverity: %^{Severity|Critical|High|Medium|Low}\nAffected: %^{What was affected}\n\n** What Happened\n%?\n\n** Root Cause\n\n** How We Fixed It\n\n** Prevention\n- [ ]\n")
+     (function ,(org-fractional-cto--file "post_mortem.org")))
     ("eR" "Retrospective" entry
      (function ,(org-fractional-cto--target "Retrospectives"))
      (function ,(org-fractional-cto--file "retrospective.org"))
@@ -197,7 +197,7 @@ Org expands the file's %-escapes."
      :clock-in t :clock-resume t)
     ("eD" "Quick decision" entry
      (function ,(org-fractional-cto--target "Architecture Decisions"))
-     "* DECISION: %^{Decision} :DECISION:\n%U\nMade by: %^{Who}\nContext: %^{What prompted this}\n\n** Decision\n%?\n\n** Rationale\n\n** Alternatives Rejected\n\n** Revisit if\n")
+     (function ,(org-fractional-cto--file "quick_decision.org")))
     ("eA" "Architecture review" entry
      (function ,(org-fractional-cto--target "Architecture Reviews"))
      (function ,(org-fractional-cto--file "arch_review.org"))
@@ -208,15 +208,15 @@ Org expands the file's %-escapes."
      :clock-in t :clock-resume t)
     ("et" "Tech debt item" entry
      (function ,(org-fractional-cto--target "Technical Debt"))
-     "* [TECH DEBT] %^{Description} :TECHDEBT:\n%U\nArea: %^{Area|Frontend|Backend|Infrastructure|Integration|Data|Security}\nSeverity: %^{Severity|Critical|High|Medium|Low}\nDiscovered during: %^{Context}\nImpact if unaddressed: %?\n")
+     (function ,(org-fractional-cto--file "tech_debt.org")))
     ("ex" "Security finding" entry
      (function ,(org-fractional-cto--target "Security Findings"))
-     "* [SECURITY] %^{Finding} :SECURITY:\n%U\nStatus: %^{Status|Open|Mitigated|Resolved|Accepted}\nSeverity: %^{Severity|Critical|High|Medium|Low}\nArea: %^{Area|PCI|GDPR|API|Auth|Data|Infrastructure}\nAction: %?\nOwner: %^{Owner}\n")
+     (function ,(org-fractional-cto--file "security.org")))
 
     ;; -- Innovation -------------------------------------------------------
     ("en" "Innovation idea (single)" entry
      (function ,(org-fractional-cto--target "Innovation Pipeline"))
-     "* INNOVATION IDEA: %^{Title} :INNOVATION:\n%U\nCategory: %^{Category|AI/ML|Data|Platform|Integration|Other}\n\n** The Opportunity\n%?\n\n** The Technology\n\n** Why Now / Why This Client\n\n** Rough Effort\n\n** Next Step\n")
+     (function ,(org-fractional-cto--file "innovation_idea.org")))
     ("eI" "Innovation meeting" entry
      (function ,(org-fractional-cto--target "Innovation Pipeline"))
      (function ,(org-fractional-cto--file "innovation_meeting.org"))

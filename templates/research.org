@@ -1,0 +1,12 @@
+* RESEARCH: %^{Topic} :RESEARCH:
+%U
+Area: %^{Area|Company|Market|Competitor|Tech stack|People|Funding|Other}
+Source: %^{Source / link}
+
+** Finding
+%?
+
+** Implication
+
+** Follow-up
+- [ ]

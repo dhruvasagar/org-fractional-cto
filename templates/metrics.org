@@ -1,0 +1,13 @@
+* METRICS %^{Date|%<%Y-%m-%d>} :METRICS:
+%U
+
+** Funnel
+| Metric | Value | vs. Last Week | Notes |
+|--------+-------+---------------+-------|
+|        |       |               |       |
+
+** Observations
+%?
+
+** Actions Triggered
+- [ ]

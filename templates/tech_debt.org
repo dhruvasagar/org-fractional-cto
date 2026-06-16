@@ -1,0 +1,6 @@
+* [TECH DEBT] %^{Description} :TECHDEBT:
+%U
+Area: %^{Area|Frontend|Backend|Infrastructure|Integration|Data|Security}
+Severity: %^{Severity|Critical|High|Medium|Low}
+Discovered during: %^{Context}
+Impact if unaddressed: %?

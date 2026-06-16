@@ -1,0 +1,15 @@
+* POST-MORTEM: %^{Incident title} :POSTMORTEM:
+%U
+Date: %^{Incident date}
+Severity: %^{Severity|Critical|High|Medium|Low}
+Affected: %^{What was affected}
+
+** What Happened
+%?
+
+** Root Cause
+
+** How We Fixed It
+
+** Prevention
+- [ ]

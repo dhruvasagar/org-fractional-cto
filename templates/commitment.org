@@ -1,0 +1,5 @@
+* TODO [COMMITMENT] %^{Commitment} :COMMITMENT:
+DEADLINE: %^{Due date}t
+Owner (internal): %^{Owner}
+%U
+Context: %a

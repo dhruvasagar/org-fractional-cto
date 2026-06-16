@@ -301,12 +301,11 @@ scaffold, so their hubs agree on every heading once slug and stage are removed."
 
 (ert-deftest ofc-risk-and-security-templates-have-status-field ()
   "Both the risk and security templates offer the same closeable Status field."
-  (let ((templates (org-fractional-cto-capture-templates)))
-    (dolist (key '("er" "ex"))
-      (let ((body (nth 4 (seq-find (lambda (tpl) (equal (car-safe tpl) key))
-                                   templates))))
-        (should (string-match-p
-                 "Status: %\\^{Status|Open|Mitigated|Resolved|Accepted}" body))))))
+  (dolist (name '("risk.org" "security.org"))
+    (let ((body (org-fractional-cto--file-contents
+                 (org-fractional-cto--template name))))
+      (should (string-match-p
+               "Status: %\\^{Status|Open|Mitigated|Resolved|Accepted}" body)))))
 
 (ert-deftest ofc-client-name-reads-title ()
   "client-name returns the hub's #+title."
@@ -390,19 +389,11 @@ scaffold, so their hubs agree on every heading once slug and stage are removed."
         (while (re-search-forward "^#\\+filetags:" nil t) (setq n (1+ n)))
         (should (= n 1))))))
 
-(ert-deftest ofc-inline-templates-drop-client-tag ()
-  "No inline capture template references the client tag any more."
-  (dolist (tpl (org-fractional-cto-capture-templates))
-    (let ((body (and (> (length tpl) 4) (nth 4 tpl))))
-      (when (stringp body)
-        (should-not (string-match-p ":ofc-client-tag" body))))))
-
 (ert-deftest ofc-templates-keep-type-subtags ()
-  "The risk template still carries its :RISK: subtag."
-  (let ((body (nth 4 (seq-find (lambda (tpl) (equal (car-safe tpl) "er"))
-                               (org-fractional-cto-capture-templates)))))
-    (should (string-match-p ":RISK:" body))
-    (should-not (string-match-p ":ofc-client-tag" body))))
+  "The risk template file still carries its :RISK: subtag."
+  (let ((body (org-fractional-cto--file-contents
+               (org-fractional-cto--template "risk.org"))))
+    (should (string-match-p ":RISK:" body))))
 
 (ert-deftest ofc-file-templates-drop-client-tag ()
   "No bundled file template embeds the client tag (it comes from #+filetags)."

@@ -1,0 +1,16 @@
+* SCOPE CHANGE: %^{Description} :SCOPE:
+%U
+Identified by: %^{Who}
+SOW status: %^{Status|Out of scope|In scope|Grey area}
+
+** What Changed
+%?
+
+** Business Impact
+
+** Recommended Action
+%^{Action|Add to SOW|Decline|Defer|Investigate}
+
+** Commercial Impact
+SOW amendment needed? %^{SOW|Yes|No|TBD}
+DEADLINE: %^{Decision needed by}t

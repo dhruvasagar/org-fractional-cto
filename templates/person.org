@@ -1,0 +1,6 @@
+* %^{Name} — %^{Role / Stream} :PEOPLE:
+%U
+:PROPERTIES:
+:STREAM: %^{Stream}
+:END:
+%?

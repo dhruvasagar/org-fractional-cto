@@ -1,0 +1,14 @@
+* INNOVATION IDEA: %^{Title} :INNOVATION:
+%U
+Category: %^{Category|AI/ML|Data|Platform|Integration|Other}
+
+** The Opportunity
+%?
+
+** The Technology
+
+** Why Now / Why This Client
+
+** Rough Effort
+
+** Next Step

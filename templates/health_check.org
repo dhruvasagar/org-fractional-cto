@@ -1,0 +1,17 @@
+* CLIENT HEALTH CHECK %^{Month} %^{Year} :HEALTH:
+%U
+
+** Pulse Questions
+1. What's working well?
+2. What would you change?
+3. What would you love to see in the next 30 days?
+
+** Their Responses
+%?
+
+** Analysis
+- One thing to improve:
+- One thing to double down on:
+
+** Actions
+- [ ]

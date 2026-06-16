@@ -1,0 +1,7 @@
+* [SECURITY] %^{Finding} :SECURITY:
+%U
+Status: %^{Status|Open|Mitigated|Resolved|Accepted}
+Severity: %^{Severity|Critical|High|Medium|Low}
+Area: %^{Area|PCI|GDPR|API|Auth|Data|Infrastructure}
+Action: %?
+Owner: %^{Owner}

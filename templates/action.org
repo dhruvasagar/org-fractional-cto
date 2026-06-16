@@ -1,0 +1,4 @@
+* TODO %^{Action}
+DEADLINE: %^{Due}t
+%U
+%?
