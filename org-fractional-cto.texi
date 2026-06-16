@@ -87,7 +87,8 @@ Action tracking & delegation
 
 Step 11 — Make it yours
 
-* Override a single template::
+* Override a template for one client::
+* Override every template globally::
 * Reorder or extend the dashboard::
 
 Playbook
@@ -196,6 +197,7 @@ File Organization
 
 Capture Templates — Complete Reference
 
+* Per-Client Template Overrides::
 * Pre-Sales & Pipeline Templates::
 * Relationship & Communication Templates::
 * Action Tracking & Delegation Templates::
@@ -468,15 +470,18 @@ set, they prompt you to choose — nothing breaks, it is just one extra step.
 @node The client hub
 @subsection The client hub
 
-Each client owns a directory with three files:
+Each client owns a directory with its hub, its context file, and a @samp{templates/} folder:
 
 @example
 ~/org/clients/
   acme/
     acme.org      ← operational hub: one section per capture type
-    standup.org   ← per-client standup template (the es capture reads this)
     CONTEXT.md    ← domain glossary, people, tech stack (load in AI sessions)
+    templates/    ← per-client copies of every capture template (override-able)
 @end example
+
+Onboarding copies the full bundled set of capture templates into @samp{templates/},
+so every template is editable per client (see @ref{Step 11 — Make it yours, , Step 11}).
 
 The hub's section headings, the capture targets, and the dashboard's queries
 are all generated from a single section list, so they agree by construction —
@@ -505,9 +510,10 @@ and files, and is upper-cased into the Org tag (@samp{acme} → @samp{:ACME:};
 non-alphanumerics become @samp{_}, so @samp{acme-eu} → @samp{:ACME_EU:}).
 @end enumerate
 
-The command then creates @samp{acme/acme.org}, @samp{acme/standup.org}, and
-@samp{acme/CONTEXT.md}, adds the new directory to @samp{org-agenda-files} immediately (no
-restart), and opens @samp{CONTEXT.md} for you to fill in.
+The command then creates @samp{acme/acme.org} and @samp{acme/CONTEXT.md}, copies the
+bundled capture templates into @samp{acme/templates/}, adds the new directory to
+@samp{org-agenda-files} immediately (no restart), and opens @samp{CONTEXT.md} for you to
+fill in.
 
 @menu
 * Walk the hub it generated::
@@ -669,11 +675,12 @@ tagged — is the entire capture model. Two things make it work:
 @strong{Routing.} Each template targets a section heading by name in the active
 client's hub. No inbox, no manual refiling.
 @item
-@strong{Two kinds of template.} Short captures (action, risk, commitment, …) are
-inline; richer ones (discovery, ADR, QBR, …) are filled from a file in the
-bundled @samp{templates/} folder, which you can override (see @ref{Step 11 — Make it yours, , Step 11}). The
-@strong{standup} (@samp{es}) is special: it reads the client's own @samp{standup.org} so you can
-tailor the streams to the real team, falling back to the bundled template.
+@strong{Every template is a file you can override.} All captures are filled from a
+named @samp{.org} file. At capture time the file resolves the active client's
+@samp{templates/<name>.org} first, then the bundled template — so editing
+@samp{acme/templates/standup.org} tailors the standup streams for Acme without
+touching any other client (see @ref{Step 11 — Make it yours, , Step 11}). The standup is just one of these
+files; it has no special handling.
 @end itemize
 
 @node Step 7 — A tour of every capture in working order
@@ -780,7 +787,7 @@ for @samp{eg} / @samp{eb} when you are capturing something new.
 @node Relationship & communication
 @subsection Relationship & communication
 
-@multitable {aaaa} {aaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@multitable {aaaa} {aaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
 @headitem Key
 @tab Captures
 @tab Files to
@@ -788,7 +795,7 @@ for @samp{eg} / @samp{eb} when you are capturing something new.
 @item @samp{es}
 @tab Standup
 @tab Standup Notes
-@tab Daily standup (reads @samp{standup.org})
+@tab Daily standup
 @item @samp{em}
 @tab Client meeting
 @tab Meeting Notes
@@ -1127,12 +1134,46 @@ Everything tunable lives in the @samp{org-fractional-cto} customize group
 Two customisations you are most likely to want:
 
 @menu
-* Override a single template::
+* Override a template for one client::
+* Override every template globally::
 * Reorder or extend the dashboard::
 @end menu
 
-@node Override a single template
-@subsection Override a single template
+@node Override a template for one client
+@subsection Override a template for one client
+
+Each client has its own @samp{templates/} folder, populated at onboarding with a copy
+of every bundled capture template. To customise a template for that client, edit
+the file under @samp{<slug>/templates/} — for example, rename the standup streams in
+@samp{acme/templates/standup.org} to the real Acme team.
+
+At capture time a template resolves in two steps: (1) the active client's
+@samp{templates/<name>.org} if it exists, else (2) the bundled template
+(@samp{org-fractional-cto-template-directory}, default = the package's @samp{templates/}).
+There is no flat @samp{<slug>/standup.org} fallback; per-client overrides live only
+under @samp{templates/}.
+
+The @samp{templates/} folder is @strong{not} scanned by the agenda — Org lists agenda
+directories non-recursively and only the client root dirs are added to
+@samp{org-agenda-files}, so per-client template files never appear on the dashboard.
+
+If a capture template clocks in, keep its @samp{%?} cursor marker in the @strong{top entry
+body} — above the first @samp{**} sub-heading — so Org clocks the entry's main
+heading rather than a sub-heading. Preserve that placement when you edit a
+per-client clock-in template.
+
+@strong{Existing clients.} Clients created before this feature have no @samp{templates/}
+folder; they keep working via the bundled fallback. To adopt overrides, re-run
+@samp{M-x org-fractional-cto-new-client} (or @samp{new-prospect}) for the client — it
+copies any missing templates without clobbering files you have edited. If you
+previously tailored a flat @samp{<slug>/standup.org}, move it to
+@samp{<slug>/templates/standup.org}.
+
+@node Override every template globally
+@subsection Override every template globally
+
+This sets the fallback templates used for @strong{all} clients that have no matching
+per-client @samp{templates/<name>.org} override.
 
 Copy the bundled @samp{templates/} folder somewhere of your own, edit only the file
 you care about (say @samp{adr.org}), and point the variable at your copy:
@@ -1140,6 +1181,9 @@ you care about (say @samp{adr.org}), and point the variable at your copy:
 @lisp
 (setq org-fractional-cto-template-directory "~/org/ofc-templates")
 @end lisp
+
+This becomes the fallback for clients with no matching @samp{templates/<name>.org}
+override.
 
 @node Reorder or extend the dashboard
 @subsection Reorder or extend the dashboard
@@ -1208,8 +1252,14 @@ default) so the inherited client filetag is visible to the agenda filter.
 
 @item
 @strong{A standup capture inserts literal @samp{%^@{...@}} / @samp{%U} text.} You are on an old
-version where the standup was injected as a string. Update the package; the
-standup is now read as a file template so its escapes expand normally.
+version where the standup was injected as a string. Update the package; every
+template (the standup included) is now read as a file so its escapes expand
+normally.
+
+@item
+@strong{A clocked capture clocks a sub-heading instead of the entry.} The template's
+@samp{%?} cursor marker sits below the first @samp{**} sub-heading. Move @samp{%?} into the
+top entry body, above the first sub-heading, so Org clocks the main heading.
 
 @item
 @strong{@code{C-c a E} is not listed in the dispatcher.} @samp{setup} has not run (or ran
@@ -1932,9 +1982,9 @@ This automatically creates:
 @item
 @samp{<clients-directory>/acme/acme.org} with all standard sections (Actions, Delegations, Blockers, People, etc.)
 @item
-@samp{<clients-directory>/acme/standup.org} with stream-based standup template
-@item
 @samp{<clients-directory>/acme/CONTEXT.md} pre-populated with all section headers
+@item
+@samp{<clients-directory>/acme/templates/} with per-client copies of every capture template (override-able)
 @item
 Adds the client directory to @samp{org-agenda-files} automatically
 @end itemize
@@ -2009,9 +2059,11 @@ First client sync scheduled
 @node Reference All Capture Templates
 @section Reference: All Capture Templates
 
-All engagement captures use the @samp{e} prefix. File-based templates live in the
-package's bundled @samp{templates/} directory (configurable via
-@samp{org-fractional-cto-template-directory}). Active client must be set (@samp{M-x org-fractional-cto-set-active-client})
+All engagement captures use the @samp{e} prefix. Every template is a file: at capture
+time it resolves to the active client's @samp{<slug>/templates/<name>.org} if present,
+else the bundled template (@samp{org-fractional-cto-template-directory}). Onboarding
+populates each client's @samp{templates/}, so edit a file there to tailor a template
+for that client. Active client must be set (@samp{M-x org-fractional-cto-set-active-client})
 or you will be prompted on each capture.
 
 @menu
@@ -2618,13 +2670,17 @@ Your engagements (yours, version-controlled separately):
 <clients-directory>/
   acme/                ← created by M-x org-fractional-cto-new-client
     acme.org           ← ★ OPERATIONAL HUB: all captures land here directly
-    standup.org        ← per-client standup template (tailor the streams)
     CONTEXT.md         ← domain vocab, key people, stack (load in AI sessions)
+    templates/         ← per-client copies of every capture template (override)
   globex/
     globex.org
-    standup.org
     CONTEXT.md
+    templates/
 @end example
+
+The @samp{templates/} folder is @strong{not} scanned by the agenda: Org lists agenda
+directories non-recursively and only the client root dirs are added to
+@samp{org-agenda-files}, so per-client template files never pollute the dashboard.
 
 A non-client inbox (@samp{refile.org} or your @samp{org-default-notes-file}) still holds
 generic captures (@samp{t}, @samp{n}, @samp{m}); engagement captures bypass it entirely.
@@ -2682,12 +2738,45 @@ The client display name is auto-filled from the hub's @samp{#+title} — no @sam
 prompt appears. Clocked entries start the org-clock automatically.
 
 @menu
+* Per-Client Template Overrides::
 * Pre-Sales & Pipeline Templates::
 * Relationship & Communication Templates::
 * Action Tracking & Delegation Templates::
 * Risk & Delivery Templates::
 * Technical Templates::
 @end menu
+
+@node Per-Client Template Overrides
+@subsection Per-Client Template Overrides
+
+Every capture is filled from a named @samp{.org} file, and each client owns a copy of
+the full set under @samp{<slug>/templates/}. At capture time a template resolves in
+two steps:
+
+@enumerate
+@item
+the active client's @samp{<slug>/templates/<name>.org}, if it exists;
+@item
+otherwise the bundled template (@samp{org-fractional-cto-template-directory},
+default = the package's @samp{templates/}).
+@end enumerate
+
+Onboarding (@samp{new-client} / @samp{new-prospect}) populates @samp{templates/} with the full
+bundled set, so every template is editable per client. To customise one, edit the
+file under that client's @samp{templates/} — e.g. rename the standup streams in
+@samp{acme/templates/standup.org}. The standup is just one of these files and gets no
+special handling; there is no flat @samp{<slug>/standup.org} fallback.
+
+Clients created before this feature have no @samp{templates/} folder and keep working
+via the bundled fallback. To adopt overrides, re-run onboarding for the client
+(it copies missing templates without clobbering edited files), or copy the
+bundled templates in by hand; move any previously-edited flat
+@samp{<slug>/standup.org} to @samp{<slug>/templates/standup.org}.
+
+@strong{Clock-in convention.} Templates that clock in keep their @samp{%?} cursor marker in
+the @strong{top entry body} — above the first @samp{**} sub-heading — so Org clocks the
+entry's main heading, not a sub-heading. When editing a per-client clock-in
+template, keep @samp{%?} above the first @samp{**} sub-heading to preserve this.
 
 @node Pre-Sales & Pipeline Templates
 @subsection Pre-Sales & Pipeline Templates
@@ -3124,7 +3213,7 @@ All package variables are @samp{defcustom=s. Set them before calling
 =org-fractional-cto-setup}, or customise interactively via @samp{M-x customize-group
 RET org-fractional-cto RET}.
 
-@multitable {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@multitable {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
 @headitem Variable
 @tab Default
 @tab Purpose
@@ -3133,7 +3222,7 @@ RET org-fractional-cto RET}.
 @tab Root directory holding one sub-dir per client
 @item @samp{org-fractional-cto-template-directory}
 @tab @samp{<package-dir>/templates}
-@tab Bundled capture templates; override by pointing at your own directory
+@tab Bundled capture templates (fallback); a client's @samp{<slug>/templates/} overrides per-client
 @item @samp{org-fractional-cto-author}
 @tab @samp{user-full-name}
 @tab @samp{#+AUTHOR} inserted in scaffolded hub files
@@ -3603,9 +3692,11 @@ This creates in one step:
 @item
 @samp{<clients-directory>/acme/acme.org} — operational hub with all standard sections
 @item
-@samp{<clients-directory>/acme/standup.org} — standup template with stream slots
-@item
 @samp{<clients-directory>/acme/CONTEXT.md} — context file opened immediately for editing
+@item
+@samp{<clients-directory>/acme/templates/} — per-client copies of every capture
+template, override-able (edit the file you want to tailor; see
+@ref{Per-Client Template Overrides} above)
 @item
 Registers the client in @samp{org-agenda-files} automatically (no reload needed)
 @end itemize

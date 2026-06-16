@@ -250,13 +250,17 @@ Your engagements (yours, version-controlled separately):
 <clients-directory>/
   acme/                ← created by M-x org-fractional-cto-new-client
     acme.org           ← ★ OPERATIONAL HUB: all captures land here directly
-    standup.org        ← per-client standup template (tailor the streams)
     CONTEXT.md         ← domain vocab, key people, stack (load in AI sessions)
+    templates/         ← per-client copies of every capture template (override)
   globex/
     globex.org
-    standup.org
     CONTEXT.md
+    templates/
 #+end_example
+
+The =templates/= folder is *not* scanned by the agenda: Org lists agenda
+directories non-recursively and only the client root dirs are added to
+=org-agenda-files=, so per-client template files never pollute the dashboard.
 
 A non-client inbox (=refile.org= or your =org-default-notes-file=) still holds
 generic captures (=t=, =n=, =m=); engagement captures bypass it entirely.
@@ -297,6 +301,33 @@ to the relevant section of the active client's =<client>.org= (set the active
 client with =M-x org-fractional-cto-set-active-client= to avoid being prompted each time).
 The client display name is auto-filled from the hub's =#+title= — no =Client:=
 prompt appears. Clocked entries start the org-clock automatically.
+
+*** Per-Client Template Overrides
+
+Every capture is filled from a named =.org= file, and each client owns a copy of
+the full set under =<slug>/templates/=. At capture time a template resolves in
+two steps:
+
+1. the active client's =<slug>/templates/<name>.org=, if it exists;
+2. otherwise the bundled template (=org-fractional-cto-template-directory=,
+   default = the package's =templates/=).
+
+Onboarding (=new-client= / =new-prospect=) populates =templates/= with the full
+bundled set, so every template is editable per client. To customise one, edit the
+file under that client's =templates/= — e.g. rename the standup streams in
+=acme/templates/standup.org=. The standup is just one of these files and gets no
+special handling; there is no flat =<slug>/standup.org= fallback.
+
+Clients created before this feature have no =templates/= folder and keep working
+via the bundled fallback. To adopt overrides, re-run onboarding for the client
+(it copies missing templates without clobbering edited files), or copy the
+bundled templates in by hand; move any previously-edited flat
+=<slug>/standup.org= to =<slug>/templates/standup.org=.
+
+*Clock-in convention.* Templates that clock in keep their =%?= cursor marker in
+the *top entry body* — above the first =**= sub-heading — so Org clocks the
+entry's main heading, not a sub-heading. When editing a per-client clock-in
+template, keep =%?= above the first =**= sub-heading to preserve this.
 
 *** Pre-Sales & Pipeline Templates
 
@@ -624,7 +655,7 @@ RET org-fractional-cto RET=.
 | Variable                                     | Default                                       | Purpose                                                                        |
 |----------------------------------------------+-----------------------------------------------+--------------------------------------------------------------------------------|
 | =org-fractional-cto-clients-directory=       | =<org-directory>/clients=                     | Root directory holding one sub-dir per client                                  |
-| =org-fractional-cto-template-directory=      | =<package-dir>/templates=                     | Bundled capture templates; override by pointing at your own directory          |
+| =org-fractional-cto-template-directory=      | =<package-dir>/templates=                     | Bundled capture templates (fallback); a client's =<slug>/templates/= overrides per-client |
 | =org-fractional-cto-author=                  | =user-full-name=                              | =#+AUTHOR= inserted in scaffolded hub files                                    |
 | =org-fractional-cto-agenda-key=              | ="E"=                                         | Dispatcher key under =C-c a= for the client dashboard                         |
 | =org-fractional-cto-keymap-prefix=           | =nil=                                         | Optional prefix to bind =org-fractional-cto-command-map= globally              |
@@ -906,8 +937,10 @@ In Emacs: =M-x org-fractional-cto-new-client=
 
 This creates in one step:
 - =<clients-directory>/acme/acme.org= — operational hub with all standard sections
-- =<clients-directory>/acme/standup.org= — standup template with stream slots
 - =<clients-directory>/acme/CONTEXT.md= — context file opened immediately for editing
+- =<clients-directory>/acme/templates/= — per-client copies of every capture
+  template, override-able (edit the file you want to tailor; see
+  [[*Per-Client Template Overrides][Per-Client Template Overrides]] above)
 - Registers the client in =org-agenda-files= automatically (no reload needed)
 
 *** Step 2 — Fill CONTEXT.md

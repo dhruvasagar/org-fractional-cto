@@ -110,15 +110,18 @@ set, they prompt you to choose — nothing breaks, it is just one extra step.
 
 ** The client hub
 
-Each client owns a directory with three files:
+Each client owns a directory with its hub, its context file, and a =templates/= folder:
 
 #+begin_example
 ~/org/clients/
   acme/
     acme.org      ← operational hub: one section per capture type
-    standup.org   ← per-client standup template (the es capture reads this)
     CONTEXT.md    ← domain glossary, people, tech stack (load in AI sessions)
+    templates/    ← per-client copies of every capture template (override-able)
 #+end_example
+
+Onboarding copies the full bundled set of capture templates into =templates/=,
+so every template is editable per client (see [[*Step 11 — Make it yours][Step 11]]).
 
 The hub's section headings, the capture targets, and the dashboard's queries
 are all generated from a single section list, so they agree by construction —
@@ -139,9 +142,10 @@ You are asked for two things:
    and files, and is upper-cased into the Org tag (=acme= → =:ACME:=;
    non-alphanumerics become =_=, so =acme-eu= → =:ACME_EU:=).
 
-The command then creates =acme/acme.org=, =acme/standup.org=, and
-=acme/CONTEXT.md=, adds the new directory to =org-agenda-files= immediately (no
-restart), and opens =CONTEXT.md= for you to fill in.
+The command then creates =acme/acme.org= and =acme/CONTEXT.md=, copies the
+bundled capture templates into =acme/templates/=, adds the new directory to
+=org-agenda-files= immediately (no restart), and opens =CONTEXT.md= for you to
+fill in.
 
 ** Walk the hub it generated
 
@@ -262,11 +266,12 @@ tagged — is the entire capture model. Two things make it work:
 
 - *Routing.* Each template targets a section heading by name in the active
   client's hub. No inbox, no manual refiling.
-- *Two kinds of template.* Short captures (action, risk, commitment, …) are
-  inline; richer ones (discovery, ADR, QBR, …) are filled from a file in the
-  bundled =templates/= folder, which you can override (see [[*Step 11 — Make it yours][Step 11]]). The
-  *standup* (=es=) is special: it reads the client's own =standup.org= so you can
-  tailor the streams to the real team, falling back to the bundled template.
+- *Every template is a file you can override.* All captures are filled from a
+  named =.org= file. At capture time the file resolves the active client's
+  =templates/<name>.org= first, then the bundled template — so editing
+  =acme/templates/standup.org= tailors the standup streams for Acme without
+  touching any other client (see [[*Step 11 — Make it yours][Step 11]]). The standup is just one of these
+  files; it has no special handling.
 
 * Step 7 — A tour of every capture, in working order
 
@@ -330,7 +335,7 @@ for =eg= / =eb= when you are capturing something new.
 
 | Key  | Captures            | Files to             | Reach for it when…                  |
 |------+---------------------+----------------------+-------------------------------------|
-| =es= | Standup             | Standup Notes        | Daily standup (reads =standup.org=) |
+| =es= | Standup             | Standup Notes        | Daily standup                       |
 | =em= | Client meeting      | Meeting Notes        | Any client-facing sync              |
 | =ei= | Internal sync       | Internal Syncs       | Your team's internal sync           |
 | =ec= | Commitment          | Commitments          | A promise is made (by you or them)  |
@@ -505,7 +510,39 @@ Everything tunable lives in the =org-fractional-cto= customize group
 
 Two customisations you are most likely to want:
 
-** Override a single template
+** Override a template for one client
+
+Each client has its own =templates/= folder, populated at onboarding with a copy
+of every bundled capture template. To customise a template for that client, edit
+the file under =<slug>/templates/= — for example, rename the standup streams in
+=acme/templates/standup.org= to the real Acme team.
+
+At capture time a template resolves in two steps: (1) the active client's
+=templates/<name>.org= if it exists, else (2) the bundled template
+(=org-fractional-cto-template-directory=, default = the package's =templates/=).
+There is no flat =<slug>/standup.org= fallback; per-client overrides live only
+under =templates/=.
+
+The =templates/= folder is *not* scanned by the agenda — Org lists agenda
+directories non-recursively and only the client root dirs are added to
+=org-agenda-files=, so per-client template files never appear on the dashboard.
+
+If a capture template clocks in, keep its =%?= cursor marker in the *top entry
+body* — above the first =**= sub-heading — so Org clocks the entry's main
+heading rather than a sub-heading. Preserve that placement when you edit a
+per-client clock-in template.
+
+*Existing clients.* Clients created before this feature have no =templates/=
+folder; they keep working via the bundled fallback. To adopt overrides, re-run
+=M-x org-fractional-cto-new-client= (or =new-prospect=) for the client — it
+copies any missing templates without clobbering files you have edited. If you
+previously tailored a flat =<slug>/standup.org=, move it to
+=<slug>/templates/standup.org=.
+
+** Override every template globally
+
+This sets the fallback templates used for *all* clients that have no matching
+per-client =templates/<name>.org= override.
 
 Copy the bundled =templates/= folder somewhere of your own, edit only the file
 you care about (say =adr.org=), and point the variable at your copy:
@@ -513,6 +550,9 @@ you care about (say =adr.org=), and point the variable at your copy:
 #+begin_src emacs-lisp
 (setq org-fractional-cto-template-directory "~/org/ofc-templates")
 #+end_src
+
+This becomes the fallback for clients with no matching =templates/<name>.org=
+override.
 
 ** Reorder or extend the dashboard
 
@@ -566,8 +606,13 @@ decision frameworks — is the job of [[file:playbook.org][playbook.org]]. Read 
   default) so the inherited client filetag is visible to the agenda filter.
 
 - *A standup capture inserts literal =%^{...}= / =%U= text.* You are on an old
-  version where the standup was injected as a string. Update the package; the
-  standup is now read as a file template so its escapes expand normally.
+  version where the standup was injected as a string. Update the package; every
+  template (the standup included) is now read as a file so its escapes expand
+  normally.
+
+- *A clocked capture clocks a sub-heading instead of the entry.* The template's
+  =%?= cursor marker sits below the first =**= sub-heading. Move =%?= into the
+  top entry body, above the first sub-heading, so Org clocks the main heading.
 
 - *~C-c a E~ is not listed in the dispatcher.* =setup= has not run (or ran
   before Org loaded). Ensure =org-fractional-cto-setup= runs =:after org=, then

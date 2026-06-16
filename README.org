@@ -104,9 +104,15 @@ Each client owns a directory:
 <clients-directory>/
   acme/
     acme.org      ← operational hub: one section per capture type
-    standup.org   ← per-client standup template
     CONTEXT.md    ← domain glossary, people, tech stack (load in AI sessions)
+    templates/    ← per-client copies of every capture template (override-able)
 #+end_example
+
+Onboarding copies the full bundled set of capture templates into =templates/=.
+At capture time a template resolves to the active client's
+=<slug>/templates/<name>.org= if it exists, else the bundled template — so edit
+a file under a client's =templates/= to tailor it for that client. The folder is
+not scanned by the agenda. See [[*Customisation][Customisation]] for details.
 
 The operational hub declares the client identity once as a file-level tag, so it
 is inherited by every heading in the file rather than repeated:
@@ -422,10 +428,11 @@ Standard Org priorities apply to actionable items:
 creates:
 
 - =<slug>/<slug>.org= — the hub, with the client identity in =#+filetags= and every section pre-created with its type subtag.
-- =<slug>/standup.org= — a standup template you can tailor (rename the streams
-  to your actual team; the standup capture reads this file).
 - =<slug>/CONTEXT.md= — fill this with domain vocabulary, key people, and the
   tech stack. Load it at the start of any AI coding session for that client.
+- =<slug>/templates/= — a per-client copy of every capture template. Edit any
+  file here to tailor that template for the client (e.g. rename the standup
+  streams in =<slug>/templates/standup.org=). See [[*Customisation][Customisation]].
 
 The new client is added to =org-agenda-files= immediately — no restart.
 
@@ -444,7 +451,7 @@ engagement heading carries a stage tag (defaulting to =ACTIVE=, or whatever
 | Variable                                       | Default                     | Purpose                                                                                                                  |
 |------------------------------------------------+-----------------------------+--------------------------------------------------------------------------------------------------------------------------|
 | =org-fractional-cto-clients-directory=         | =<org-directory>/clients=   | Where client engagements live                                                                                            |
-| =org-fractional-cto-template-directory=        | bundled =templates/=        | Capture templates (override to customise)                                                                                |
+| =org-fractional-cto-template-directory=        | bundled =templates/=        | Bundled capture templates (fallback); a client's =<slug>/templates/= overrides per-client                               |
 | =org-fractional-cto-doc-directory=             | bundled =doc/=              | Where the guide, playbook, and reference live                                                                            |
 | =org-fractional-cto-author=                    | =user-full-name=            | =#+AUTHOR= in scaffolded files                                                                                           |
 | =org-fractional-cto-agenda-key=                | ="E"=                       | Dispatcher key for the dashboard (=C-c a E=)                                                                            |
@@ -460,9 +467,15 @@ engagement heading carries a stage tag (defaulting to =ACTIVE=, or whatever
 | =org-fractional-cto-set-tag-inheritance=       | =t=                         | Enable =org-agenda-use-tag-inheritance=; required for the dashboard's client-tag focus AND for =C-c a m TAG= searches — setting it nil breaks both |
 | =org-fractional-cto-agenda-keymap-prefix=      | =nil=                       | Optional prefix key for at-point actions in agendas                                                                      |
 
-To customise a single template, copy the bundled =templates/= folder somewhere,
-edit the file you care about, and point =org-fractional-cto-template-directory=
-at your copy.
+*Per-client template overrides.* Each client gets a =templates/= folder of
+capture templates, copied in at onboarding. A capture uses the client's
+=templates/<name>.org= if present, otherwise the bundled template. Edit a
+client's file to tailor that capture; see the guide's "Override a template for
+one client" for details.
+
+To customise *every* client's fallback at once, copy the bundled =templates/=
+folder somewhere, edit the file you care about, and point
+=org-fractional-cto-template-directory= at your copy.
 
 * Working with AI session skills (optional)
 

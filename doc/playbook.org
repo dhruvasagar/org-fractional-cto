@@ -334,8 +334,8 @@ In Emacs: =M-x org-fractional-cto-new-client=
 
 This automatically creates:
 - =<clients-directory>/acme/acme.org= with all standard sections (Actions, Delegations, Blockers, People, etc.)
-- =<clients-directory>/acme/standup.org= with stream-based standup template
 - =<clients-directory>/acme/CONTEXT.md= pre-populated with all section headers
+- =<clients-directory>/acme/templates/= with per-client copies of every capture template (override-able)
 - Adds the client directory to =org-agenda-files= automatically
 
 Then: set this session's active client:
@@ -372,9 +372,11 @@ Load this at the start of every Claude Code session on that account.
 
 ** Reference: All Capture Templates
 
-All engagement captures use the =e= prefix. File-based templates live in the
-package's bundled =templates/= directory (configurable via
-=org-fractional-cto-template-directory=). Active client must be set (=M-x org-fractional-cto-set-active-client=)
+All engagement captures use the =e= prefix. Every template is a file: at capture
+time it resolves to the active client's =<slug>/templates/<name>.org= if present,
+else the bundled template (=org-fractional-cto-template-directory=). Onboarding
+populates each client's =templates/=, so edit a file there to tailor a template
+for that client. Active client must be set (=M-x org-fractional-cto-set-active-client=)
 or you will be prompted on each capture.
 
 *** Relationship & Communication
