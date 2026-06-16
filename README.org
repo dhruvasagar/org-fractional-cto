@@ -59,12 +59,24 @@ every capture and the dashboard follow it. Switch clients with one command.
 
 Requires Emacs 27.1+ and Org 9.4+.
 
-** use-package (from a local clone)
+** use-package
 
+*** From a local clone
 #+begin_src emacs-lisp
 (use-package org-fractional-cto
   :load-path "~/src/org-fractional-cto"
   :after org
+  :custom
+  (org-fractional-cto-clients-directory "~/org/clients")
+  (org-fractional-cto-author "Your Name")
+  :config
+  (org-fractional-cto-setup))
+#+end_src
+*** Using straight
+#+begin_src emacs-lisp
+(use-package org-fractional-cto
+  :after org
+  :straight (:type git :host github :repo "dhruvasagar/org-fractional-cto" :files (:defaults "templates" "doc"))
   :custom
   (org-fractional-cto-clients-directory "~/org/clients")
   (org-fractional-cto-author "Your Name")
