@@ -26,6 +26,19 @@
 
 ;;;; Capture-time helpers
 
+(defun org-fractional-cto--capture-client-slug ()
+  "Return the client slug for the current capture, selecting at most once.
+Memoised into the capture plist under :ofc-client-slug.  Org resolves a
+\(function ...) template (e.g. the standup) via `org-capture-get-template'
+BEFORE it runs the target function, so the template cannot rely on the target
+having stashed the slug yet.  Routing both through this helper means whichever
+runs first performs the selection, stores it, and the other reuses it -- the
+user is prompted once and both agree on the same client."
+  (or (org-capture-get :ofc-client-slug)
+      (let ((slug (org-fractional-cto--select-client)))
+        (org-capture-put :ofc-client-slug slug)
+        slug)))
+
 (defun org-fractional-cto--capture-to-heading (heading)
   "Visit HEADING in the selected client's org file, ready for capture.
 Stores :ofc-client-slug, :ofc-client-tag, and :ofc-client-name in the capture
@@ -33,10 +46,9 @@ plist.  Templates should reference the client name via
 %(org-capture-get :ofc-client-name); :ofc-client-tag is retained for
 backward compatibility but templates must NOT embed it in headlines
 (the tag lives in the hub's #+filetags instead)."
-  (let* ((slug (org-fractional-cto--select-client))
+  (let* ((slug (org-fractional-cto--capture-client-slug))
          (tag  (org-fractional-cto-client-tag slug))
          (file (org-fractional-cto-client-org-file slug)))
-    (org-capture-put :ofc-client-slug slug)
     (org-capture-put :ofc-client-tag  tag)
     (org-capture-put :ofc-client-name (org-fractional-cto-client-name slug))
     (find-file file)
@@ -62,8 +74,12 @@ Org re-scans so the standup's %^{...}, %U and %? escapes expand normally."
   "Return the active client's standup.org contents, or the bundled fallback.
 Used as a (function ...) capture template so Org re-scans and expands the
 %-escapes in the returned text -- unlike a %(sexp) escape, whose result Org
-would insert verbatim, leaving any nested %^{...}, %U or %? inert."
-  (let* ((slug (org-capture-get :ofc-client-slug))
+would insert verbatim, leaving any nested %^{...}, %U or %? inert.
+
+This runs before the target function (see `org-capture-get-template'), so it
+selects the client itself via `org-fractional-cto--capture-client-slug' rather
+than reading a slug the target has not stored yet."
+  (let* ((slug (org-fractional-cto--capture-client-slug))
          (file (and slug (org-fractional-cto-client-standup-file slug))))
     (org-fractional-cto--file-contents
      (if (and file (file-exists-p file))
