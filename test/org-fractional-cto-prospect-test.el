@@ -197,6 +197,54 @@
     (org-fractional-cto-pipeline-install)
     (should (assoc "P" org-agenda-custom-commands))))
 
+(ert-deftest ofc-pipeline-header-tracks-configured-stages ()
+  "The header is derived from the stage match, not hard-coded."
+  (let ((org-fractional-cto-pipeline-stages "LEAD|QUALIFIED"))
+    (should (equal (org-fractional-cto--pipeline-header)
+                   "Prospect pipeline (LEAD / QUALIFIED)")))
+  (let ((org-fractional-cto-pipeline-stages "LEAD|QUALIFIED|NEGOTIATING"))
+    (should (equal (org-fractional-cto--pipeline-header)
+                   "Prospect pipeline (LEAD / QUALIFIED / NEGOTIATING)"))))
+
+(ert-deftest ofc-pipeline-cmp-orders-by-stage ()
+  "The funnel comparator ranks earlier stages first, unknowns last."
+  (let ((org-fractional-cto-stages '("LEAD" "QUALIFIED" "ACTIVE" "LOST" "DORMANT"))
+        (lead      (propertize "lead"  'tags '("LEAD")))
+        (qualified (propertize "qual"  'tags '("QUALIFIED")))
+        (untagged  (propertize "plain" 'tags '("MISC"))))
+    (should (eq (org-fractional-cto--pipeline-cmp lead qualified) -1))
+    (should (eq (org-fractional-cto--pipeline-cmp qualified lead) +1))
+    (should (null (org-fractional-cto--pipeline-cmp lead lead)))
+    (should (eq (org-fractional-cto--pipeline-cmp qualified untagged) -1))))
+
+(ert-deftest ofc-pipeline-view-lists-only-prospect-headings ()
+  "Running the agenda lists LEAD/QUALIFIED engagement headings and nothing else.
+ACTIVE clients are excluded, and no sub-heading of a prospect leaks in."
+  (ofc-prospect-test-with-clients-dir
+    (let ((org-agenda-custom-commands nil)
+          (org-agenda-sticky nil))
+      (org-fractional-cto-new-prospect "Lead Co" "leadco")
+      (org-fractional-cto-new-prospect "Qual Co" "qualco")
+      ;; new-prospect leaves qualco active, so set-stage targets it.
+      (org-fractional-cto-set-stage "QUALIFIED")
+      (org-fractional-cto-new-client "Active Co" "activeco")
+      (org-fractional-cto-pipeline-install)
+      (org-agenda nil org-fractional-cto-pipeline-key)
+      (unwind-protect
+          (let ((out (buffer-substring-no-properties (point-min) (point-max))))
+            ;; Both prospects appear, the ACTIVE client does not.
+            (should (string-match-p "Lead Co Engagement" out))
+            (should (string-match-p "Qual Co Engagement" out))
+            (should-not (string-match-p "Active Co Engagement" out))
+            ;; Sub-headings of a prospect hub must not leak in.
+            (should-not (string-match-p "Pre-Sales Notes" out))
+            (should-not (string-match-p "Qualification" out))
+            ;; LEAD sorts before QUALIFIED in the funnel.
+            (should (< (string-match "Lead Co Engagement" out)
+                       (string-match "Qual Co Engagement" out))))
+        (when (get-buffer org-agenda-buffer-name)
+          (kill-buffer org-agenda-buffer-name))))))
+
 (ert-deftest ofc-command-map-has-prospect-bindings ()
   (should (eq (lookup-key org-fractional-cto-command-map "p")
               #'org-fractional-cto-new-prospect))

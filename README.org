@@ -303,8 +303,11 @@ To change focus while the dashboard is open:
 and opens the board in one step — the fast path for context switching.
 
 For the cross-client view, ~C-c a P~ (=M-x org-fractional-cto-pipeline=) lists
-every =LEAD= / =QUALIFIED= engagement across all clients, one line per prospect —
-your funnel board, complementing the global =C-c a E= dashboard.
+every =LEAD= / =QUALIFIED= engagement across all clients, one line per prospect,
+grouped by stage (all =LEAD= entries before =QUALIFIED=, then by client) — your
+funnel board, complementing the global =C-c a E= dashboard. The header tracks
+=org-fractional-cto-pipeline-stages=, so it stays accurate if you customise the
+stages shown.
 
 * Key bindings & legend
 

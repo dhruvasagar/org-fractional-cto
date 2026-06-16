@@ -30,6 +30,7 @@
 (defvar org-fractional-cto-agenda-key)
 (defvar org-fractional-cto-pipeline-key)
 (defvar org-fractional-cto-pipeline-stages)
+(defvar org-fractional-cto-stages)
 
 (defcustom org-fractional-cto-dashboard-blocks
   '((agenda ""
@@ -112,10 +113,44 @@ focus with the native agenda filter."
 
 (defun org-fractional-cto--pipeline-skip ()
   "Agenda skip function keeping only level-1 engagement headings.
-Returns nil for a top-level heading (keep) or the position of the next heading
-\(skip) for anything deeper, so inherited child entries do not clutter the view."
+Returns nil for a top-level heading (keep) or the end of the current subtree
+\(skip) for anything deeper, so inherited child entries do not clutter the view.
+Skipping to the subtree end -- rather than the next heading -- jumps past the
+whole branch in one step instead of re-checking every descendant."
   (when (> (or (org-current-level) 1) 1)
-    (or (outline-next-heading) (point-max))))
+    (org-end-of-subtree t)))
+
+(defun org-fractional-cto--pipeline-header ()
+  "Render `org-fractional-cto-pipeline-stages' as a human funnel label.
+The match expression (e.g. \"LEAD|QUALIFIED\") becomes \"Prospect pipeline
+\(LEAD / QUALIFIED)\", so the header tracks the configured stages instead of
+hard-coding them."
+  (format "Prospect pipeline (%s)"
+          (mapconcat #'identity
+                     (split-string org-fractional-cto-pipeline-stages
+                                   "[^A-Za-z0-9_]+" t)
+                     " / ")))
+
+(defun org-fractional-cto--pipeline-stage-rank (entry)
+  "Return the funnel rank of agenda ENTRY by its stage tag.
+ENTRY is an agenda line string carrying a `tags' text property.  The rank is the
+index of its stage tag within `org-fractional-cto-stages', so earlier stages
+sort first; an entry with no known stage sorts last."
+  (let* ((tags (get-text-property 0 'tags entry))
+         (stage (seq-find (lambda (s) (member s tags))
+                          org-fractional-cto-stages)))
+    (or (and stage (seq-position org-fractional-cto-stages stage))
+        most-positive-fixnum)))
+
+(defun org-fractional-cto--pipeline-cmp (a b)
+  "Compare agenda entries A and B by funnel stage order.
+Returns -1, +1, or nil so the pipeline groups every LEAD before every QUALIFIED
+\(and so on, following `org-fractional-cto-stages'), turning the flat tag match
+into a stage-ordered funnel.  Wired in via `org-agenda-cmp-user-defined'."
+  (let ((ra (org-fractional-cto--pipeline-stage-rank a))
+        (rb (org-fractional-cto--pipeline-stage-rank b)))
+    (cond ((< ra rb) -1)
+          ((> ra rb) +1))))
 
 ;;;###autoload
 (defun org-fractional-cto-pipeline-install ()
@@ -130,8 +165,12 @@ Bound to `org-fractional-cto-pipeline-key'.  Idempotent."
    `(,org-fractional-cto-pipeline-key
      "Fractional CTO — prospect pipeline"
      ((tags ,org-fractional-cto-pipeline-stages
-            ((org-agenda-overriding-header "Prospect pipeline (LEAD / QUALIFIED)")
-             (org-agenda-skip-function 'org-fractional-cto--pipeline-skip))))
+            ((org-agenda-overriding-header ,(org-fractional-cto--pipeline-header))
+             (org-agenda-skip-function 'org-fractional-cto--pipeline-skip)
+             ;; Group the funnel by stage (LEAD before QUALIFIED, …), then by
+             ;; client within a stage, instead of raw file-scan order.
+             (org-agenda-sorting-strategy '(user-defined-up category-up))
+             (org-agenda-cmp-user-defined 'org-fractional-cto--pipeline-cmp))))
      ((org-agenda-files (org-fractional-cto-agenda-files))))))
 
 ;;;###autoload
