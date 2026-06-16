@@ -7,10 +7,11 @@
 
 ;; `org-fractional-cto-new-client' scaffolds a complete per-client workspace:
 ;;
-;;   <clients-dir>/<slug>/<slug>.org   -- operational hub, one section per
-;;                                        capture type, each pre-tagged
-;;   <clients-dir>/<slug>/standup.org  -- per-client standup template
-;;   <clients-dir>/<slug>/CONTEXT.md   -- domain glossary / people / stack
+;;   <clients-dir>/<slug>/<slug>.org      -- operational hub, one section per
+;;                                           capture type, each pre-tagged
+;;   <clients-dir>/<slug>/templates/      -- per-client copies of the bundled
+;;                                           capture templates (override-able)
+;;   <clients-dir>/<slug>/CONTEXT.md      -- domain glossary / people / stack
 ;;
 ;; The section list below is the single source of truth: the hub headings, the
 ;; capture targets (`org-fractional-cto-capture.el'), and the dashboard
@@ -23,7 +24,8 @@
 
 (declare-function org-fractional-cto-client-tag "org-fractional-cto")
 (declare-function org-fractional-cto-client-org-file "org-fractional-cto")
-(declare-function org-fractional-cto-client-standup-file "org-fractional-cto")
+(declare-function org-fractional-cto-client-template-file "org-fractional-cto")
+(declare-function org-fractional-cto--template "org-fractional-cto")
 (declare-function org-fractional-cto-client-context-file "org-fractional-cto")
 (declare-function org-fractional-cto-agenda-files "org-fractional-cto")
 (declare-function org-fractional-cto--clients-dir "org-fractional-cto")
@@ -84,18 +86,18 @@ heading; TAG is written as the file's `#+filetags'."
             (insert (format "** %s\n\n" heading))
           (insert (format "** %s  :%s:\n\n" heading subtag)))))))
 
-(defun org-fractional-cto--write-standup (file)
-  "Write a per-client standup template FILE."
-  (with-temp-file file
-    (insert "* STANDUP %^{Date|%<%Y-%m-%d>}  :STANDUP:\n%U\n\n")
-    (dotimes (i 6)
-      (insert (format "** Stream %d — Lead: (TBD)\n- Shipped: %%?\n- Next:\n- Blockers:\n\n"
-                      (1+ i))))
-    (insert "** Key Metrics This Week\n")
-    (insert "| Metric | This Week | Last Week | Trend |\n")
-    (insert "|--------+-----------+-----------+-------|\n")
-    (insert "|        |           |           |       |\n\n")
-    (insert "** Escalations / Actions\n- [ ]\n")))
+(defun org-fractional-cto--copy-templates (slug)
+  "Copy every bundled template into client SLUG's templates/ directory.
+Existing files are left untouched so re-running never clobbers edits.  Standup
+is just one of the copied files -- it gets no special handling."
+  (let* ((dest (file-name-directory
+                (org-fractional-cto-client-template-file slug "x.org")))
+         (src  (file-name-directory (org-fractional-cto--template "x.org"))))
+    (make-directory dest t)
+    (dolist (name (directory-files src nil "\\.org\\'"))
+      (let ((target (expand-file-name name dest)))
+        (unless (file-exists-p target)
+          (copy-file (expand-file-name name src) target))))))
 
 (defun org-fractional-cto--write-context (file client-name slug)
   "Write the CONTEXT.md FILE for CLIENT-NAME with SLUG."
@@ -126,8 +128,9 @@ heading; TAG is written as the file's `#+filetags'."
 
 (defun org-fractional-cto--scaffold (client-name slug stage)
   "Create the on-disk workspace for CLIENT-NAME under SLUG at STAGE.
-Writes the hub, standup, and CONTEXT.md, registers the directory with
-`org-agenda-files', and returns the client directory."
+Writes the hub and CONTEXT.md, copies the bundled templates into the client's
+templates/ directory, registers the directory with `org-agenda-files', and
+returns the client directory."
   (when (string-empty-p (string-trim slug))
     (user-error "Client slug must not be empty"))
   (unless (member stage org-fractional-cto-stages)
@@ -135,7 +138,6 @@ Writes the hub, standup, and CONTEXT.md, registers the directory with
   (let* ((tag     (org-fractional-cto-client-tag slug))
          (dir     (expand-file-name slug (org-fractional-cto--clients-dir)))
          (hub     (org-fractional-cto-client-org-file slug))
-         (standup (org-fractional-cto-client-standup-file slug))
          (context (org-fractional-cto-client-context-file slug)))
     (when (and (file-exists-p dir)
                (not (yes-or-no-p
@@ -143,7 +145,7 @@ Writes the hub, standup, and CONTEXT.md, registers the directory with
       (user-error "Aborted"))
     (make-directory dir t)
     (org-fractional-cto--write-hub hub client-name tag stage)
-    (org-fractional-cto--write-standup standup)
+    (org-fractional-cto--copy-templates slug)
     (org-fractional-cto--write-context context client-name slug)
     (dolist (d (org-fractional-cto-agenda-files))
       (add-to-list 'org-agenda-files d t))
@@ -152,8 +154,8 @@ Writes the hub, standup, and CONTEXT.md, registers the directory with
 ;;;###autoload
 (defun org-fractional-cto-new-client (client-name slug)
   "Scaffold a new ACTIVE engagement for CLIENT-NAME under SLUG.
-Creates the client directory with its operational hub, standup template, and
-CONTEXT.md, then opens CONTEXT.md for editing."
+Creates the client directory with its operational hub, the bundled capture
+templates, and CONTEXT.md, then opens CONTEXT.md for editing."
   (interactive (org-fractional-cto--read-name-and-slug))
   (org-fractional-cto--scaffold client-name slug org-fractional-cto-default-stage)
   (find-file (org-fractional-cto-client-context-file slug))

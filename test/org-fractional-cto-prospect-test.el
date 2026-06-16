@@ -447,6 +447,33 @@ scaffold, so their hubs agree on every heading once slug and stage are removed."
     (should (equal (org-fractional-cto-client-template-file "acme" "risk.org")
                    "/tmp/ofc-x/acme/templates/risk.org"))))
 
+(ert-deftest ofc-onboarding-populates-client-templates ()
+  "new-client copies every bundled template into the client's templates/ dir."
+  (ofc-prospect-test-with-clients-dir
+    (org-fractional-cto-new-client "Acme Corp" "acme")
+    (let* ((bundled-dir (file-name-directory
+                         (org-fractional-cto--template "x.org")))
+           (bundled (directory-files bundled-dir nil "\\.org\\'"))
+           (client-dir (org-fractional-cto-client-template-file "acme" "")))
+      (should (file-directory-p client-dir))
+      ;; standup.org is copied like any other template, no special handling.
+      (should (member "standup.org" bundled))
+      (dolist (name bundled)
+        (should (file-exists-p
+                 (org-fractional-cto-client-template-file "acme" name)))))))
+
+(ert-deftest ofc-copy-templates-is-idempotent ()
+  "Re-running copy-templates does not clobber existing client edits."
+  (ofc-prospect-test-with-clients-dir
+    (org-fractional-cto-new-client "Acme Corp" "acme")
+    (let ((risk-file (org-fractional-cto-client-template-file "acme" "risk.org")))
+      (with-temp-file risk-file (insert "EDITED"))
+      (org-fractional-cto--copy-templates "acme")
+      (should (equal (with-temp-buffer
+                       (insert-file-contents risk-file)
+                       (buffer-string))
+                     "EDITED")))))
+
 (provide 'org-fractional-cto-prospect-test)
 
 ;;; org-fractional-cto-prospect-test.el ends here
