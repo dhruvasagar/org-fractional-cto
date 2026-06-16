@@ -450,6 +450,12 @@ scaffold, so their hubs agree on every heading once slug and stage are removed."
   (should (eq (lookup-key org-fractional-cto-agenda-command-map "b")
               #'org-fractional-cto-block-at-point)))
 
+(ert-deftest ofc-client-template-file-path ()
+  "client-template-file points into the client's templates/ subdir."
+  (let ((org-fractional-cto-clients-directory "/tmp/ofc-x"))
+    (should (equal (org-fractional-cto-client-template-file "acme" "risk.org")
+                   "/tmp/ofc-x/acme/templates/risk.org"))))
+
 (provide 'org-fractional-cto-prospect-test)
 
 ;;; org-fractional-cto-prospect-test.el ends here

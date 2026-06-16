@@ -194,6 +194,13 @@ skipped, matching `org-fractional-cto-agenda-files'."
   (expand-file-name (format "%s/%s.org" slug slug)
                     (org-fractional-cto--clients-dir)))
 
+(defun org-fractional-cto-client-template-file (slug name)
+  "Return the per-client override template file NAME for client SLUG.
+NAME is a bundled template filename such as \"risk.org\"; the override lives
+under the client's `templates/' subdirectory."
+  (expand-file-name (format "%s/templates/%s" slug name)
+                    (org-fractional-cto--clients-dir)))
+
 (defun org-fractional-cto-client-standup-file (slug)
   "Return the standup template file for client SLUG."
   (expand-file-name (format "%s/standup.org" slug)
