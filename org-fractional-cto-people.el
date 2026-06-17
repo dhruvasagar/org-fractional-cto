@@ -106,11 +106,15 @@ under the people directory, given a fresh ID, and registered with `org-id'."
         id))))
 
 (defun org-fractional-cto--register-people-with-org-id ()
-  "Make every person node resolvable by `org-id' in a fresh session.
-Adds the node files to `org-id-extra-files' when that variable holds a list."
-  (when (listp org-id-extra-files)
-    (dolist (file (org-fractional-cto--person-files))
-      (add-to-list 'org-id-extra-files file))))
+  "Register every person node with `org-id' so `[[id:...]]' links resolve.
+Reads each node file's `:ID:' and records its location directly via
+`org-id-add-location', independent of `org-id-extra-files' (whose default value
+is a symbol, not a list).  Person files are never added to `org-agenda-files'."
+  (require 'org-id)
+  (dolist (file (org-fractional-cto--person-files))
+    (let ((id (org-fractional-cto--person-id file)))
+      (when id
+        (org-id-add-location id file)))))
 
 ;;;###autoload
 (defun org-fractional-cto-insert-person ()

@@ -76,21 +76,32 @@
     (with-temp-file (org-fractional-cto-person-file "jane_doe") (insert ""))
     (should (equal (org-fractional-cto--unique-slug "jane_doe") "jane_doe_2"))))
 
-(ert-deftest ofc-register-people-adds-extra-files ()
+(ert-deftest ofc-register-people-makes-nodes-resolvable ()
   (ofc-people-test
-    (org-fractional-cto-create-person "Jane Doe")
-    (org-fractional-cto-create-person "Pat Lee")
-    (setq org-id-extra-files nil)
-    (org-fractional-cto--register-people-with-org-id)
-    (should (member (org-fractional-cto-person-file "jane_doe") org-id-extra-files))
-    (should (member (org-fractional-cto-person-file "pat_lee") org-id-extra-files))))
+    (let ((id1 (org-fractional-cto-create-person "Jane Doe"))
+          (id2 (org-fractional-cto-create-person "Pat Lee")))
+      ;; Simulate a fresh session: drop the in-memory id locations that
+      ;; create-person populated, so resolution must come from registration.
+      (clrhash org-id-locations)
+      (setq org-id-files nil)
+      (org-fractional-cto--register-people-with-org-id)
+      (should (equal (file-name-nondirectory (org-id-find-id-file id1))
+                     "jane_doe.org"))
+      (should (equal (file-name-nondirectory (org-id-find-id-file id2))
+                     "pat_lee.org")))))
 
-(ert-deftest ofc-register-people-tolerates-symbol-extra-files ()
+(ert-deftest ofc-register-people-works-with-symbol-extra-files ()
   (ofc-people-test
-    (org-fractional-cto-create-person "Jane Doe")
-    (let ((org-id-extra-files 'org-agenda-text-search-extra-files))
-      ;; Must not error when the variable is a symbol rather than a list.
-      (should (progn (org-fractional-cto--register-people-with-org-id) t)))))
+    (let ((id (org-fractional-cto-create-person "Jane Doe")))
+      (clrhash org-id-locations)
+      (setq org-id-files nil)
+      (let ((org-id-extra-files 'org-agenda-text-search-extra-files))
+        (org-fractional-cto--register-people-with-org-id)
+        (should (equal (file-name-nondirectory (org-id-find-id-file id))
+                       "jane_doe.org"))
+        ;; Must NOT have mutated the agenda text-search bucket.
+        (should (null (ignore-errors
+                        (symbol-value 'org-agenda-text-search-extra-files))))))))
 
 (ert-deftest ofc-insert-person-links-existing ()
   (ofc-people-test
