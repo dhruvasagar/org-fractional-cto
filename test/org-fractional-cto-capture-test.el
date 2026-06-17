@@ -203,6 +203,17 @@ bundled template (after a single client selection prompt)."
         (should (equal (org-fractional-cto--resolve-template-file "stakeholder.org")
                        (org-fractional-cto--template "stakeholder.org")))))))
 
+(ert-deftest ofc-person-capture-targets-person-and-bundled-note ()
+  "eP routes to the person target and a bundled (client-free) note template."
+  (let* ((templates (org-fractional-cto-capture-templates))
+         (entry (seq-find (lambda (tpl) (equal (car-safe tpl) "eP")) templates))
+         (target (nth 3 entry))
+         (template-form (nth 4 entry)))
+    (should (eq (car target) 'function))
+    (should (eq (cadr target) 'org-fractional-cto--capture-to-person))
+    (should (eq (car template-form) 'function))
+    (should (functionp (cadr template-form)))))
+
 (provide 'org-fractional-cto-capture-test)
 
 ;;; org-fractional-cto-capture-test.el ends here

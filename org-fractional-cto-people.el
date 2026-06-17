@@ -129,6 +129,30 @@ org-roam users may instead use `org-roam-node-insert'."
     (when id
       (insert (format "[[id:%s][%s]]" id name)))))
 
+(defun org-fractional-cto--person-goto-notes (file)
+  "Visit person FILE and move point onto its `Notes / History' heading.
+Appends the heading if the node lacks one."
+  (find-file file)
+  (widen)
+  (goto-char (point-min))
+  (if (re-search-forward "^\\*+ Notes / History[ \t]*$" nil t)
+      (beginning-of-line)
+    (goto-char (point-max))
+    (unless (bolp) (insert "\n"))
+    (insert "* Notes / History\n")
+    (forward-line -1)))
+
+(defun org-fractional-cto--capture-to-person ()
+  "Capture target for `eP': pick or create a person; file under Notes / History."
+  (let* ((people (org-fractional-cto-people))
+         (name (completing-read "Person: " (mapcar #'car people) nil nil))
+         (cell (assoc name people))
+         (file (if cell
+                   (cdr cell)
+                 (progn (org-fractional-cto-create-person name)
+                        (cdr (assoc name (org-fractional-cto-people)))))))
+    (org-fractional-cto--person-goto-notes file)))
+
 (provide 'org-fractional-cto-people)
 
 ;;; org-fractional-cto-people.el ends here

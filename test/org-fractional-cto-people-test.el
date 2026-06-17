@@ -123,3 +123,16 @@
                 ((symbol-function 'y-or-n-p) (lambda (&rest _) nil)))
         (org-fractional-cto-insert-person))
       (should (equal (buffer-string) "")))))
+
+(ert-deftest ofc-person-goto-notes-positions-in-history ()
+  (ofc-people-test
+    (org-fractional-cto-create-person "Jane Doe")
+    (let ((file (org-fractional-cto-person-file "jane_doe")))
+      (save-window-excursion
+        (org-fractional-cto--person-goto-notes file)
+        (should (equal (buffer-file-name) file))
+        ;; Point sits on the Notes / History heading line.
+        (should (string-match-p "Notes / History"
+                                (buffer-substring (line-beginning-position)
+                                                  (line-end-position)))))
+      (kill-buffer (find-file-noselect file)))))

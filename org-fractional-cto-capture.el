@@ -23,6 +23,7 @@
 (declare-function org-fractional-cto--template "org-fractional-cto")
 (declare-function org-fractional-cto-client-name "org-fractional-cto")
 (declare-function org-fractional-cto-client-template-file "org-fractional-cto")
+(declare-function org-fractional-cto--capture-to-person "org-fractional-cto-people")
 
 ;;;; Capture-time helpers
 
@@ -97,6 +98,14 @@ Org expands the file's %-escapes."
   (lambda () (org-fractional-cto--file-contents
               (org-fractional-cto--resolve-template-file filename))))
 
+(defun org-fractional-cto--bundled-file (filename)
+  "Return a capture-template thunk yielding bundled FILENAME's contents.
+Unlike `org-fractional-cto--file' this performs NO client selection or
+per-client override resolution; use it for templates (e.g. person notes) that
+are not scoped to a client."
+  (lambda () (org-fractional-cto--file-contents
+              (org-fractional-cto--template filename))))
+
 ;;;; The templates
 
 (defun org-fractional-cto-capture-templates ()
@@ -131,9 +140,9 @@ Org expands the file's %-escapes."
      (function ,(org-fractional-cto--target "Weekly Reviews"))
      (function ,(org-fractional-cto--file "weekly_review.org"))
      :clock-in t :clock-resume t)
-    ("eP" "Person / team member note" entry
-     (function ,(org-fractional-cto--target "People"))
-     (function ,(org-fractional-cto--file "person.org")))
+    ("eP" "Person note (global)" entry
+     (function org-fractional-cto--capture-to-person)
+     (function ,(org-fractional-cto--bundled-file "person_note.org")))
 
     ;; -- Relationship & communication -------------------------------------
     ("em" "Client meeting" entry
