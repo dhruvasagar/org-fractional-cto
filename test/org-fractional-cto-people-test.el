@@ -1,0 +1,48 @@
+;;; org-fractional-cto-people-test.el --- Tests for people nodes -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2026 Dhruva Sagar
+;; SPDX-License-Identifier: GPL-3.0-or-later
+
+;;; Commentary:
+
+;; ERT tests for org-fractional-cto-people: slug/path helpers, node listing,
+;; pure node creation, org-id registration, the insert-or-create helper, and
+;; the eP capture target.  Run with: make test
+
+;;; Code:
+
+(require 'ert)
+(require 'cl-lib)
+(require 'org-id)
+(require 'org-fractional-cto)
+(require 'org-fractional-cto-people)
+
+(defmacro ofc-people-test (&rest body)
+  "Run BODY with a throwaway people directory and isolated org-id state."
+  (declare (indent 0) (debug t))
+  `(let* ((org-fractional-cto-people-directory (make-temp-file "ofc-people" t))
+          (org-id-extra-files nil)
+          (org-id-locations (make-hash-table :test 'equal))
+          (org-id-files nil))
+     (unwind-protect (progn ,@body)
+       (delete-directory org-fractional-cto-people-directory t))))
+
+(ert-deftest ofc-people-slug-normalises-name ()
+  (should (equal (org-fractional-cto-people-slug "Jane Doe") "jane_doe"))
+  (should (equal (org-fractional-cto-people-slug "  O'Brien, Pat!  ") "o_brien_pat"))
+  (should (equal (org-fractional-cto-people-slug "Ann-Marie") "ann_marie")))
+
+(ert-deftest ofc-person-file-lives-under-people-dir ()
+  (ofc-people-test
+    (should (equal (org-fractional-cto-person-file "jane_doe")
+                   (expand-file-name "jane_doe.org"
+                                     (org-fractional-cto--people-dir))))))
+
+(ert-deftest ofc-people-lists-titles-and-files ()
+  (ofc-people-test
+    (let ((f (org-fractional-cto-person-file "jane_doe")))
+      (with-temp-file f
+        (insert ":PROPERTIES:\n:ID:       abc-123\n:END:\n#+title: Jane Doe\n"))
+      (should (equal (org-fractional-cto-people) (list (cons "Jane Doe" f))))
+      (should (equal (org-fractional-cto--person-title f) "Jane Doe"))
+      (should (equal (org-fractional-cto--person-id f) "abc-123")))))

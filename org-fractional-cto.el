@@ -67,6 +67,15 @@ templates/ subdirectory of per-client capture templates."
   :type 'directory
   :group 'org-fractional-cto)
 
+(defcustom org-fractional-cto-people-directory
+  (expand-file-name "people" (or (bound-and-true-p org-directory) "~/org"))
+  "Directory holding one Org node per person (global, cross-client).
+Each person is a file-level `org-id' node (an `:ID:' property drawer plus a
+`#+title').  Point this inside your `org-roam-directory' to have roam index
+the nodes; the package itself never requires org-roam."
+  :type 'directory
+  :group 'org-fractional-cto)
+
 (defcustom org-fractional-cto-template-directory
   (expand-file-name
    "templates"
@@ -179,6 +188,10 @@ Set with `org-fractional-cto-set-active-client'.")
   "Return the configured clients directory, expanded."
   (expand-file-name org-fractional-cto-clients-directory))
 
+(defun org-fractional-cto--people-dir ()
+  "Return the configured people directory, expanded."
+  (expand-file-name org-fractional-cto-people-directory))
+
 (defun org-fractional-cto-clients ()
   "Return the list of client slugs discovered on disk.
 Hidden entries (names beginning with a dot, e.g. \".git\" or \".DS_Store\") are
@@ -273,6 +286,7 @@ picked up automatically."
 (require 'org-fractional-cto-stage)
 (require 'org-fractional-cto-actions)
 (require 'org-fractional-cto-doc)
+(require 'org-fractional-cto-people)
 
 ;;;; Top-level commands and keymap
 
