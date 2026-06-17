@@ -24,14 +24,14 @@ Schedule explicit *hat blocks* — a discovery session is discovery only; an
 architecture session is architecture only. Mixing them produces mediocre output
 in both directions.
 
-| Hat | When to wear it | Key discipline |
-|------------------+-------------------------------------------+--------------------------------------|
-| Engagement Director | Client calls, QBRs, scope conversations | Speak business outcomes, not tech |
-| Discovery | Stream interviews, system mapping | Listen more than you talk |
-| Fractional CTO | ADRs, roadmap, build vs. buy decisions | First principles, not vendor bias |
-| QA Auditor | Test coverage review, release gates | Find the gaps the team normalised |
-| Security Reviewer | Compliance posture, infra review | Assume breach, work backwards |
-| DevOps Reviewer | CI/CD, infra, deployment, on-call | Optimise for recovery speed, not uptime |
+| Hat                 | When to wear it                         | Key discipline                          |
+|---------------------+-----------------------------------------+-----------------------------------------|
+| Engagement Director | Client calls, QBRs, scope conversations | Speak business outcomes, not tech       |
+| Discovery           | Stream interviews, system mapping       | Listen more than you talk               |
+| Fractional CTO      | ADRs, roadmap, build vs. buy decisions  | First principles, not vendor bias       |
+| QA Auditor          | Test coverage review, release gates     | Find the gaps the team normalised       |
+| Security Reviewer   | Compliance posture, infra review        | Assume breach, work backwards           |
+| DevOps Reviewer     | CI/CD, infra, deployment, on-call       | Optimise for recovery speed, not uptime |
 
 *** Hat-switching tools
 
@@ -268,17 +268,17 @@ decisions under pressure.
 - Frame findings as transparency and forward planning, not a problem list
 
 *** Capture templates
-| Key | Template | Ceremony |
-|-----+-----------+----------|
-| =C-c c es= | Standup notes | Daily |
-| =C-c c eg= | Delegate action (WAITING) | When delegating any task |
-| =C-c c eb= | Blocker / escalation | When a blocker is identified |
-| =C-c c eW= | Weekly review | Friday delegation + team review |
-| =C-c c em= | Client meeting | Weekly client sync |
-| =C-c c ei= | Internal sync | Weekly internal sync |
-| =C-c c eh= | Client health check | Monthly |
-| =C-c c eq= | QBR | Quarterly |
-| =C-c c eA= | Architecture health review | Quarterly |
+| Key        | Template                   | Ceremony                        |
+|------------+----------------------------+---------------------------------|
+| =C-c c es= | Standup notes              | Daily                           |
+| =C-c c eg= | Delegate action (WAITING)  | When delegating any task        |
+| =C-c c eb= | Blocker / escalation       | When a blocker is identified    |
+| =C-c c eW= | Weekly review              | Friday delegation + team review |
+| =C-c c em= | Client meeting             | Weekly client sync              |
+| =C-c c ei= | Internal sync              | Weekly internal sync            |
+| =C-c c eh= | Client health check        | Monthly                         |
+| =C-c c eq= | QBR                        | Quarterly                       |
+| =C-c c eA= | Architecture health review | Quarterly                       |
 
 *** Managing client expectations
 - Under-promise on timelines; over-deliver on quality
@@ -380,44 +380,44 @@ for that client. Active client must be set (=M-x org-fractional-cto-set-active-c
 or you will be prompted on each capture.
 
 *** Relationship & Communication
-| Full key | Template | Phase | Hat |
-|----------+----------+-------+-----|
-| =C-c c es= | Standup notes | 3 | Discovery |
-| =C-c c em= | Client meeting | 3 | Engagement Director |
-| =C-c c ei= | Internal sync | 3 | Engagement Director |
-| =C-c c ep= | Stakeholder profile | 0 | Engagement Director |
-| =C-c c ec= | Commitment captured | all | Engagement Director |
-| =C-c c eh= | Client health check | 3 | Engagement Director |
-| =C-c c eq= | QBR | 3 | Engagement Director |
-| =C-c c eM= | Metrics snapshot | 3 | Engagement Director |
+| Full key   | Template            | Phase | Hat                 |
+|------------+---------------------+-------+---------------------|
+| =C-c c es= | Standup notes       |     3 | Discovery           |
+| =C-c c em= | Client meeting      |     3 | Engagement Director |
+| =C-c c ei= | Internal sync       |     3 | Engagement Director |
+| =C-c c ep= | Stakeholder profile |     0 | Engagement Director |
+| =C-c c ec= | Commitment captured |   all | Engagement Director |
+| =C-c c eh= | Client health check |     3 | Engagement Director |
+| =C-c c eq= | QBR                 |     3 | Engagement Director |
+| =C-c c eM= | Metrics snapshot    |     3 | Engagement Director |
 
 *** Action Tracking & Delegation
-| Full key | Template | When |
-|----------+----------+------|
-| =C-c c ew= | Action item (quick TODO) | Ad hoc task for yourself |
-| =C-c c eg= | Delegate action (WAITING) | Assigning a task to a team member |
-| =C-c c eb= | Blocker / escalation | When something is blocking delivery |
-| =C-c c eW= | Weekly review | Friday delegation + team pulse review |
+| Full key   | Template                  | When                                  |
+|------------+---------------------------+---------------------------------------|
+| =C-c c ew= | Action item (quick TODO)  | Ad hoc task for yourself              |
+| =C-c c eg= | Delegate action (WAITING) | Assigning a task to a team member     |
+| =C-c c eb= | Blocker / escalation      | When something is blocking delivery   |
+| =C-c c eW= | Weekly review             | Friday delegation + team pulse review |
 | =C-c c eP= | Person / team member note | Capacity, concerns, or wins to record |
 
 *** Risk & Delivery
-| Full key | Template | Phase | Hat |
-|----------+----------+-------+-----|
-| =C-c c er= | Risk item | all | Engagement Director |
-| =C-c c ee= | Scope change | all | Engagement Director |
-| =C-c c ef= | Post-mortem (incident) | all | all |
-| =C-c c eR= | Retrospective | each sprint | People Manager |
+| Full key   | Template               | Phase       | Hat                 |
+|------------+------------------------+-------------+---------------------|
+| =C-c c er= | Risk item              | all         | Engagement Director |
+| =C-c c ee= | Scope change           | all         | Engagement Director |
+| =C-c c ef= | Post-mortem (incident) | all         | all                 |
+| =C-c c eR= | Retrospective          | each sprint | People Manager      |
 
 *** Technical
-| Full key | Template | Phase | Hat |
-|----------+----------+-------+-----|
-| =C-c c ed= | Discovery session | 1 | Discovery |
-| =C-c c ek= | Tech spike | 1/2 | Fractional CTO |
-| =C-c c ea= | ADR | 2 | Fractional CTO |
-| =C-c c eD= | Quick decision | 2/3 | Fractional CTO |
-| =C-c c eA= | Architecture health review | 3 | Fractional CTO |
-| =C-c c ev= | Vendor evaluation | 2 | Fractional CTO |
-| =C-c c et= | Technical debt item | 1/2 | Fractional CTO |
-| =C-c c ex= | Security finding | 1/2 | Security Reviewer |
-| =C-c c en= | Innovation idea (single) | 4 | Fractional CTO |
-| =C-c c eI= | Innovation meeting (multi-idea) | 4 | Fractional CTO |
+| Full key   | Template                        | Phase | Hat               |
+|------------+---------------------------------+-------+-------------------|
+| =C-c c ed= | Discovery session               |     1 | Discovery         |
+| =C-c c ek= | Tech spike                      |   1/2 | Fractional CTO    |
+| =C-c c ea= | ADR                             |     2 | Fractional CTO    |
+| =C-c c eD= | Quick decision                  |   2/3 | Fractional CTO    |
+| =C-c c eA= | Architecture health review      |     3 | Fractional CTO    |
+| =C-c c ev= | Vendor evaluation               |     2 | Fractional CTO    |
+| =C-c c et= | Technical debt item             |   1/2 | Fractional CTO    |
+| =C-c c ex= | Security finding                |   1/2 | Security Reviewer |
+| =C-c c en= | Innovation idea (single)        |     4 | Fractional CTO    |
+| =C-c c eI= | Innovation meeting (multi-idea) |     4 | Fractional CTO    |
