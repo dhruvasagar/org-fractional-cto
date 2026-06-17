@@ -214,6 +214,12 @@ bundled template (after a single client selection prompt)."
     (should (eq (car template-form) 'function))
     (should (functionp (cadr template-form)))))
 
+(ert-deftest ofc-stakeholder-template-has-person-link-line ()
+  "The bundled stakeholder template prompts for a link to the global person."
+  (let ((text (org-fractional-cto--file-contents
+               (org-fractional-cto--template "stakeholder.org"))))
+    (should (string-match-p "^Person (global node):" text))))
+
 (provide 'org-fractional-cto-capture-test)
 
 ;;; org-fractional-cto-capture-test.el ends here

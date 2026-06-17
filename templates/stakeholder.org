@@ -3,7 +3,7 @@
 Client: %(org-capture-get :ofc-client-name)
 Role / Title: %^{Role}
 Organisation: %^{Organisation}
-%?
+Person (global node): %?
 
 ** Decision & Influence
 Role in decisions: %^{Type|Decision Maker|Influencer|Technical Evaluator|Champion|Blocker}
