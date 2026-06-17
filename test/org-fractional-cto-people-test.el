@@ -91,3 +91,35 @@
     (let ((org-id-extra-files 'org-agenda-text-search-extra-files))
       ;; Must not error when the variable is a symbol rather than a list.
       (should (progn (org-fractional-cto--register-people-with-org-id) t)))))
+
+(ert-deftest ofc-insert-person-links-existing ()
+  (ofc-people-test
+    (let ((id (org-fractional-cto-create-person "Jane Doe")))
+      (with-temp-buffer
+        (cl-letf (((symbol-function 'completing-read)
+                   (lambda (&rest _) "Jane Doe")))
+          (org-fractional-cto-insert-person))
+        (should (equal (buffer-string)
+                       (format "[[id:%s][Jane Doe]]" id)))))))
+
+(ert-deftest ofc-insert-person-creates-on-unknown-name ()
+  (ofc-people-test
+    (with-temp-buffer
+      (cl-letf (((symbol-function 'completing-read)
+                 (lambda (&rest _) "New Person"))
+                ((symbol-function 'y-or-n-p) (lambda (&rest _) t)))
+        (org-fractional-cto-insert-person))
+      (should (file-exists-p (org-fractional-cto-person-file "new_person")))
+      (let ((id (org-fractional-cto--person-id
+                 (org-fractional-cto-person-file "new_person"))))
+        (should (equal (buffer-string)
+                       (format "[[id:%s][New Person]]" id)))))))
+
+(ert-deftest ofc-insert-person-declined-inserts-nothing ()
+  (ofc-people-test
+    (with-temp-buffer
+      (cl-letf (((symbol-function 'completing-read)
+                 (lambda (&rest _) "Nope"))
+                ((symbol-function 'y-or-n-p) (lambda (&rest _) nil)))
+        (org-fractional-cto-insert-person))
+      (should (equal (buffer-string) "")))))

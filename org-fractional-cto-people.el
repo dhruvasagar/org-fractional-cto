@@ -112,6 +112,23 @@ Adds the node files to `org-id-extra-files' when that variable holds a list."
     (dolist (file (org-fractional-cto--person-files))
       (add-to-list 'org-id-extra-files file))))
 
+;;;###autoload
+(defun org-fractional-cto-insert-person ()
+  "Insert an `[[id:...][Name]]' link to a person, creating the node if new.
+Completes over existing person nodes by name.  Entering a name with no match
+offers to create the node and then links it.  Bind it yourself if you like;
+org-roam users may instead use `org-roam-node-insert'."
+  (interactive)
+  (let* ((people (org-fractional-cto-people))
+         (name (completing-read "Person: " (mapcar #'car people) nil nil))
+         (cell (assoc name people))
+         (id (if cell
+                 (org-fractional-cto--person-id (cdr cell))
+               (when (y-or-n-p (format "Create new person \"%s\"? " name))
+                 (org-fractional-cto-create-person name)))))
+    (when id
+      (insert (format "[[id:%s][%s]]" id name)))))
+
 (provide 'org-fractional-cto-people)
 
 ;;; org-fractional-cto-people.el ends here
