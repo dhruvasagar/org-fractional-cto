@@ -190,6 +190,29 @@ Existing hubs can be migrated to this layout with =M-x org-fractional-cto-upgrad
 The hub's sections, the capture targets, and the dashboard all agree by
 construction — they are generated from one section list.
 
+** People & stakeholders
+
+People are first-class Org nodes, not inline text.  Each person is one file
+under =org-fractional-cto-people-directory= (default =~/org/people=, a sibling
+of the clients directory), holding a file-level =org-id= node with an =:ID:=
+property and a =#+title=.  This record is *global and durable*: it survives any
+client being archived or deleted, and is where long-term, cross-engagement
+history about a person accumulates.
+
+A *stakeholder profile* is different: it lives in the client hub's
+=Stakeholder Profiles= section and captures engagement-specific relationship
+data.  It links to the global person via its =Person (global node):= line.
+One person can be a stakeholder at several clients.
+
+To insert a person link: =M-x org-fractional-cto-insert-person= — complete by
+name and insert an =[[id:...][Name]]= link; type a new name to create the node
+on the fly.  The =eP= capture (=C-c c e P=) files a timestamped note under a
+person's =Notes / History=, creating the node if needed.
+
+org-roam is *not* required.  If you use roam, set
+=org-fractional-cto-people-directory= to a folder inside your
+=org-roam-directory= and roam indexes the nodes automatically.
+
 * Quick start
 
 1. =M-x org-fractional-cto-new-client= → name = "Acme Corp", slug = "acme".

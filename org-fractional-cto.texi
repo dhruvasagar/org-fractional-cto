@@ -57,6 +57,7 @@ Guide
 * Step 12 — Wire in AI session skills (optional)::
 * Step 13 — Settle into the rhythm::
 * Troubleshooting::
+* People & Stakeholders::
 * Where to go next::
 
 Step 1 — Install and verify
@@ -90,6 +91,11 @@ Step 11 — Make it yours
 * Override a template for one client::
 * Override every template globally::
 * Reorder or extend the dashboard::
+
+People & Stakeholders
+
+* Referencing a person::
+* org-roam users::
 
 Playbook
 
@@ -333,6 +339,7 @@ should @strong{see} so you can confirm it worked before moving on.
 * Step 12 — Wire in AI session skills (optional)::
 * Step 13 — Settle into the rhythm::
 * Troubleshooting::
+* People & Stakeholders::
 * Where to go next::
 @end menu
 
@@ -582,8 +589,10 @@ If you have hubs created before stages existed, run @samp{M-x
 org-fractional-cto-upgrade-hub} on each. It: adds a @samp{#+filetags: :SLUG:} line
 (the client tag at file level), strips any now-redundant per-heading client tag
 from every heading, appends any missing sections from the current section list,
-and ensures the engagement heading carries a stage tag (defaulting to @samp{ACTIVE}).
-The command is idempotent — safe to run more than once.
+ensures the engagement heading carries a stage tag (defaulting to @samp{ACTIVE}), and
+copies any bundled capture templates the client's @samp{templates/} directory is
+missing (templates you have already edited are left untouched). The command is
+idempotent — safe to run more than once.
 
 @node Step 4 — Fill in CONTEXTmd
 @section Step 4 — Fill in CONTEXT.md
@@ -1301,6 +1310,49 @@ Also verify the chosen prefix does not shadow an existing agenda binding (e.g.
 use Evil, the comma localleader (@samp{, g} / @samp{, b}) is wired automatically by setup
 and does not require a prefix.
 @end itemize
+
+@node People & Stakeholders
+@section People & Stakeholders
+
+People are first-class Org nodes, not inline text.  Each person is one file
+under @samp{org-fractional-cto-people-directory} (default @samp{~/org/people}), a
+file-level @samp{org-id} node with an @samp{:ID:} and a @samp{#+title}.  This record is
+global and durable: it survives any client being archived or deleted, and is
+where long-term, cross-engagement history about a person accumulates.
+
+A @strong{stakeholder profile} is different: it lives in the client hub's
+@samp{Stakeholder Profiles} section and captures engagement-specific relationship
+data (influence, what success means to them, communication cadence).  It links
+to the global person via its @samp{Person (global node):} line.  One person can be a
+stakeholder at several clients.
+
+@menu
+* Referencing a person::
+* org-roam users::
+@end menu
+
+@node Referencing a person
+@subsection Referencing a person
+
+@itemize
+@item
+@samp{M-x org-fractional-cto-insert-person} — complete by name and insert an
+@samp{[[id:...][Name]]} link; type a new name to create the node on the fly.
+@item
+Or the native dance: visit the person node, @samp{C-c l} (@samp{org-store-link}), then
+@samp{C-c C-l} (@samp{org-insert-link}) where you are writing.
+@item
+The @samp{eP} capture (@samp{C-c c e P}) files a timestamped note under a person's
+@samp{Notes / History}, creating the node if needed.
+@end itemize
+
+@node org-roam users
+@subsection org-roam users
+
+org-roam is @strong{not} required.  If you already use roam, set
+@samp{org-fractional-cto-people-directory} to a folder inside your
+@samp{org-roam-directory}; roam then indexes these nodes and your
+@samp{org-roam-node-insert} and backlinks buffer work unchanged.
 
 @node Where to go next
 @section Where to go next
@@ -2618,6 +2670,8 @@ carries @samp{:METRICS:}.  Both are reachable directly via @samp{C-c a m DECISIO
 @tab Delegate the heading at point
 @item @samp{M-x org-fractional-cto-block-at-point}
 @tab Blocker against heading at point
+@item @samp{M-x org-fractional-cto-insert-person}
+@tab Insert an @samp{[[id:...][Name]]} link; creates the person node if new
 @item @samp{M-x org-fractional-cto-docs}
 @tab Open docs dispatcher (guide/playbook/reference/info)
 @item @samp{M-x org-fractional-cto-guide}
@@ -2638,9 +2692,11 @@ They also live in @samp{org-fractional-cto-command-map} (keys @samp{n s k d w p 
 @samp{org-fractional-cto-upgrade-hub} migrates a hub file that was created before the
 current version of the package. It adds a @samp{#+filetags:} line (client identity tag),
 strips any per-heading client tags that are now redundant, appends any section
-headings missing from the current scaffold, and ensures the engagement heading
-carries a valid stage tag. The command is idempotent — running it more than once
-on the same file is safe. Select the client when prompted.
+headings missing from the current scaffold, ensures the engagement heading
+carries a valid stage tag, and copies any bundled capture templates the client's
+@samp{templates/} directory lacks (existing per-client overrides are preserved). The
+command is idempotent — running it more than once on the same file is safe.
+Select the client when prompted.
 
 @samp{g} (@samp{org-fractional-cto-delegate-at-point}) and @samp{b}
 (@samp{org-fractional-cto-block-at-point}) act on the Org heading at point — both
@@ -3281,6 +3337,9 @@ RET org-fractional-cto RET}.
 @item @samp{org-fractional-cto-dashboard-blocks}
 @tab 9 blocks (agenda → delegated → blockers → …)
 @tab The agenda series composing the @samp{C-c a E} dashboard; reorder or extend freely
+@item @samp{org-fractional-cto-people-directory}
+@tab @samp{~/org/people}
+@tab Directory holding one Org file per person (global, durable @samp{org-id} nodes)
 @item @samp{org-fractional-cto-doc-directory}
 @tab @samp{<package-dir>/doc}
 @tab Directory holding the bundled documentation sources

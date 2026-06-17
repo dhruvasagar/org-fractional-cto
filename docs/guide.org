@@ -652,6 +652,36 @@ decision frameworks — is the job of [[file:playbook.org][playbook.org]]. Read 
   use Evil, the comma localleader (=, g= / =, b=) is wired automatically by setup
   and does not require a prefix.
 
+* People & Stakeholders
+
+People are first-class Org nodes, not inline text.  Each person is one file
+under =org-fractional-cto-people-directory= (default =~/org/people=), a
+file-level =org-id= node with an =:ID:= and a =#+title=.  This record is
+global and durable: it survives any client being archived or deleted, and is
+where long-term, cross-engagement history about a person accumulates.
+
+A *stakeholder profile* is different: it lives in the client hub's
+=Stakeholder Profiles= section and captures engagement-specific relationship
+data (influence, what success means to them, communication cadence).  It links
+to the global person via its =Person (global node):= line.  One person can be a
+stakeholder at several clients.
+
+** Referencing a person
+
+- =M-x org-fractional-cto-insert-person= — complete by name and insert an
+  =[[id:...][Name]]= link; type a new name to create the node on the fly.
+- Or the native dance: visit the person node, =C-c l= (=org-store-link=), then
+  =C-c C-l= (=org-insert-link=) where you are writing.
+- The =eP= capture (=C-c c e P=) files a timestamped note under a person's
+  =Notes / History=, creating the node if needed.
+
+** org-roam users
+
+org-roam is *not* required.  If you already use roam, set
+=org-fractional-cto-people-directory= to a folder inside your
+=org-roam-directory=; roam then indexes these nodes and your
+=org-roam-node-insert= and backlinks buffer work unchanged.
+
 * Where to go next
 
 - [[file:playbook.org][playbook.org]] — the engagement methodology: phases, the hat model, and

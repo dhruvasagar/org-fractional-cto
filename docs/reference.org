@@ -195,6 +195,7 @@ carries =:METRICS:=.  Both are reachable directly via =C-c a m DECISION= /
 | =M-x org-fractional-cto-pipeline=          | Prospect pipeline (same as =C-c a P=)                |
 | =M-x org-fractional-cto-delegate-at-point= | Delegate the heading at point                        |
 | =M-x org-fractional-cto-block-at-point=    | Blocker against heading at point                     |
+| =M-x org-fractional-cto-insert-person=     | Insert an =[[id:...][Name]]= link; creates the person node if new |
 | =M-x org-fractional-cto-docs=              | Open docs dispatcher (guide/playbook/reference/info) |
 | =M-x org-fractional-cto-guide=             | Open the step-by-step user guide                     |
 | =M-x org-fractional-cto-playbook=          | Open the engagement playbook                         |
@@ -676,6 +677,7 @@ RET org-fractional-cto RET=.
 | =org-fractional-cto-todo-keywords=        | =TODO NEXT INPROGRESS WAITING= \vert{} =DONE CANCELLED= | TODO keyword sequence merged globally                                                     |
 | =org-fractional-cto-todo-keyword-faces=   | =INPROGRESS → deep sky blue bold=                       | Keyword faces merged non-destructively into =org-todo-keyword-faces=                      |
 | =org-fractional-cto-dashboard-blocks=     | 9 blocks (agenda → delegated → blockers → …)            | The agenda series composing the =C-c a E= dashboard; reorder or extend freely             |
+| =org-fractional-cto-people-directory=     | =~/org/people=                                          | Directory holding one Org file per person (global, durable =org-id= nodes)               |
 | =org-fractional-cto-doc-directory=        | =<package-dir>/doc=                                     | Directory holding the bundled documentation sources                                       |
 
 ** Operating Rhythms — Day by Day
