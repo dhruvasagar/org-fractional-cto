@@ -72,29 +72,29 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 | Set the engagement stage              | =M-x org-fractional-cto-set-stage=         |
 
 *** Look up / analyse
-| I need to...                            | Do this                                                  |
-|-----------------------------------------+----------------------------------------------------------|
-| Client dashboard (actions, delegations) | =C-c a E= (global; pre-filtered to active client if set) |
-| Delegated items awaiting response       | =C-c a E= → "Delegated — awaiting response" block         |
-| Blockers & escalations                  | =C-c a E= → "Blockers & Escalations" block               |
-| All open TODOs for this client          | =C-c a E= → "Open Actions" block                         |
-| Open commitments                        | =C-c a E= → "Commitments" block                          |
-| Active risks                            | =C-c a E= → "Active Risks" block                         |
-| Open security findings                  | =C-c a E= → "Open Security Findings" block               |
-| Open tech debt                             | =C-c a E= → "Open Tech Debt" block                |
-| Pending scope decisions                    | =C-c a E= → "Scope Changes — Pending Decisions"   |
-| Set active client (avoid repeated prompts) | =M-x org-fractional-cto-set-active-client=                      |
-| Clear active client                        | =M-x org-fractional-cto-clear-active-client=                    |
-| Prospect pipeline (all leads)              | =C-c a P= (or =M-x org-fractional-cto-pipeline=)               |
-| Browse by section (meetings, risks, etc.)  | =C-x C-f <client>.org= then navigate headings   |
-| Find a specific past note or doc           | =M-x org-roam-node-find= (fuzzy search)         |
-| Search text across all org files           | =C-c a s= (agenda search)                       |
-| All entries with a specific tag            | =C-c a m TAGNAME= (e.g. =C-c a m RISK=)         |
-| Challenge my own framing                   | =/grill-me= (mattpocock/skills)                 |
-| Structure a big decision                   | =/office-hours= (gstack)                        |
-| Security audit                             | =/cso= (gstack)                                 |
-| Run a sprint retrospective                 | =/retro= (gstack) + =C-c c eR=                  |
-| Onboard a new client                       | =M-x org-fractional-cto-new-client=                         |
+| I need to...                               | Do this                                                  |
+|--------------------------------------------+----------------------------------------------------------|
+| Client dashboard (actions, delegations)    | =C-c a E= (global; pre-filtered to active client if set) |
+| Delegated items awaiting response          | =C-c a E= → "Delegated — awaiting response" block        |
+| Blockers & escalations                     | =C-c a E= → "Blockers & Escalations" block               |
+| All open TODOs for this client             | =C-c a E= → "Open Actions" block                         |
+| Open commitments                           | =C-c a E= → "Commitments" block                          |
+| Active risks                               | =C-c a E= → "Active Risks" block                         |
+| Open security findings                     | =C-c a E= → "Open Security Findings" block               |
+| Open tech debt                             | =C-c a E= → "Open Tech Debt" block                       |
+| Pending scope decisions                    | =C-c a E= → "Scope Changes — Pending Decisions"          |
+| Set active client (avoid repeated prompts) | =M-x org-fractional-cto-set-active-client=               |
+| Clear active client                        | =M-x org-fractional-cto-clear-active-client=             |
+| Prospect pipeline (all leads)              | =C-c a P= (or =M-x org-fractional-cto-pipeline=)         |
+| Browse by section (meetings, risks, etc.)  | =C-x C-f <client>.org= then navigate headings            |
+| Find a specific past note or doc           | =M-x org-roam-node-find= (fuzzy search)                  |
+| Search text across all org files           | =C-c a s= (agenda search)                                |
+| All entries with a specific tag            | =C-c a m TAGNAME= (e.g. =C-c a m RISK=)                  |
+| Challenge my own framing                   | =/grill-me= (mattpocock/skills)                          |
+| Structure a big decision                   | =/office-hours= (gstack)                                 |
+| Security audit                             | =/cso= (gstack)                                          |
+| Run a sprint retrospective                 | =/retro= (gstack) + =C-c c eR=                           |
+| Onboard a new client                       | =M-x org-fractional-cto-new-client=                      |
 
 ** Legend
 
@@ -144,35 +144,35 @@ hub's =#+filetags= line (e.g. =#+filetags: :ACME:=) rather than being repeated
 on individual headings or items. The dashboard and =C-c a m TAG= search on these
 type tags.
 
-| Tag           | Section / capture            |
-|---------------+------------------------------|
-| =DELEGATED=   | Delegations (=eg=)           |
-| =BLOCKER=     | Blockers (=eb=)              |
-| =COMMITMENT=  | Commitments (=ec=)           |
-| =RISK=        | Risks (=er=)                 |
-| =REVIEW=      | Weekly Reviews (=eW=)        |
-| =PEOPLE=      | People (=eP=)                |
-| =MEETING=     | Meeting Notes (=em=)         |
-| =STANDUP=     | Standup Notes (=es=)         |
-| =INTERNAL=    | Internal Syncs (=ei=)        |
-| =DISCOVERY=   | Discovery / Tech spike (=ed=, =ek=) |
-| =STAKEHOLDER= | Stakeholder Profiles (=ep=)  |
-| =ADR=         | Architecture Decisions section tag (=ea=)               |
-| =DECISION=    | Architecture Decisions → Quick decision item tag (=eD=) |
-| =ARCHREVIEW=  | Architecture Reviews (=eA=)                             |
-| =VENDOR=      | Vendor Evaluations (=ev=)                               |
-| =TECHDEBT=    | Technical Debt (=et=)                                   |
-| =SECURITY=    | Security Findings (=ex=)                                |
-| =HEALTH=      | Health Checks section tag (=eh=)                        |
-| =METRICS=     | Health Checks → Metrics snapshot item tag (=eM=)        |
-| =QBR=         | QBRs (=eq=)                  |
-| =INNOVATION=  | Innovation Pipeline (=en=, =eI=) |
-| =SCOPE=       | Scope Changes (=ee=)         |
-| =POSTMORTEM=  | Post-Mortems (=ef=)          |
-| =RETRO=       | Retrospectives (=eR=)        |
-| =PRESALES=      | Pre-Sales Notes (=el=)        |
-| =RESEARCH=      | Research (=eo=)               |
-| =QUALIFICATION= | Qualification (=eF=)          |
+| Tag             | Section / capture                                       |
+|-----------------+---------------------------------------------------------|
+| =DELEGATED=     | Delegations (=eg=)                                      |
+| =BLOCKER=       | Blockers (=eb=)                                         |
+| =COMMITMENT=    | Commitments (=ec=)                                      |
+| =RISK=          | Risks (=er=)                                            |
+| =REVIEW=        | Weekly Reviews (=eW=)                                   |
+| =PEOPLE=        | People (=eP=)                                           |
+| =MEETING=       | Meeting Notes (=em=)                                    |
+| =STANDUP=       | Standup Notes (=es=)                                    |
+| =INTERNAL=      | Internal Syncs (=ei=)                                   |
+| =DISCOVERY=     | Discovery / Tech spike (=ed=, =ek=)                     |
+| =STAKEHOLDER=   | Stakeholder Profiles (=ep=)                             |
+| =ADR=           | Architecture Decisions section tag (=ea=)               |
+| =DECISION=      | Architecture Decisions → Quick decision item tag (=eD=) |
+| =ARCHREVIEW=    | Architecture Reviews (=eA=)                             |
+| =VENDOR=        | Vendor Evaluations (=ev=)                               |
+| =TECHDEBT=      | Technical Debt (=et=)                                   |
+| =SECURITY=      | Security Findings (=ex=)                                |
+| =HEALTH=        | Health Checks section tag (=eh=)                        |
+| =METRICS=       | Health Checks → Metrics snapshot item tag (=eM=)        |
+| =QBR=           | QBRs (=eq=)                                             |
+| =INNOVATION=    | Innovation Pipeline (=en=, =eI=)                        |
+| =SCOPE=         | Scope Changes (=ee=)                                    |
+| =POSTMORTEM=    | Post-Mortems (=ef=)                                     |
+| =RETRO=         | Retrospectives (=eR=)                                   |
+| =PRESALES=      | Pre-Sales Notes (=el=)                                  |
+| =RESEARCH=      | Research (=eo=)                                         |
+| =QUALIFICATION= | Qualification (=eF=)                                    |
 
 Some captures file under a typed section but stamp the item with their own
 distinct tag: =eD= (quick decision) files under Architecture Decisions but
@@ -181,25 +181,25 @@ carries =:METRICS:=.  Both are reachable directly via =C-c a m DECISION= /
 =C-c a m METRICS=, and also via the section tag through inheritance.
 
 *** Key bindings
-| ~C-c c e<key>~ | Capture (see [[*Capture Templates — Complete Reference][capture reference]]) |
-| ~C-c a E~      | Global dashboard (pre-filtered to active client)                            |
-| ~C-c a m TAG~  | Match a type tag across all clients                                         |
-| =M-x org-fractional-cto-new-client=        | New client (onboard)                             |
-| =M-x org-fractional-cto-set-active-client= | Set active client                                |
-| =M-x org-fractional-cto-dashboard=         | Global dashboard (pre-filtered to active client) |
-| =M-x org-fractional-cto-switch-client=     | Switch client + open dashboard                   |
-| =M-x org-fractional-cto-new-prospect=      | New prospect (LEAD stage)                        |
-| =M-x org-fractional-cto-set-stage=         | Set engagement stage                             |
-| =M-x org-fractional-cto-upgrade-hub=       | Upgrade an old hub in place                      |
-| =C-c a P=                                  | Prospect pipeline (all leads)                    |
-| =M-x org-fractional-cto-pipeline=          | Prospect pipeline (same as =C-c a P=)            |
-| =M-x org-fractional-cto-delegate-at-point= | Delegate the heading at point                    |
-| =M-x org-fractional-cto-block-at-point=    | Blocker against heading at point                 |
-| =M-x org-fractional-cto-docs=             | Open docs dispatcher (guide/playbook/reference/info) |
-| =M-x org-fractional-cto-guide=            | Open the step-by-step user guide                 |
-| =M-x org-fractional-cto-playbook=         | Open the engagement playbook                     |
-| =M-x org-fractional-cto-reference=        | Open this reference guide                        |
-| =M-x org-fractional-cto-info=             | Open the combined Info manual                    |
+| ~C-c c e<key>~                             | Capture (see [[*Capture Templates — Complete Reference][capture reference]])                      |
+| ~C-c a E~                                  | Global dashboard (pre-filtered to active client)     |
+| ~C-c a m TAG~                              | Match a type tag across all clients                  |
+| =M-x org-fractional-cto-new-client=        | New client (onboard)                                 |
+| =M-x org-fractional-cto-set-active-client= | Set active client                                    |
+| =M-x org-fractional-cto-dashboard=         | Global dashboard (pre-filtered to active client)     |
+| =M-x org-fractional-cto-switch-client=     | Switch client + open dashboard                       |
+| =M-x org-fractional-cto-new-prospect=      | New prospect (LEAD stage)                            |
+| =M-x org-fractional-cto-set-stage=         | Set engagement stage                                 |
+| =M-x org-fractional-cto-upgrade-hub=       | Upgrade an old hub in place                          |
+| =C-c a P=                                  | Prospect pipeline (all leads)                        |
+| =M-x org-fractional-cto-pipeline=          | Prospect pipeline (same as =C-c a P=)                |
+| =M-x org-fractional-cto-delegate-at-point= | Delegate the heading at point                        |
+| =M-x org-fractional-cto-block-at-point=    | Blocker against heading at point                     |
+| =M-x org-fractional-cto-docs=              | Open docs dispatcher (guide/playbook/reference/info) |
+| =M-x org-fractional-cto-guide=             | Open the step-by-step user guide                     |
+| =M-x org-fractional-cto-playbook=          | Open the engagement playbook                         |
+| =M-x org-fractional-cto-reference=         | Open this reference guide                            |
+| =M-x org-fractional-cto-info=              | Open the combined Info manual                        |
 
 Management commands run via =M-x= by default (no global prefix is claimed).
 They also live in =org-fractional-cto-command-map= (keys =n s k d w p S g b h=); set
@@ -209,9 +209,11 @@ They also live in =org-fractional-cto-command-map= (keys =n s k d w p S g b h=);
 =org-fractional-cto-upgrade-hub= migrates a hub file that was created before the
 current version of the package. It adds a =#+filetags:= line (client identity tag),
 strips any per-heading client tags that are now redundant, appends any section
-headings missing from the current scaffold, and ensures the engagement heading
-carries a valid stage tag. The command is idempotent — running it more than once
-on the same file is safe. Select the client when prompted.
+headings missing from the current scaffold, ensures the engagement heading
+carries a valid stage tag, and copies any bundled capture templates the client's
+=templates/= directory lacks (existing per-client overrides are preserved). The
+command is idempotent — running it more than once on the same file is safe.
+Select the client when prompted.
 
 =g= (=org-fractional-cto-delegate-at-point=) and =b=
 (=org-fractional-cto-block-at-point=) act on the Org heading at point — both
@@ -657,24 +659,24 @@ All package variables are =defcustom=s. Set them before calling
 =org-fractional-cto-setup=, or customise interactively via =M-x customize-group
 RET org-fractional-cto RET=.
 
-| Variable                                     | Default                                       | Purpose                                                                        |
-|----------------------------------------------+-----------------------------------------------+--------------------------------------------------------------------------------|
-| =org-fractional-cto-clients-directory=       | =<org-directory>/clients=                     | Root directory holding one sub-dir per client                                  |
-| =org-fractional-cto-template-directory=      | =<package-dir>/templates=                     | Bundled capture templates (fallback); a client's =<slug>/templates/= overrides per-client |
-| =org-fractional-cto-author=                  | =user-full-name=                              | =#+AUTHOR= inserted in scaffolded hub files                                    |
-| =org-fractional-cto-agenda-key=              | ="E"=                                         | Dispatcher key under =C-c a= for the client dashboard                         |
-| =org-fractional-cto-keymap-prefix=           | =nil=                                         | Optional prefix to bind =org-fractional-cto-command-map= globally              |
-| =org-fractional-cto-agenda-keymap-prefix=    | =nil=                                         | Optional prefix for at-point actions in =org-agenda-mode-map=                  |
-| =org-fractional-cto-stages=                  | =LEAD QUALIFIED ACTIVE LOST DORMANT=          | Ordered list of valid engagement stage tags                                    |
-| =org-fractional-cto-default-stage=           | ="ACTIVE"=                                    | Stage applied by =new-client=                                                  |
-| =org-fractional-cto-lead-stage=              | ="LEAD"=                                      | Stage applied by =new-prospect=                                                |
-| =org-fractional-cto-pipeline-stages=         | ~"LEAD\vert{}QUALIFIED"~                      | Tag-match expression selecting prospects for the pipeline view                 |
-| =org-fractional-cto-pipeline-key=            | ="P"=                                         | Dispatcher key under =C-c a= for the prospect pipeline view                   |
-| =org-fractional-cto-set-tag-inheritance=     | =t=                                           | Enable agenda tag inheritance (required for filetag-based client focus)        |
-| =org-fractional-cto-todo-keywords=           | =TODO NEXT INPROGRESS WAITING= \vert{} =DONE CANCELLED= | TODO keyword sequence merged globally                              |
-| =org-fractional-cto-todo-keyword-faces=      | =INPROGRESS → deep sky blue bold=             | Keyword faces merged non-destructively into =org-todo-keyword-faces=           |
-| =org-fractional-cto-dashboard-blocks=        | 9 blocks (agenda → delegated → blockers → …) | The agenda series composing the =C-c a E= dashboard; reorder or extend freely |
-| =org-fractional-cto-doc-directory=           | =<package-dir>/doc=                           | Directory holding the bundled documentation sources                            |
+| Variable                                  | Default                                                 | Purpose                                                                                   |
+|-------------------------------------------+---------------------------------------------------------+-------------------------------------------------------------------------------------------|
+| =org-fractional-cto-clients-directory=    | =<org-directory>/clients=                               | Root directory holding one sub-dir per client                                             |
+| =org-fractional-cto-template-directory=   | =<package-dir>/templates=                               | Bundled capture templates (fallback); a client's =<slug>/templates/= overrides per-client |
+| =org-fractional-cto-author=               | =user-full-name=                                        | =#+AUTHOR= inserted in scaffolded hub files                                               |
+| =org-fractional-cto-agenda-key=           | ="E"=                                                   | Dispatcher key under =C-c a= for the client dashboard                                     |
+| =org-fractional-cto-keymap-prefix=        | =nil=                                                   | Optional prefix to bind =org-fractional-cto-command-map= globally                         |
+| =org-fractional-cto-agenda-keymap-prefix= | =nil=                                                   | Optional prefix for at-point actions in =org-agenda-mode-map=                             |
+| =org-fractional-cto-stages=               | =LEAD QUALIFIED ACTIVE LOST DORMANT=                    | Ordered list of valid engagement stage tags                                               |
+| =org-fractional-cto-default-stage=        | ="ACTIVE"=                                              | Stage applied by =new-client=                                                             |
+| =org-fractional-cto-lead-stage=           | ="LEAD"=                                                | Stage applied by =new-prospect=                                                           |
+| =org-fractional-cto-pipeline-stages=      | ~"LEAD\vert{}QUALIFIED"~                                | Tag-match expression selecting prospects for the pipeline view                            |
+| =org-fractional-cto-pipeline-key=         | ="P"=                                                   | Dispatcher key under =C-c a= for the prospect pipeline view                               |
+| =org-fractional-cto-set-tag-inheritance=  | =t=                                                     | Enable agenda tag inheritance (required for filetag-based client focus)                   |
+| =org-fractional-cto-todo-keywords=        | =TODO NEXT INPROGRESS WAITING= \vert{} =DONE CANCELLED= | TODO keyword sequence merged globally                                                     |
+| =org-fractional-cto-todo-keyword-faces=   | =INPROGRESS → deep sky blue bold=                       | Keyword faces merged non-destructively into =org-todo-keyword-faces=                      |
+| =org-fractional-cto-dashboard-blocks=     | 9 blocks (agenda → delegated → blockers → …)            | The agenda series composing the =C-c a E= dashboard; reorder or extend freely             |
+| =org-fractional-cto-doc-directory=        | =<package-dir>/doc=                                     | Directory holding the bundled documentation sources                                       |
 
 ** Operating Rhythms — Day by Day
 
@@ -798,26 +800,26 @@ file *directly* to the relevant section of the active client's =<client>.org=
 — no refile step. Generic captures (=t=, =n=, =m=) still go to =refile.org=.
 
 Essential keybindings:
-| Key | Action |
-|-----+--------|
-| =C-c c= | Open capture menu |
-| =C-c c e= | Jump directly to client group |
-| =C-c C-c= | Confirm and file the capture |
-| =C-c C-k= | Abort the capture |
-| =C-c C-w= | Refile a heading (for refile.org inbox items) |
-| =C-x C-s= in capture | Save without closing |
+| Key                  | Action                                        |
+|----------------------+-----------------------------------------------|
+| =C-c c=              | Open capture menu                             |
+| =C-c c e=            | Jump directly to client group                 |
+| =C-c C-c=            | Confirm and file the capture                  |
+| =C-c C-k=            | Abort the capture                             |
+| =C-c C-w=            | Refile a heading (for refile.org inbox items) |
+| =C-x C-s= in capture | Save without closing                          |
 
 *** org-agenda (=C-c a=)
 
 Your operational dashboard. Key views:
 
-| Key | View |
-|-----+------|
-| =C-c a a= | Day/week agenda — deadlines, scheduled items (all files) |
-| =C-c a E= | ★ Global dashboard (9 blocks) — spans all clients; pre-focused to active client when set; use =/= to widen or refocus |
-| =C-c a t= | All TODO items across all agenda files |
-| =C-c a m TAGNAME= | Match by tag — e.g. =RISK=, =COMMITMENT=, =DELEGATED=, =BLOCKER= |
-| =C-c a s= | Full-text search across all agenda files |
+| Key               | View                                                                                                                  |
+|-------------------+-----------------------------------------------------------------------------------------------------------------------|
+| =C-c a a=         | Day/week agenda — deadlines, scheduled items (all files)                                                              |
+| =C-c a E=         | ★ Global dashboard (9 blocks) — spans all clients; pre-focused to active client when set; use =/= to widen or refocus |
+| =C-c a t=         | All TODO items across all agenda files                                                                                |
+| =C-c a m TAGNAME= | Match by tag — e.g. =RISK=, =COMMITMENT=, =DELEGATED=, =BLOCKER=                                                      |
+| =C-c a s=         | Full-text search across all agenda files                                                                              |
 
 =C-c a E= is a first-class Org agenda command (so it exports, filters with =/=,
 refreshes with =r=, etc.). It spans *all* client files; when an active client is
@@ -835,12 +837,12 @@ it.
 All discovery sessions, meetings, and reviews are clocked (the templates include
 =:clock-in t=). This gives you automatic time tracking per engagement.
 
-| Key | Action |
-|-----+--------|
-| =C-c C-x C-i= | Clock in to current heading |
-| =C-c C-x C-o= | Clock out |
+| Key           | Action                       |
+|---------------+------------------------------|
+| =C-c C-x C-i= | Clock in to current heading  |
+| =C-c C-x C-o= | Clock out                    |
 | =C-c C-x C-r= | Insert clock report at point |
-| =C-c C-x C-d= | Show time spent on subtree |
+| =C-c C-x C-d= | Show time spent on subtree   |
 
 Monthly: =M-x org-clock-report= in the client's master doc to see time by stream.
 
@@ -848,11 +850,11 @@ Monthly: =M-x org-clock-report= in the client's master doc to see time by stream
 
 After capturing, refile entries from =refile.org= to their permanent home:
 
-| Key | Action |
-|-----+--------|
-| =C-c C-w= | Refile current heading |
-| =C-u C-c C-w= | Refile and jump to destination |
-| =C-u C-u C-c C-w= | Jump to last refile location |
+| Key               | Action                         |
+|-------------------+--------------------------------|
+| =C-c C-w=         | Refile current heading         |
+| =C-u C-c C-w=     | Refile and jump to destination |
+| =C-u C-u C-c C-w= | Jump to last refile location   |
 
 Type part of the destination heading name; org-refile searches across all agenda files
 up to 9 levels deep (configured in =init-org.el=).
@@ -862,12 +864,12 @@ up to 9 levels deep (configured in =init-org.el=).
 The long-form note graph. Discovery docs and role plans are org-roam nodes (they
 have =:ID:= properties).
 
-| Key (default / Doom) | Action |
-|---------------------+--------|
-| =M-x org-roam-node-find= | Find or create a roam node |
-| =M-x org-roam-node-insert= | Insert a link to another node |
-| =M-x org-roam-buffer-toggle= | Show backlinks panel |
-| =M-x org-roam-db-autosync-mode= | Enable auto-sync (run once) |
+| Key (default / Doom)            | Action                        |
+|---------------------------------+-------------------------------|
+| =M-x org-roam-node-find=        | Find or create a roam node    |
+| =M-x org-roam-node-insert=      | Insert a link to another node |
+| =M-x org-roam-buffer-toggle=    | Show backlinks panel          |
+| =M-x org-roam-db-autosync-mode= | Enable auto-sync (run once)   |
 
 After moving roam files: run =M-x org-roam-db-sync= to rebuild the database.
 

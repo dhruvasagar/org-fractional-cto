@@ -199,8 +199,10 @@ If you have hubs created before stages existed, run =M-x
 org-fractional-cto-upgrade-hub= on each. It: adds a =#+filetags: :SLUG:= line
 (the client tag at file level), strips any now-redundant per-heading client tag
 from every heading, appends any missing sections from the current section list,
-and ensures the engagement heading carries a stage tag (defaulting to =ACTIVE=).
-The command is idempotent — safe to run more than once.
+ensures the engagement heading carries a stage tag (defaulting to =ACTIVE=), and
+copies any bundled capture templates the client's =templates/= directory is
+missing (templates you have already edited are left untouched). The command is
+idempotent — safe to run more than once.
 
 * Step 4 — Fill in CONTEXT.md
 
@@ -283,11 +285,11 @@ into, and when to reach for it. (Field-by-field detail is in [[file:reference.or
 
 | Key  | Captures             | Files to       | Reach for it when…                          |
 |------+----------------------+----------------+---------------------------------------------|
-| =ew= | Action item (TODO)   | Actions        | A task lands on /your/ plate                 |
+| =ew= | Action item (TODO)   | Actions        | A task lands on /your/ plate                |
 | =eg= | Delegate (WAITING)   | Delegations    | You hand a task to someone — sets =WAITING= |
-| =eb= | Blocker / escalation | Blockers       | Something is blocking delivery               |
-| =eW= | Weekly review        | Weekly Reviews | Your Friday delegation + team pulse pass     |
-| =eP= | Person / team note   | People         | Capacity, a concern, or a win to record      |
+| =eb= | Blocker / escalation | Blockers       | Something is blocking delivery              |
+| =eW= | Weekly review        | Weekly Reviews | Your Friday delegation + team pulse pass    |
+| =eP= | Person / team note   | People         | Capacity, a concern, or a win to record     |
 
 =eg= is the engine of the *Delegated* dashboard block: it files in the =WAITING=
 state, which is how the system separates "things I owe" from "things I am owed."
@@ -333,16 +335,16 @@ for =eg= / =eb= when you are capturing something new.
 
 ** Relationship & communication
 
-| Key  | Captures            | Files to             | Reach for it when…                  |
-|------+---------------------+----------------------+-------------------------------------|
-| =es= | Standup             | Standup Notes        | Daily standup                       |
-| =em= | Client meeting      | Meeting Notes        | Any client-facing sync              |
-| =ei= | Internal sync       | Internal Syncs       | Your team's internal sync           |
-| =ec= | Commitment          | Commitments          | A promise is made (by you or them)  |
-| =ep= | Stakeholder profile | Stakeholder Profiles | Profiling a decision-maker          |
-| =eh= | Client health check | Health Checks        | Monthly pulse questions             |
-| =eM= | Metrics snapshot    | Health Checks        | Logging the week's funnel/metrics   |
-| =eq= | QBR                 | QBRs                 | Quarterly business review prep      |
+| Key  | Captures            | Files to             | Reach for it when…                 |
+|------+---------------------+----------------------+------------------------------------|
+| =es= | Standup             | Standup Notes        | Daily standup                      |
+| =em= | Client meeting      | Meeting Notes        | Any client-facing sync             |
+| =ei= | Internal sync       | Internal Syncs       | Your team's internal sync          |
+| =ec= | Commitment          | Commitments          | A promise is made (by you or them) |
+| =ep= | Stakeholder profile | Stakeholder Profiles | Profiling a decision-maker         |
+| =eh= | Client health check | Health Checks        | Monthly pulse questions            |
+| =eM= | Metrics snapshot    | Health Checks        | Logging the week's funnel/metrics  |
+| =eq= | QBR                 | QBRs                 | Quarterly business review prep     |
 
 ** Risk & delivery
 
@@ -350,8 +352,8 @@ for =eg= / =eb= when you are capturing something new.
 |------+---------------+----------------+------------------------------------------|
 | =er= | Risk          | Risks          | A delivery or engagement risk appears    |
 | =ee= | Scope change  | Scope Changes  | Work surfaces outside the SOW            |
-| =ef= | Post-mortem   | Post-Mortems   | /Reactive/ — something failed             |
-| =eR= | Retrospective | Retrospectives | /Routine/ — every sprint, failure or not  |
+| =ef= | Post-mortem   | Post-Mortems   | /Reactive/ — something failed            |
+| =eR= | Retrospective | Retrospectives | /Routine/ — every sprint, failure or not |
 
 Keep =ef= and =eR= distinct: a post-mortem is written because something broke; a
 retrospective runs on cadence regardless.
@@ -371,10 +373,10 @@ retrospective runs on cadence regardless.
 
 ** Innovation
 
-| Key  | Captures           | Files to            | Reach for it when…              |
-|------+--------------------+---------------------+---------------------------------|
-| =en= | Innovation idea    | Innovation Pipeline | A single opportunity occurs     |
-| =eI= | Innovation meeting | Innovation Pipeline | A multi-idea ideation session   |
+| Key  | Captures           | Files to            | Reach for it when…            |
+|------+--------------------+---------------------+-------------------------------|
+| =en= | Innovation idea    | Innovation Pipeline | A single opportunity occurs   |
+| =eI= | Innovation meeting | Innovation Pipeline | A multi-idea ideation session |
 
 By now you have met every capture. You do not need to memorise the table —
 ~C-c c e~ shows the menu, and the mnemonic is roughly "first letter of the
@@ -444,12 +446,12 @@ With an active client the dashboard opens focused; clear the filter (=/= then
 =<RET>=) to go portfolio-wide without leaving the board. For raw cross-client
 lookups by type, use the plain agenda dispatcher:
 
-| Keys             | Shows                                        |
-|------------------+----------------------------------------------|
-| ~C-c a m RISK~   | Every risk, across all clients               |
-| ~C-c a m DELEGATED~ | Everything you have delegated, anywhere   |
-| ~C-c a m BLOCKER~ | All blockers everywhere                     |
-| ~C-c a t~        | All TODOs across clients                     |
+| Keys                | Shows                                   |
+|---------------------+-----------------------------------------|
+| ~C-c a m RISK~      | Every risk, across all clients          |
+| ~C-c a m DELEGATED~ | Everything you have delegated, anywhere |
+| ~C-c a m BLOCKER~   | All blockers everywhere                 |
+| ~C-c a t~           | All TODOs across clients                |
 
 The full tag legend (one tag per capture type) is in the README and
 [[file:reference.org][reference.org]]. The pattern: =C-c a m <TAG>= turns any capture type into a
@@ -490,23 +492,23 @@ in by setting the prefix *before* =setup=:
 Everything tunable lives in the =org-fractional-cto= customize group
 (~M-x customize-group RET org-fractional-cto~):
 
-| Variable                                  | Default                   | Purpose                                               |
-|-------------------------------------------+---------------------------+-------------------------------------------------------|
-| =org-fractional-cto-clients-directory=    | =<org-directory>/clients= | Where engagements live                                |
-| =org-fractional-cto-template-directory=   | bundled =templates/=      | Capture template files                                |
-| =org-fractional-cto-author=               | =user-full-name=          | =#+AUTHOR= in scaffolded files                        |
-| =org-fractional-cto-agenda-key=           | ="E"=                     | Dispatcher key for the dashboard                      |
-| =org-fractional-cto-keymap-prefix=        | =nil=                     | Optional command-map prefix                           |
-| =org-fractional-cto-dashboard-blocks=     | (9 blocks)                | The dashboard's agenda blocks                         |
+| Variable                                  | Default                   | Purpose                                                |
+|-------------------------------------------+---------------------------+--------------------------------------------------------|
+| =org-fractional-cto-clients-directory=    | =<org-directory>/clients= | Where engagements live                                 |
+| =org-fractional-cto-template-directory=   | bundled =templates/=      | Capture template files                                 |
+| =org-fractional-cto-author=               | =user-full-name=          | =#+AUTHOR= in scaffolded files                         |
+| =org-fractional-cto-agenda-key=           | ="E"=                     | Dispatcher key for the dashboard                       |
+| =org-fractional-cto-keymap-prefix=        | =nil=                     | Optional command-map prefix                            |
+| =org-fractional-cto-dashboard-blocks=     | (9 blocks)                | The dashboard's agenda blocks                          |
 | =org-fractional-cto-todo-keywords=        | (1 sequence)              | TODO keyword sequences the workflow registers globally |
-| =org-fractional-cto-todo-keyword-faces=   | (INPROGRESS face)         | Faces for workflow TODO keywords                      |
-| =org-fractional-cto-set-tag-inheritance=  | =t=                       | Enable inherited filetag filtering in the dashboard   |
-| =org-fractional-cto-agenda-keymap-prefix= | =nil=                     | Prefix key for at-point actions in agendas (non-Evil) |
-| =org-fractional-cto-stages=               | (5 stages)                | Ordered list of valid engagement stages               |
-| =org-fractional-cto-default-stage=        | ="ACTIVE"=                | Stage applied by =new-client=                         |
-| =org-fractional-cto-lead-stage=           | ="LEAD"=                  | Stage applied by =new-prospect=                       |
-| =org-fractional-cto-pipeline-stages=      | ="LEAD\vert{}QUALIFIED"=  | Tag-match expression for the pipeline agenda view     |
-| =org-fractional-cto-pipeline-key=         | ="P"=                     | Dispatcher key for the prospect pipeline              |
+| =org-fractional-cto-todo-keyword-faces=   | (INPROGRESS face)         | Faces for workflow TODO keywords                       |
+| =org-fractional-cto-set-tag-inheritance=  | =t=                       | Enable inherited filetag filtering in the dashboard    |
+| =org-fractional-cto-agenda-keymap-prefix= | =nil=                     | Prefix key for at-point actions in agendas (non-Evil)  |
+| =org-fractional-cto-stages=               | (5 stages)                | Ordered list of valid engagement stages                |
+| =org-fractional-cto-default-stage=        | ="ACTIVE"=                | Stage applied by =new-client=                          |
+| =org-fractional-cto-lead-stage=           | ="LEAD"=                  | Stage applied by =new-prospect=                        |
+| =org-fractional-cto-pipeline-stages=      | ="LEAD\vert{}QUALIFIED"=  | Tag-match expression for the pipeline agenda view      |
+| =org-fractional-cto-pipeline-key=         | ="P"=                     | Dispatcher key for the prospect pipeline               |
 
 Two customisations you are most likely to want:
 

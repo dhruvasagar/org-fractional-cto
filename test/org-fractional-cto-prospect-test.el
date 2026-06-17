@@ -142,6 +142,42 @@
           (setq count (1+ count)))
         (should (= count 1))))))
 
+(ert-deftest ofc-upgrade-hub-populates-client-templates ()
+  "Upgrading a legacy hub copies every bundled template into templates/."
+  (ofc-prospect-test-with-clients-dir
+    (let* ((dir (expand-file-name "legacy" org-fractional-cto-clients-directory))
+           (hub (org-fractional-cto-client-org-file "legacy")))
+      (make-directory dir t)
+      (with-temp-file hub
+        (insert "* Legacy Engagement  :LEGACY:\n** Actions  :LEGACY:\n"))
+      (setq org-fractional-cto-active-client "legacy")
+      (org-fractional-cto-upgrade-hub)
+      (let* ((bundled-dir (file-name-directory
+                           (org-fractional-cto--template "x.org")))
+             (bundled (directory-files bundled-dir nil "\\.org\\'")))
+        (should (file-directory-p
+                 (org-fractional-cto-client-template-file "legacy" "")))
+        (dolist (name bundled)
+          (should (file-exists-p
+                   (org-fractional-cto-client-template-file "legacy" name))))))))
+
+(ert-deftest ofc-upgrade-hub-preserves-edited-templates ()
+  "Upgrading never clobbers a per-client template the user has edited."
+  (ofc-prospect-test-with-clients-dir
+    (let* ((dir (expand-file-name "legacy" org-fractional-cto-clients-directory))
+           (hub (org-fractional-cto-client-org-file "legacy"))
+           (risk (org-fractional-cto-client-template-file "legacy" "risk.org")))
+      (make-directory (file-name-directory risk) t)
+      (with-temp-file hub
+        (insert "* Legacy Engagement  :LEGACY:\n** Actions  :LEGACY:\n"))
+      (with-temp-file risk (insert "EDITED"))
+      (setq org-fractional-cto-active-client "legacy")
+      (org-fractional-cto-upgrade-hub)
+      (should (equal (with-temp-buffer
+                       (insert-file-contents risk)
+                       (buffer-string))
+                     "EDITED")))))
+
 (ert-deftest ofc-migrate-amends-existing-filetags ()
   "Migration amends an existing filetags line rather than adding a second."
   (ofc-prospect-test-with-clients-dir

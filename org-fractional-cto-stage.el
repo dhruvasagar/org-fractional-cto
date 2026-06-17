@@ -19,6 +19,7 @@
 (declare-function org-fractional-cto--select-client "org-fractional-cto")
 (declare-function org-fractional-cto-client-org-file "org-fractional-cto")
 (declare-function org-fractional-cto-client-tag "org-fractional-cto")
+(declare-function org-fractional-cto--copy-templates "org-fractional-cto-scaffold")
 (defvar org-fractional-cto-stages)
 (defvar org-fractional-cto-default-stage)
 (defvar org-fractional-cto-sections)
@@ -109,21 +110,24 @@ the file's \"#+filetags\" line."
 (defun org-fractional-cto-upgrade-hub ()
   "Bring the active client's hub up to date.
 Ensures the engagement heading carries a stage tag (defaulting to
-`org-fractional-cto-default-stage') and appends any sections from
-`org-fractional-cto-sections' that are missing.  Idempotent."
+`org-fractional-cto-default-stage'), appends any sections from
+`org-fractional-cto-sections' that are missing, and copies any bundled
+capture templates the client's `templates/' directory lacks (existing
+overrides are left untouched).  Idempotent."
   (interactive)
-  (with-current-buffer (find-file-noselect
-                        (org-fractional-cto-client-org-file
-                         (org-fractional-cto--select-client)))
-    (let ((was-modified (buffer-modified-p)))
-      (save-excursion
-        (org-fractional-cto--migrate-to-filetags)
-        (org-fractional-cto--ensure-stage-tag)
-        (org-fractional-cto--ensure-sections))
-      ;; Only persist if we opened a clean buffer; if the hub already had
-      ;; unsaved edits, leave saving to the user rather than committing them.
-      (unless was-modified
-        (save-buffer))))
+  (let ((slug (org-fractional-cto--select-client)))
+    (org-fractional-cto--copy-templates slug)
+    (with-current-buffer (find-file-noselect
+                          (org-fractional-cto-client-org-file slug))
+      (let ((was-modified (buffer-modified-p)))
+        (save-excursion
+          (org-fractional-cto--migrate-to-filetags)
+          (org-fractional-cto--ensure-stage-tag)
+          (org-fractional-cto--ensure-sections))
+        ;; Only persist if we opened a clean buffer; if the hub already had
+        ;; unsaved edits, leave saving to the user rather than committing them.
+        (unless was-modified
+          (save-buffer)))))
   (message "Hub upgraded."))
 
 (provide 'org-fractional-cto-stage)

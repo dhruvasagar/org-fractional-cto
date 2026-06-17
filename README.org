@@ -504,9 +504,11 @@ opens the pre-sales call capture. As a lead progresses, advance it with =M-x
 org-fractional-cto-set-stage= (=LEAD= → =QUALIFIED= → =ACTIVE= on a win, or
 =LOST= / =DORMANT=). Hubs created before filetags / stages were introduced can be migrated with
 =M-x org-fractional-cto-upgrade-hub= — it adds =#+filetags= for the client tag,
-strips per-heading client tags, adds any missing sections, and ensures the
+strips per-heading client tags, adds any missing sections, ensures the
 engagement heading carries a stage tag (defaulting to =ACTIVE=, or whatever
-=org-fractional-cto-default-stage= is set to). The command is idempotent.
+=org-fractional-cto-default-stage= is set to), and copies any bundled capture
+templates the client's =templates/= directory is missing (edited overrides are
+left untouched). The command is idempotent.
 
 * Customisation
 
