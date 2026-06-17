@@ -308,6 +308,7 @@ picked up automatically."
 (declare-function evil-define-key* "evil-core")
 (declare-function org-fractional-cto-delegate-at-point "org-fractional-cto-actions")
 (declare-function org-fractional-cto-block-at-point "org-fractional-cto-actions")
+(declare-function org-fractional-cto--register-people-with-org-id "org-fractional-cto-people")
 (defvar org-agenda-mode-map)
 
 (defvar org-fractional-cto-command-map
@@ -397,6 +398,7 @@ Call once from your init file, after Org is available."
   (org-fractional-cto-pipeline-install)
   (dolist (dir (org-fractional-cto-agenda-files))
     (add-to-list 'org-agenda-files dir t))
+  (org-fractional-cto--register-people-with-org-id)
   (org-fractional-cto-agenda-install-keys)
   (when org-fractional-cto-keymap-prefix
     (global-set-key (kbd org-fractional-cto-keymap-prefix)

@@ -75,3 +75,19 @@
     (make-directory (org-fractional-cto--people-dir) t)
     (with-temp-file (org-fractional-cto-person-file "jane_doe") (insert ""))
     (should (equal (org-fractional-cto--unique-slug "jane_doe") "jane_doe_2"))))
+
+(ert-deftest ofc-register-people-adds-extra-files ()
+  (ofc-people-test
+    (org-fractional-cto-create-person "Jane Doe")
+    (org-fractional-cto-create-person "Pat Lee")
+    (setq org-id-extra-files nil)
+    (org-fractional-cto--register-people-with-org-id)
+    (should (member (org-fractional-cto-person-file "jane_doe") org-id-extra-files))
+    (should (member (org-fractional-cto-person-file "pat_lee") org-id-extra-files))))
+
+(ert-deftest ofc-register-people-tolerates-symbol-extra-files ()
+  (ofc-people-test
+    (org-fractional-cto-create-person "Jane Doe")
+    (let ((org-id-extra-files 'org-agenda-text-search-extra-files))
+      ;; Must not error when the variable is a symbol rather than a list.
+      (should (progn (org-fractional-cto--register-people-with-org-id) t)))))

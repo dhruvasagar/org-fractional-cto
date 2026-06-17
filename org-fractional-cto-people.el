@@ -105,6 +105,13 @@ under the people directory, given a fresh ID, and registered with `org-id'."
         (org-id-add-location id file)
         id))))
 
+(defun org-fractional-cto--register-people-with-org-id ()
+  "Make every person node resolvable by `org-id' in a fresh session.
+Adds the node files to `org-id-extra-files' when that variable holds a list."
+  (when (listp org-id-extra-files)
+    (dolist (file (org-fractional-cto--person-files))
+      (add-to-list 'org-id-extra-files file))))
+
 (provide 'org-fractional-cto-people)
 
 ;;; org-fractional-cto-people.el ends here
