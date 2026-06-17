@@ -151,7 +151,7 @@ pins that ordering down with a prompt-free template."
 (defconst ofc-externalized-template-fixtures
   '(("research.org" . "* RESEARCH: %^{Topic} :RESEARCH:\n%U\nArea: %^{Area|Company|Market|Competitor|Tech stack|People|Funding|Other}\nSource: %^{Source / link}\n\n** Finding\n%?\n\n** Implication\n\n** Follow-up\n- [ ]\n")
     ("action.org" . "* TODO %^{Action}\nDEADLINE: %^{Due}t\n%U\n%?\n")
-    ("person.org" . "* %^{Name} — %^{Role / Stream} :PEOPLE:\n%U\n:PROPERTIES:\n:STREAM: %^{Stream}\n:END:\n%?\n")
+    ("person.org" . ":PROPERTIES:\n:ID:       %ID%\n:END:\n#+title: %NAME%\n#+filetags: :PERSON:\n\n- Role / title:\n- Organisation:\n- Side: Our team | Client | Vendor | External\n- Contact (email · phone):\n- Socials (LinkedIn · X · GitHub · website):\n- Photo:\n\n* About\n\n* Notes / History\n")
     ("commitment.org" . "* TODO [COMMITMENT] %^{Commitment} :COMMITMENT:\nDEADLINE: %^{Due date}t\nOwner (internal): %^{Owner}\n%U\nContext: %a\n")
     ("health_check.org" . "* CLIENT HEALTH CHECK %^{Month} %^{Year} :HEALTH:\n%U\n\n** Pulse Questions\n1. What's working well?\n2. What would you change?\n3. What would you love to see in the next 30 days?\n\n** Their Responses\n%?\n\n** Analysis\n- One thing to improve:\n- One thing to double down on:\n\n** Actions\n- [ ]\n")
     ("metrics.org" . "* METRICS %^{Date|%<%Y-%m-%d>} :METRICS:\n%U\n\n** Funnel\n| Metric | Value | vs. Last Week | Notes |\n|--------+-------+---------------+-------|\n|        |       |               |       |\n\n** Observations\n%?\n\n** Actions Triggered\n- [ ]\n")

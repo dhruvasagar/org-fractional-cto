@@ -70,6 +70,41 @@ Lowercases, maps non-alphanumerics to single underscores, and trims."
                     (and title (cons title f))))
                 (org-fractional-cto--person-files))))
 
+(defun org-fractional-cto--unique-slug (slug)
+  "Return SLUG, numerically suffixed if a node file already exists."
+  (let ((candidate slug) (n 1))
+    (while (file-exists-p (org-fractional-cto-person-file candidate))
+      (setq n (1+ n)
+            candidate (format "%s_%d" slug n)))
+    candidate))
+
+(defun org-fractional-cto--person-scaffold (name id)
+  "Return new-node text for NAME with ID, from the bundled person.org scaffold."
+  (let ((tpl (with-temp-buffer
+               (insert-file-contents (org-fractional-cto--template "person.org"))
+               (buffer-string))))
+    (replace-regexp-in-string
+     "%NAME%" name
+     (replace-regexp-in-string "%ID%" id tpl t t) t t)))
+
+(defun org-fractional-cto-create-person (name)
+  "Create (or reuse) the person node for NAME and return its `org-id'.
+A node whose `#+title' equals NAME is reused.  Otherwise a new file is written
+under the people directory, given a fresh ID, and registered with `org-id'."
+  (let ((existing (seq-find (lambda (cell) (string= (car cell) name))
+                            (org-fractional-cto-people))))
+    (if existing
+        (org-fractional-cto--person-id (cdr existing))
+      (let* ((slug (org-fractional-cto--unique-slug
+                    (org-fractional-cto-people-slug name)))
+             (file (org-fractional-cto-person-file slug))
+             (id   (org-id-new)))
+        (make-directory (org-fractional-cto--people-dir) t)
+        (with-temp-file file
+          (insert (org-fractional-cto--person-scaffold name id)))
+        (org-id-add-location id file)
+        id))))
+
 (provide 'org-fractional-cto-people)
 
 ;;; org-fractional-cto-people.el ends here

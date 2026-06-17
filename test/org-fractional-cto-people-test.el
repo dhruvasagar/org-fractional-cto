@@ -46,3 +46,32 @@
       (should (equal (org-fractional-cto-people) (list (cons "Jane Doe" f))))
       (should (equal (org-fractional-cto--person-title f) "Jane Doe"))
       (should (equal (org-fractional-cto--person-id f) "abc-123")))))
+
+(ert-deftest ofc-create-person-writes-registered-node ()
+  (ofc-people-test
+    (let* ((id (org-fractional-cto-create-person "Jane Doe"))
+           (file (org-fractional-cto-person-file "jane_doe")))
+      (should (stringp id))
+      (should (file-exists-p file))
+      (should (equal (org-fractional-cto--person-id file) id))
+      (should (equal (org-fractional-cto--person-title file) "Jane Doe"))
+      (with-temp-buffer
+        (insert-file-contents file)
+        (should (string-match-p "#\\+filetags: :PERSON:" (buffer-string)))
+        (should (string-match-p "^\\* Notes / History" (buffer-string))))
+      ;; Registered so [[id:...]] resolves.
+      (should (equal (file-name-nondirectory (org-id-find-id-file id))
+                     "jane_doe.org")))))
+
+(ert-deftest ofc-create-person-reuses-existing-title ()
+  (ofc-people-test
+    (let ((id1 (org-fractional-cto-create-person "Jane Doe"))
+          (id2 (org-fractional-cto-create-person "Jane Doe")))
+      (should (equal id1 id2))
+      (should (= 1 (length (org-fractional-cto--person-files)))))))
+
+(ert-deftest ofc-unique-slug-suffixes-on-collision ()
+  (ofc-people-test
+    (make-directory (org-fractional-cto--people-dir) t)
+    (with-temp-file (org-fractional-cto-person-file "jane_doe") (insert ""))
+    (should (equal (org-fractional-cto--unique-slug "jane_doe") "jane_doe_2"))))

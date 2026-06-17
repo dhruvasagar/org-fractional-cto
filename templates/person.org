@@ -1,6 +1,16 @@
-* %^{Name} — %^{Role / Stream} :PEOPLE:
-%U
 :PROPERTIES:
-:STREAM: %^{Stream}
+:ID:       %ID%
 :END:
-%?
+#+title: %NAME%
+#+filetags: :PERSON:
+
+- Role / title:
+- Organisation:
+- Side: Our team | Client | Vendor | External
+- Contact (email · phone):
+- Socials (LinkedIn · X · GitHub · website):
+- Photo:
+
+* About
+
+* Notes / History
