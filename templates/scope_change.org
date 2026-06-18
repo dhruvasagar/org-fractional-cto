@@ -1,6 +1,6 @@
 * SCOPE CHANGE: %^{Description} :SCOPE:
 %U
-Identified by: %^{Who}
+Identified by: %(org-fractional-cto--capture-person "Identified by")
 SOW status: %^{Status|Out of scope|In scope|Grey area}
 
 ** What Changed

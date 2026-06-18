@@ -1,7 +1,7 @@
 * PRE-SALES CALL: %^{Company / contact}  :PRESALES:
 %U
 Source / referral: %^{How did this come in}
-Attendees: %^{Who was on the call}
+Attendees: %(org-fractional-cto--capture-people "Who was on the call")
 %?
 
 ** The Ask
@@ -19,7 +19,7 @@ Attendees: %^{Who was on the call}
 ** Signals
 - Budget: %^{Budget signal|Strong|Some|Unclear|None}
 - Timeline: %^{Timeline|Urgent|This quarter|Exploratory|Unknown}
-- Decision-maker(s): %^{Who decides}
+- Decision-maker(s): %(org-fractional-cto--capture-people "Who decides")
 
 ** Next Step
 - [ ] %^{Immediate next step} (by %^{Next step by}t)

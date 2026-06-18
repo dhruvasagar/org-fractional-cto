@@ -1,7 +1,7 @@
 * MEETING %(org-capture-get :ofc-client-name) - %^{Meeting title} :MEETING:
 %U
-Attendees (Client): %^{Client attendees}
-Attendees (Us): %^{Our attendees}
+Attendees (Client): %(org-fractional-cto--capture-people "Client attendees")
+Attendees (Us): %(org-fractional-cto--capture-people "Our attendees")
 %?
 
 ** Agenda / Context

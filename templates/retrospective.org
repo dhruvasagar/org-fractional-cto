@@ -1,7 +1,7 @@
 * RETROSPECTIVE %^{Sprint / period}  :RETRO:
 %U
-Facilitator: %^{Facilitator}
-Attendees: %^{Attendees}
+Facilitator: %(org-fractional-cto--capture-person "Facilitator")
+Attendees: %(org-fractional-cto--capture-people "Attendees")
 %?
 
 ** Sprint Goals vs. Actuals

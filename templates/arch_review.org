@@ -1,7 +1,7 @@
 * ARCH REVIEW: Q%^{Quarter} %^{Year} :ARCHREVIEW:
 %U
 Client: %(org-capture-get :ofc-client-name)
-Conducted by: %^{Your name}
+Conducted by: %(org-fractional-cto--capture-person "Conducted by")
 Teams / streams reviewed: %^{Teams reviewed}
 %?
 

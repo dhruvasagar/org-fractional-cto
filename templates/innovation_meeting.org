@@ -1,7 +1,7 @@
 * INNOVATION MEETING %^{Date|%<%Y-%m-%d>} :INNOVATION:MEETING:
 %U
 Client: %(org-capture-get :ofc-client-name)
-Attendees: %^{Attendees}
+Attendees: %(org-fractional-cto--capture-people "Attendees")
 Session context: %^{What triggered or framed this session}
 %?
 
@@ -15,7 +15,7 @@ Session context: %^{What triggered or framed this session}
 
 *** Idea: %^{First idea title}
 Category: %^{Category|AI/ML|Data|Platform|Integration|UX|Music Tech|Compliance|Other}
-Raised by: %^{Who raised it}
+Raised by: %(org-fractional-cto--capture-person "Who raised it")
 Effort: %^{Effort|Low|Medium|High}
 
 **** The Opportunity

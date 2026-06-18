@@ -156,9 +156,9 @@ pins that ordering down with a prompt-free template."
     ("health_check.org" . "* CLIENT HEALTH CHECK %^{Month} %^{Year} :HEALTH:\n%U\n\n** Pulse Questions\n1. What's working well?\n2. What would you change?\n3. What would you love to see in the next 30 days?\n\n** Their Responses\n%?\n\n** Analysis\n- One thing to improve:\n- One thing to double down on:\n\n** Actions\n- [ ]\n")
     ("metrics.org" . "* METRICS %^{Date|%<%Y-%m-%d>} :METRICS:\n%U\n\n** Funnel\n| Metric | Value | vs. Last Week | Notes |\n|--------+-------+---------------+-------|\n|        |       |               |       |\n\n** Observations\n%?\n\n** Actions Triggered\n- [ ]\n")
     ("risk.org" . "* [RISK] %^{Risk} :RISK:\n%U\nStatus: %^{Status|Open|Mitigated|Resolved|Accepted}\nLikelihood: %^{Likelihood|High|Medium|Low}\nImpact: %^{Impact|High|Medium|Low}\nOwner: %(org-fractional-cto--capture-person \"Owner\" t)\nMitigation: %?\n")
-    ("scope_change.org" . "* SCOPE CHANGE: %^{Description} :SCOPE:\n%U\nIdentified by: %^{Who}\nSOW status: %^{Status|Out of scope|In scope|Grey area}\n\n** What Changed\n%?\n\n** Business Impact\n\n** Recommended Action\n%^{Action|Add to SOW|Decline|Defer|Investigate}\n\n** Commercial Impact\nSOW amendment needed? %^{SOW|Yes|No|TBD}\nDEADLINE: %^{Decision needed by}t\n")
+    ("scope_change.org" . "* SCOPE CHANGE: %^{Description} :SCOPE:\n%U\nIdentified by: %(org-fractional-cto--capture-person \"Identified by\")\nSOW status: %^{Status|Out of scope|In scope|Grey area}\n\n** What Changed\n%?\n\n** Business Impact\n\n** Recommended Action\n%^{Action|Add to SOW|Decline|Defer|Investigate}\n\n** Commercial Impact\nSOW amendment needed? %^{SOW|Yes|No|TBD}\nDEADLINE: %^{Decision needed by}t\n")
     ("post_mortem.org" . "* POST-MORTEM: %^{Incident title} :POSTMORTEM:\n%U\nDate: %^{Incident date}\nSeverity: %^{Severity|Critical|High|Medium|Low}\nAffected: %^{What was affected}\n\n** What Happened\n%?\n\n** Root Cause\n\n** How We Fixed It\n\n** Prevention\n- [ ]\n")
-    ("quick_decision.org" . "* DECISION: %^{Decision} :DECISION:\n%U\nMade by: %^{Who}\nContext: %^{What prompted this}\n\n** Decision\n%?\n\n** Rationale\n\n** Alternatives Rejected\n\n** Revisit if\n")
+    ("quick_decision.org" . "* DECISION: %^{Decision} :DECISION:\n%U\nMade by: %(org-fractional-cto--capture-person \"Made by\")\nContext: %^{What prompted this}\n\n** Decision\n%?\n\n** Rationale\n\n** Alternatives Rejected\n\n** Revisit if\n")
     ("tech_debt.org" . "* [TECH DEBT] %^{Description} :TECHDEBT:\n%U\nArea: %^{Area|Frontend|Backend|Infrastructure|Integration|Data|Security}\nSeverity: %^{Severity|Critical|High|Medium|Low}\nDiscovered during: %^{Context}\nImpact if unaddressed: %?\n")
     ("security.org" . "* [SECURITY] %^{Finding} :SECURITY:\n%U\nStatus: %^{Status|Open|Mitigated|Resolved|Accepted}\nSeverity: %^{Severity|Critical|High|Medium|Low}\nArea: %^{Area|PCI|GDPR|API|Auth|Data|Infrastructure}\nAction: %?\nOwner: %(org-fractional-cto--capture-person \"Owner\" t)\n")
     ("innovation_idea.org" . "* INNOVATION IDEA: %^{Title} :INNOVATION:\n%U\nCategory: %^{Category|AI/ML|Data|Platform|Integration|Other}\n\n** The Opportunity\n%?\n\n** The Technology\n\n** Why Now / Why This Client\n\n** Rough Effort\n\n** Next Step\n"))
@@ -228,6 +228,25 @@ bundled template (after a single client selection prompt)."
                  (org-fractional-cto--template name))))
       (should (string-match-p
                "%(org-fractional-cto--capture-person \"[^\"]+\" t)" text)))))
+
+(ert-deftest ofc-attendee-templates-use-people-helper ()
+  "Attendee fields invoke the multi-person link helper."
+  (dolist (name '("client_meeting.org" "discovery.org" "qbr.org"
+                  "retrospective.org" "innovation_meeting.org" "presales_call.org"))
+    (let ((text (org-fractional-cto--file-contents
+                 (org-fractional-cto--template name))))
+      (should (string-match-p "%(org-fractional-cto--capture-people " text)))))
+
+(ert-deftest ofc-authorship-templates-use-untagged-person-helper ()
+  "Authorship fields invoke the single-person helper WITHOUT the tag flag."
+  (dolist (name '("arch_review.org" "vendor_eval.org"
+                  "quick_decision.org" "scope_change.org"))
+    (let ((text (org-fractional-cto--file-contents
+                 (org-fractional-cto--template name))))
+      ;; present, and not the tagging form (no trailing ` t)`)
+      (should (string-match-p "%(org-fractional-cto--capture-person \"[^\"]+\")" text))
+      (should-not (string-match-p
+                   "%(org-fractional-cto--capture-person \"[^\"]+\" t)" text)))))
 
 (provide 'org-fractional-cto-capture-test)
 

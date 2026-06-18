@@ -2,7 +2,7 @@
 %U
 Client: %(org-capture-get :ofc-client-name)
 Category: %^{Category|Integration|Platform|Analytics|Infrastructure|Security|Other}
-Evaluated by: %^{Your name}
+Evaluated by: %(org-fractional-cto--capture-person "Evaluated by")
 %?
 
 ** Problem Being Solved

@@ -1,6 +1,6 @@
 * DECISION: %^{Decision} :DECISION:
 %U
-Made by: %^{Who}
+Made by: %(org-fractional-cto--capture-person "Made by")
 Context: %^{What prompted this}
 
 ** Decision
