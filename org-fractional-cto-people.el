@@ -16,6 +16,7 @@
 
 ;;; Code:
 
+(require 'org-capture)
 (require 'org-id)
 (require 'seq)
 (require 'subr-x)
@@ -208,13 +209,13 @@ Returns a comma-separated string of `[[id:]]' links (empty string if none)."
 (defun org-fractional-cto--apply-person-tag ()
   "Tag the captured heading with the `:ofc-person' record's tag, if any.
 Registered on `org-capture-before-finalize-hook'; a no-op for captures that did
-not select a taggable person."
+not select a taggable person.  The hook runs with the capture buffer widened to
+the whole target file, so it tags the entry at point (where org-capture leaves
+point inside the captured item), not the file's first heading."
   (let ((rec (org-capture-get :ofc-person)))
     (when rec
       (save-excursion
-        (goto-char (point-min))
-        (unless (org-at-heading-p) (outline-next-heading))
-        (when (org-at-heading-p)
+        (when (ignore-errors (org-back-to-heading t))
           (org-toggle-tag (plist-get rec :tag) 'on))))))
 
 (provide 'org-fractional-cto-people)

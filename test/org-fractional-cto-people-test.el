@@ -220,6 +220,20 @@
     (goto-char (point-min))
     (should-not (org-get-tags))))
 
+(ert-deftest ofc-apply-person-tag-tags-entry-not-ancestor ()
+  "With headings above the captured entry, the hook tags the entry at point."
+  (with-temp-buffer
+    (org-mode)
+    (insert "* Acme Engagement\n** Delegations\n*** WAITING Do the thing\nbody line\n")
+    (goto-char (point-max))            ; point inside the captured entry, as in capture
+    (let ((org-capture-plist (list :ofc-person '(:tag "@jane"))))
+      (org-fractional-cto--apply-person-tag))
+    (goto-char (point-min))
+    (search-forward "WAITING Do the thing")
+    (should (member "@jane" (org-get-tags nil t)))   ; on the captured entry
+    (goto-char (point-min))                          ; the * Acme Engagement heading
+    (should-not (member "@jane" (org-get-tags nil t)))))
+
 (ert-deftest ofc-capture-install-registers-finalize-hook ()
   (let ((org-capture-before-finalize-hook nil))
     (org-fractional-cto-capture-install)

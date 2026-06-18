@@ -240,7 +240,8 @@ bundled template (after a single client selection prompt)."
 (ert-deftest ofc-authorship-templates-use-untagged-person-helper ()
   "Authorship fields invoke the single-person helper WITHOUT the tag flag."
   (dolist (name '("arch_review.org" "vendor_eval.org"
-                  "quick_decision.org" "scope_change.org"))
+                  "quick_decision.org" "scope_change.org"
+                  "retrospective.org" "innovation_meeting.org"))
     (let ((text (org-fractional-cto--file-contents
                  (org-fractional-cto--template name))))
       ;; present, and not the tagging form (no trailing ` t)`)
