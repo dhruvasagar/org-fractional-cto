@@ -31,10 +31,17 @@
   "Minimal client hub used as the fixture for every test.")
 
 (defmacro ofc-test-with-hub (&rest body)
-  "Visit a fresh acme.org hub in a temp dir and run BODY at its start."
+  "Visit a fresh acme.org hub in a temp dir and run BODY at its start.
+Also isolates the people directory and `org-id' state so delegating/blocking
+to a person never touches the user's real files."
   (declare (indent 0) (debug t))
   `(let* ((dir (make-temp-file "ofc-test" t))
-          (file (expand-file-name "acme.org" dir)))
+          (file (expand-file-name "acme.org" dir))
+          (org-fractional-cto-people-directory
+           (expand-file-name "people" dir))
+          (org-id-extra-files nil)
+          (org-id-locations (make-hash-table :test 'equal))
+          (org-id-files nil))
      (unwind-protect
          (progn
            (with-temp-file file (insert ofc-test-hub))
@@ -66,14 +73,25 @@
     (ofc-test-goto "Ship the thing")
     (should (equal (org-get-todo-state) "WAITING"))))
 
-(ert-deftest ofc-delegate-records-tag-and-properties ()
+(ert-deftest ofc-delegate-records-link-and-person-tag ()
+  (ofc-test-with-hub
+    (ofc-test-goto "Ship the thing")
+    (org-fractional-cto-delegate-at-point "Alice" nil nil)
+    (ofc-test-goto "Ship the thing")
+    (should (member "DELEGATED" (org-get-tags nil t)))
+    (should (member "@alice" (org-get-tags nil t)))
+    (let ((assigned (org-entry-get nil "ASSIGNED_TO")))
+      (should (string-match-p "\\[\\[id:.+\\]\\[Alice\\]\\]" assigned)))))
+
+(ert-deftest ofc-delegate-records-dates ()
   (ofc-test-with-hub
     (ofc-test-goto "Ship the thing")
     (org-fractional-cto-delegate-at-point "Alice" "2026-07-01" "2026-07-15")
     (ofc-test-goto "Ship the thing")
     (should (member "DELEGATED" (org-get-tags nil t)))
     (should (member "ACME" (org-get-tags)))
-    (should (equal (org-entry-get nil "ASSIGNED_TO") "Alice"))
+    (let ((assigned (org-entry-get nil "ASSIGNED_TO")))
+      (should (string-match-p "\\[\\[id:.+\\]\\[Alice\\]\\]" assigned)))
     (should (string-match-p "\\`\\[[0-9]\\{4\\}-" (org-entry-get nil "DELEGATED_ON")))
     (should (string-match-p "2026-07-01" (org-entry-get nil "SCHEDULED")))
     (should (string-match-p "2026-07-15" (org-entry-get nil "DEADLINE")))))
@@ -116,8 +134,18 @@
     (org-fractional-cto-block-at-point "Payments API down" "Dave" "2026-07-20")
     (ofc-test-goto-blocker "Payments API down")
     (should (string-match-p "Ship the thing" (org-entry-get nil "BLOCKING")))
-    (should (equal (org-entry-get nil "UNBLOCK_OWNER") "Dave"))
+    (let ((owner (org-entry-get nil "UNBLOCK_OWNER")))
+      (should (string-match-p "\\[\\[id:.+\\]\\[Dave\\]\\]" owner)))
     (should (string-match-p "2026-07-20" (org-entry-get nil "DEADLINE")))))
+
+(ert-deftest ofc-block-links-and-tags-owner ()
+  (ofc-test-with-hub
+    (ofc-test-goto "Ship the thing")
+    (org-fractional-cto-block-at-point "API keys missing" "Bob" nil)
+    (ofc-test-goto-blocker "API keys missing")
+    (should (member "@bob" (org-get-tags nil t)))
+    (let ((owner (org-entry-get nil "UNBLOCK_OWNER")))
+      (should (string-match-p "\\[\\[id:.+\\]\\[Bob\\]\\]" owner)))))
 
 (ert-deftest ofc-block-adds-backreference-to-action ()
   (ofc-test-with-hub
