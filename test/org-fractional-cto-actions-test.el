@@ -41,7 +41,8 @@ to a person never touches the user's real files."
            (expand-file-name "people" dir))
           (org-id-extra-files nil)
           (org-id-locations (make-hash-table :test 'equal))
-          (org-id-files nil))
+          (org-id-files nil)
+          (org-id-track-globally nil))
      (unwind-protect
          (progn
            (with-temp-file file (insert ofc-test-hub))
