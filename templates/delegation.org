@@ -2,7 +2,7 @@
 DEADLINE: %^{Expected delivery}t
 SCHEDULED: %^{Check-in / follow-up}t
 :PROPERTIES:
-:ASSIGNED_TO: %^{Assigned to}
+:ASSIGNED_TO: %(org-fractional-cto--capture-person "Assigned to" t)
 :DELEGATED_ON: %U
 :END:
 

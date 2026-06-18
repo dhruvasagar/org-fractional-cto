@@ -1,5 +1,5 @@
 * TODO [COMMITMENT] %^{Commitment} :COMMITMENT:
 DEADLINE: %^{Due date}t
-Owner (internal): %^{Owner}
+Owner (internal): %(org-fractional-cto--capture-person "Owner" t)
 %U
 Context: %a

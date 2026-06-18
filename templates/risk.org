@@ -3,5 +3,5 @@
 Status: %^{Status|Open|Mitigated|Resolved|Accepted}
 Likelihood: %^{Likelihood|High|Medium|Low}
 Impact: %^{Impact|High|Medium|Low}
-Owner: %^{Owner}
+Owner: %(org-fractional-cto--capture-person "Owner" t)
 Mitigation: %?

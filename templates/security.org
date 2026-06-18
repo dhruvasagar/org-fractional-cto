@@ -4,4 +4,4 @@ Status: %^{Status|Open|Mitigated|Resolved|Accepted}
 Severity: %^{Severity|Critical|High|Medium|Low}
 Area: %^{Area|PCI|GDPR|API|Auth|Data|Infrastructure}
 Action: %?
-Owner: %^{Owner}
+Owner: %(org-fractional-cto--capture-person "Owner" t)

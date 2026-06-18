@@ -2,7 +2,7 @@
 %U
 :PROPERTIES:
 :BLOCKING: %^{Feature / work stream being blocked}
-:UNBLOCK_OWNER: %^{Who can remove this blocker}
+:UNBLOCK_OWNER: %(org-fractional-cto--capture-person "Who can remove this blocker" t)
 :END:
 
 *Root cause:* %?
