@@ -104,6 +104,16 @@ begins. Everything in Phase 1 is harder if you skip this.
 - =C-c c er= Risk item — anything that looks like a blocker this early
 - =C-c c eP= Team member note — one per key internal team member (stream leads, eng leads)
 
+People named in stakeholder profiles, delegations, and team notes are linked to
+durable, *global person nodes* — one Org file per person under
+=org-fractional-cto-people-directory=, not bare text. Type a name at any
+assignee / owner / attendee / decision-maker prompt: an existing person is
+completed and linked, a new name creates the node on the spot. Stakeholder
+profiles point at the same global node via their =Person (global node):= line, so
+one person can be a stakeholder at several clients while their cross-engagement
+history accumulates in one place. Need a standalone link? =M-x
+org-fractional-cto-insert-person=.
+
 *** Deliverable
 Working =CONTEXT.md=. Confirmed ceremony calendar. Role scope document shared internally.
 
@@ -221,6 +231,10 @@ decisions under pressure.
 - ~C-c a E~ opens the global engagement dashboard (all clients, pre-focused on the
   active client; press =/= to widen) — the "Delegated — awaiting response" block
   is your inbox within it
+- To pull up one person's open work across types, press =/= and type their
+  =@<slug>= tag (e.g. =@jane_doe=) — delegations, blockers, commitments, risks,
+  and security items are tagged with their owner's person tag, so the filter
+  gathers everything that person owns in one view
 - Evil users: with point on an agenda line, =, g= delegates and =, b= files a
   blocker without leaving the agenda
 - Rule: nothing WAITING goes more than one week without a check-in

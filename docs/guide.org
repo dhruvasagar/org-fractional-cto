@@ -289,7 +289,7 @@ into, and when to reach for it. (Field-by-field detail is in [[file:reference.or
 | =eg= | Delegate (WAITING)   | Delegations    | You hand a task to someone — sets =WAITING= |
 | =eb= | Blocker / escalation | Blockers       | Something is blocking delivery              |
 | =eW= | Weekly review        | Weekly Reviews | Your Friday delegation + team pulse pass    |
-| =eP= | Person / team note   | People         | Capacity, a concern, or a win to record     |
+| =eP= | Person / team note   | Person node    | Capacity, a concern, or a win to record     |
 
 =eg= is the engine of the *Delegated* dashboard block: it files in the =WAITING=
 state, which is how the system separates "things I owe" from "things I am owed."

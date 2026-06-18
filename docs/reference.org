@@ -38,7 +38,7 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 | Delegate a task (WAITING)          | =C-c c eg=    | <client>.org → Delegations                 |
 | Flag a blocker / escalation        | =C-c c eb=    | <client>.org → Blockers                    |
 | Weekly review (delegation + pulse) | =C-c c eW=    | <client>.org → Weekly Reviews              |
-| Note on a team member              | =C-c c eP=    | <client>.org → People                      |
+| Note on a team member              | =C-c c eP=    | <person>.org → Notes / History             |
 | Capture a standup                  | =C-c c es=    | <client>.org → Standup Notes               |
 | Log a client meeting               | =C-c c em=    | <client>.org → Meeting Notes               |
 | Log an internal sync               | =C-c c ei=    | <client>.org → Internal Syncs              |
@@ -151,7 +151,7 @@ type tags.
 | =COMMITMENT=    | Commitments (=ec=)                                      |
 | =RISK=          | Risks (=er=)                                            |
 | =REVIEW=        | Weekly Reviews (=eW=)                                   |
-| =PEOPLE=        | People (=eP=)                                           |
+| =PEOPLE=        | People — roster (link via =insert-person=)              |
 | =MEETING=       | Meeting Notes (=em=)                                    |
 | =STANDUP=       | Standup Notes (=es=)                                    |
 | =INTERNAL=      | Internal Syncs (=ei=)                                   |
@@ -416,10 +416,13 @@ Client comms review | Actions.
 /Use:/ First time you meet or learn about a significant client contact. One profile
 per person. Update it as the relationship develops.
 /Clock:/ Yes.
-/Fields:/ Full name, role, organisation.
-/Key sections:/ Their personal definition of success (not the project's) | Key
-priorities & concerns | Communication preferences | Relationship status |
-How to engage them effectively.
+/Fields:/ Full name, role, organisation, and =Person (global node):= — link to the
+person's durable node (=M-x org-fractional-cto-insert-person=) so the engagement
+profile and the cross-client record stay connected.
+/Key sections:/ Role in decisions (Decision Maker / Influencer / Technical
+Evaluator / Champion / Blocker) | Their personal definition of success (not the
+project's) | Key priorities & concerns | Communication preferences |
+Relationship status | How to engage them effectively.
 /Why it matters:/ Stakeholder maps decay fast. Documenting what makes each person
 tick lets you tailor every communication.
 
@@ -519,15 +522,19 @@ Anyone who's gone quiet gets a direct ping — don't wait for the next standup.
 /After capturing:/ Each "change/action needed" becomes a TODO. Use =C-c a E= delegated
 block as the source of truth while filling the inbox table.
 
-**** =eP= — Person / Team Member Note
-/Use:/ Capturing something about a team member — capacity, a concern, a win, a
-development need. Builds the People section over time.
-/Fields:/ Name, role/stream, =STREAM= property.
+**** =eP= — Person Note (global node)
+/Use:/ Capturing something about a person — capacity, a concern, a win, a
+development need. Picks (or creates) the person's *global node* and files a
+timestamped note under its =Notes / History=, so the record follows the person
+across engagements instead of living in one client hub.
+/Fields:/ Person (completed by name; a new name creates the node), then a
+free-form timestamped note.
 /Why it matters:/ As a fractional CTO you're managing people you didn't hire and
 don't see daily. Tracking capacity signals (who's overloaded, who's a single point
 of failure) is how you spot delivery risk before it becomes a missed deadline.
-/Maintain:/ The People section also holds the Team Roster and Stream → Lead map —
-keep those current as the team changes.
+/Maintain:/ The client hub's People section is a *roster*: link each person in the
+engagement with =M-x org-fractional-cto-insert-person= (or =C-c C-l=), and keep the
+Team Roster and Stream → Lead map there current as the team changes.
 
 *** Risk & Delivery Templates
 

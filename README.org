@@ -264,7 +264,7 @@ These are the lead stage's working set; the operational captures below
 | =eg= | Delegate (WAITING)   | Delegations    |
 | =eb= | Blocker / escalation | Blockers       |
 | =eW= | Weekly review        | Weekly Reviews |
-| =eP= | Person / team note   | People         |
+| =eP= | Person / team note   | Person node    |
 
 ** Relationship & communication
 | Key  | Captures            | Files to             |
@@ -483,7 +483,7 @@ The type tags are what the dashboard and =C-c a m= search on:
 | =COMMITMENT=    | Commitments (=ec=)                                 |
 | =RISK=          | Risks (=er=)                                       |
 | =REVIEW=        | Weekly Reviews (=eW=)                              |
-| =PEOPLE=        | People (=eP=)                                      |
+| =PEOPLE=        | People — roster (link via =insert-person=)         |
 | =MEETING=       | Meeting Notes (=em=)                               |
 | =STANDUP=       | Standup Notes (=es=)                               |
 | =INTERNAL=      | Internal Syncs (=ei=)                              |
