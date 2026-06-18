@@ -147,3 +147,29 @@
                                 (buffer-substring (line-beginning-position)
                                                   (line-end-position)))))
       (kill-buffer (find-file-noselect file)))))
+
+(ert-deftest ofc-person-tag-prefixes-at ()
+  (should (equal (org-fractional-cto-person-tag "jane_doe") "@jane_doe")))
+
+(ert-deftest ofc-person-record-creates-and-describes ()
+  (ofc-people-test
+    (let ((rec (org-fractional-cto-person-record "Jane Doe")))
+      (should (equal (plist-get rec :name) "Jane Doe"))
+      (should (equal (plist-get rec :slug) "jane_doe"))
+      (should (equal (plist-get rec :tag) "@jane_doe"))
+      (should (equal (plist-get rec :link)
+                     (format "[[id:%s][Jane Doe]]" (plist-get rec :id))))
+      (should (file-exists-p (org-fractional-cto-person-file "jane_doe"))))))
+
+(ert-deftest ofc-person-record-reuses-existing ()
+  (ofc-people-test
+    (let ((r1 (org-fractional-cto-person-record "Jane Doe"))
+          (r2 (org-fractional-cto-person-record "Jane Doe")))
+      (should (equal (plist-get r1 :id) (plist-get r2 :id)))
+      (should (= 1 (length (org-fractional-cto--person-files)))))))
+
+(ert-deftest ofc-read-person-name-returns-completion ()
+  (ofc-people-test
+    (cl-letf (((symbol-function 'completing-read)
+               (lambda (&rest _) "Typed Name")))
+      (should (equal (org-fractional-cto--read-person-name "Owner") "Typed Name")))))

@@ -157,6 +157,31 @@ Appends the heading if the node lacks one."
                         (cdr (assoc name (org-fractional-cto-people)))))))
     (org-fractional-cto--person-goto-notes file)))
 
+(defun org-fractional-cto-person-tag (slug)
+  "Return the Org heading tag for person SLUG (e.g. \"jane_doe\" -> \"@jane_doe\").
+SLUG is a person node's filename base; it is already `[a-z0-9_]', valid in an
+Org tag."
+  (concat "@" slug))
+
+(defun org-fractional-cto-person-record (name)
+  "Ensure a person node exists for NAME and return a descriptor plist.
+The plist has :id, :name, :slug, :tag (see `org-fractional-cto-person-tag'),
+and :link (an `[[id:ID][NAME]]' string).  Reuses an existing node whose title
+equals NAME, otherwise creates one."
+  (let* ((id   (org-fractional-cto-create-person name))
+         (file (cdr (assoc name (org-fractional-cto-people))))
+         (slug (and file (file-name-base file))))
+    (list :id id :name name :slug slug
+          :tag (and slug (org-fractional-cto-person-tag slug))
+          :link (format "[[id:%s][%s]]" id name))))
+
+(defun org-fractional-cto--read-person-name (prompt)
+  "Completing-read a person by display name for PROMPT.
+Existing person titles are offered; free text is allowed so a new name flows
+through to node creation.  Returns the chosen/typed string (possibly empty)."
+  (completing-read (format "%s: " prompt)
+                   (mapcar #'car (org-fractional-cto-people)) nil nil))
+
 (provide 'org-fractional-cto-people)
 
 ;;; org-fractional-cto-people.el ends here
