@@ -24,6 +24,7 @@
 (declare-function org-fractional-cto-client-name "org-fractional-cto")
 (declare-function org-fractional-cto-client-template-file "org-fractional-cto")
 (declare-function org-fractional-cto--capture-to-person "org-fractional-cto-people")
+(declare-function org-fractional-cto--apply-person-tag "org-fractional-cto-people")
 
 ;;;; Capture-time helpers
 
@@ -237,6 +238,8 @@ are not scoped to a client."
 Idempotent: any existing templates whose keys we own are removed first, so
 re-running after editing the templates updates them in place rather than
 leaving stale duplicates."
+  (add-hook 'org-capture-before-finalize-hook
+            #'org-fractional-cto--apply-person-tag)
   (let* ((templates (org-fractional-cto-capture-templates))
          (keys (mapcar #'car templates)))
     (setq org-capture-templates

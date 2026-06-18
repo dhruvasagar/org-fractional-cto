@@ -182,6 +182,41 @@ through to node creation.  Returns the chosen/typed string (possibly empty)."
   (completing-read (format "%s: " prompt)
                    (mapcar #'car (org-fractional-cto-people)) nil nil))
 
+(defun org-fractional-cto--capture-person (prompt &optional tag)
+  "Capture `%()' helper: pick a person for PROMPT and return an `[[id:]]' link.
+With TAG non-nil, also stash the person record under `:ofc-person' in the
+capture plist so `org-fractional-cto--apply-person-tag' tags the heading on
+finalize.  Returns an empty string when no name is entered."
+  (let ((name (org-fractional-cto--read-person-name prompt)))
+    (if (or (null name) (string-empty-p (string-trim name)))
+        ""
+      (let ((rec (org-fractional-cto-person-record name)))
+        (when tag (org-capture-put :ofc-person rec))
+        (plist-get rec :link)))))
+
+(defun org-fractional-cto--capture-people (prompt)
+  "Capture `%()' helper: pick people for PROMPT until empty input.
+Returns a comma-separated string of `[[id:]]' links (empty string if none)."
+  (let ((links nil)
+        (name (org-fractional-cto--read-person-name prompt)))
+    (while (and name (not (string-empty-p (string-trim name))))
+      (push (plist-get (org-fractional-cto-person-record name) :link) links)
+      (setq name (org-fractional-cto--read-person-name
+                  (format "%s (another; empty to finish)" prompt))))
+    (mapconcat #'identity (nreverse links) ", ")))
+
+(defun org-fractional-cto--apply-person-tag ()
+  "Tag the captured heading with the `:ofc-person' record's tag, if any.
+Registered on `org-capture-before-finalize-hook'; a no-op for captures that did
+not select a taggable person."
+  (let ((rec (org-capture-get :ofc-person)))
+    (when rec
+      (save-excursion
+        (goto-char (point-min))
+        (unless (org-at-heading-p) (outline-next-heading))
+        (when (org-at-heading-p)
+          (org-toggle-tag (plist-get rec :tag) 'on))))))
+
 (provide 'org-fractional-cto-people)
 
 ;;; org-fractional-cto-people.el ends here

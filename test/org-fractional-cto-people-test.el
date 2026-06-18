@@ -173,3 +173,55 @@
     (cl-letf (((symbol-function 'completing-read)
                (lambda (&rest _) "Typed Name")))
       (should (equal (org-fractional-cto--read-person-name "Owner") "Typed Name")))))
+
+(ert-deftest ofc-capture-person-returns-link-and-flags-tag ()
+  (ofc-people-test
+    (let ((org-capture-plist nil))
+      (cl-letf (((symbol-function 'org-fractional-cto--read-person-name)
+                 (lambda (&rest _) "Jane Doe")))
+        (let ((link (org-fractional-cto--capture-person "Owner" t)))
+          (should (string-match-p "\\`\\[\\[id:.+\\]\\[Jane Doe\\]\\]\\'" link))
+          (should (equal (plist-get (org-capture-get :ofc-person) :tag)
+                         "@jane_doe")))))))
+
+(ert-deftest ofc-capture-person-without-tag-does-not-flag ()
+  (ofc-people-test
+    (let ((org-capture-plist nil))
+      (cl-letf (((symbol-function 'org-fractional-cto--read-person-name)
+                 (lambda (&rest _) "Jane Doe")))
+        (org-fractional-cto--capture-person "Made by")
+        (should-not (org-capture-get :ofc-person))))))
+
+(ert-deftest ofc-capture-people-builds-comma-list ()
+  (ofc-people-test
+    (let ((names (list "Ann" "Bob" "")))
+      (cl-letf (((symbol-function 'org-fractional-cto--read-person-name)
+                 (lambda (&rest _) (pop names))))
+        (let ((result (org-fractional-cto--capture-people "Attendees")))
+          (should (string-match-p
+                   "\\`\\[\\[id:.+\\]\\[Ann\\]\\], \\[\\[id:.+\\]\\[Bob\\]\\]\\'"
+                   result)))))))
+
+(ert-deftest ofc-apply-person-tag-tags-heading ()
+  (with-temp-buffer
+    (org-mode)
+    (insert "* WAITING Do the thing\n")
+    (let ((org-capture-plist (list :ofc-person '(:tag "@alice"))))
+      (org-fractional-cto--apply-person-tag))
+    (goto-char (point-min))
+    (should (member "@alice" (org-get-tags)))))
+
+(ert-deftest ofc-apply-person-tag-noop-without-person ()
+  (with-temp-buffer
+    (org-mode)
+    (insert "* WAITING Do the thing\n")
+    (let ((org-capture-plist nil))
+      (org-fractional-cto--apply-person-tag))
+    (goto-char (point-min))
+    (should-not (org-get-tags))))
+
+(ert-deftest ofc-capture-install-registers-finalize-hook ()
+  (let ((org-capture-before-finalize-hook nil))
+    (org-fractional-cto-capture-install)
+    (should (memq 'org-fractional-cto--apply-person-tag
+                  org-capture-before-finalize-hook))))
