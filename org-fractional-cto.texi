@@ -96,6 +96,7 @@ People & Stakeholders
 
 * Referencing a person::
 * org-roam users::
+* Assigning and referencing people::
 
 Playbook
 
@@ -1329,6 +1330,7 @@ stakeholder at several clients.
 @menu
 * Referencing a person::
 * org-roam users::
+* Assigning and referencing people::
 @end menu
 
 @node Referencing a person
@@ -1353,6 +1355,30 @@ org-roam is @strong{not} required.  If you already use roam, set
 @samp{org-fractional-cto-people-directory} to a folder inside your
 @samp{org-roam-directory}; roam then indexes these nodes and your
 @samp{org-roam-node-insert} and backlinks buffer work unchanged.
+
+@node Assigning and referencing people
+@subsection Assigning and referencing people
+
+Assignment and reference fields link to person nodes instead of storing bare
+names.  When a capture or command asks for an owner, assignee, attendee, or
+author, type a name: an existing person is completed and linked, a new name
+creates the node on the spot.  The field stores an @samp{[[id:...][Name]]} link.
+
+Five single-owner item types also tag the heading with the person's @samp{@@slug}
+tag — delegation, blocker, commitment, risk, and security.  Because they are
+tags, the dashboard slices by person natively: open the dashboard, press @samp{/}
+and type the tag (e.g. @samp{@@jane_doe}) to see just that person's open work.  This
+needs no extra command and works without org-roam.
+
+@samp{M-x org-fractional-cto-delegate-at-point} and
+@samp{M-x org-fractional-cto-block-at-point} do the same for an existing heading:
+they link the assignee / unblock-owner and add the @samp{@@slug} tag.
+
+Owner @strong{columns inside tables} are filled by hand — use
+@samp{M-x org-fractional-cto-insert-person} in the cell.
+
+Existing notes with plain-text owners keep working; re-assigning through the
+capture or command upgrades them to a link and tag in place.
 
 @node Where to go next
 @section Where to go next
@@ -2637,6 +2663,12 @@ distinct tag: @samp{eD} (quick decision) files under Architecture Decisions but
 carries @samp{:DECISION:}; @samp{eM} (metrics snapshot) files under Health Checks but
 carries @samp{:METRICS:}.  Both are reachable directly via @samp{C-c a m DECISION} /
 @samp{C-c a m METRICS}, and also via the section tag through inheritance.
+
+Five single-owner item types — @samp{DELEGATED}, @samp{BLOCKER}, @samp{COMMITMENT}, @samp{RISK},
+and @samp{SECURITY} — also carry the assignee's @samp{@@<person-slug>} tag on the heading.
+Press @samp{/} in the dashboard or any agenda view and type the tag (e.g. @samp{@@jane_doe})
+to filter to that person's open work.  No new command is needed; this is plain
+Org tag filtering.
 
 @node Key bindings
 @subsection Key bindings

@@ -180,6 +180,12 @@ carries =:DECISION:=; =eM= (metrics snapshot) files under Health Checks but
 carries =:METRICS:=.  Both are reachable directly via =C-c a m DECISION= /
 =C-c a m METRICS=, and also via the section tag through inheritance.
 
+Five single-owner item types — =DELEGATED=, =BLOCKER=, =COMMITMENT=, =RISK=,
+and =SECURITY= — also carry the assignee's =@<person-slug>= tag on the heading.
+Press =/= in the dashboard or any agenda view and type the tag (e.g. =@jane_doe=)
+to filter to that person's open work.  No new command is needed; this is plain
+Org tag filtering.
+
 *** Key bindings
 | ~C-c c e<key>~                             | Capture (see [[*Capture Templates — Complete Reference][capture reference]])                      |
 | ~C-c a E~                                  | Global dashboard (pre-filtered to active client)     |

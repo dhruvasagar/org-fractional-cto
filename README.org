@@ -204,10 +204,19 @@ A *stakeholder profile* is different: it lives in the client hub's
 data.  It links to the global person via its =Person (global node):= line.
 One person can be a stakeholder at several clients.
 
-To insert a person link: =M-x org-fractional-cto-insert-person= — complete by
-name and insert an =[[id:...][Name]]= link; type a new name to create the node
-on the fly.  The =eP= capture (=C-c c e P=) files a timestamped note under a
-person's =Notes / History=, creating the node if needed.
+Assignment and reference fields (assignee, owner, attendees, author) link to
+person nodes via =[[id:...][Name]]=.  Type a name at any prompt: an existing
+person is completed and linked; a new name creates the node on the spot.  For
+owner columns inside tables, use =M-x org-fractional-cto-insert-person= in the
+cell.
+
+Five single-owner item types — delegation, blocker, commitment, risk, security
+— also tag the heading with the person's =@slug= (e.g. =@jane_doe=).  Press
+=/= in the dashboard and type the tag to filter to that person's open work.
+
+To insert a standalone person link: =M-x org-fractional-cto-insert-person=.
+The =eP= capture (=C-c c e P=) files a timestamped note under a person's
+=Notes / History=, creating the node if needed.
 
 org-roam is *not* required.  If you use roam, set
 =org-fractional-cto-people-directory= to a folder inside your

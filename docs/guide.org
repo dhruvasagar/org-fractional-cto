@@ -682,6 +682,29 @@ org-roam is *not* required.  If you already use roam, set
 =org-roam-directory=; roam then indexes these nodes and your
 =org-roam-node-insert= and backlinks buffer work unchanged.
 
+** Assigning and referencing people
+
+Assignment and reference fields link to person nodes instead of storing bare
+names.  When a capture or command asks for an owner, assignee, attendee, or
+author, type a name: an existing person is completed and linked, a new name
+creates the node on the spot.  The field stores an =[[id:...][Name]]= link.
+
+Five single-owner item types also tag the heading with the person's =@slug=
+tag — delegation, blocker, commitment, risk, and security.  Because they are
+tags, the dashboard slices by person natively: open the dashboard, press =/=
+and type the tag (e.g. =@jane_doe=) to see just that person's open work.  This
+needs no extra command and works without org-roam.
+
+=M-x org-fractional-cto-delegate-at-point= and
+=M-x org-fractional-cto-block-at-point= do the same for an existing heading:
+they link the assignee / unblock-owner and add the =@slug= tag.
+
+Owner *columns inside tables* are filled by hand — use
+=M-x org-fractional-cto-insert-person= in the cell.
+
+Existing notes with plain-text owners keep working; re-assigning through the
+capture or command upgrades them to a link and tag in place.
+
 * Where to go next
 
 - [[file:playbook.org][playbook.org]] — the engagement methodology: phases, the hat model, and
