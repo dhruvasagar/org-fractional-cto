@@ -211,12 +211,22 @@ Returns a comma-separated string of `[[id:]]' links (empty string if none)."
 Registered on `org-capture-before-finalize-hook'; a no-op for captures that did
 not select a taggable person.  The hook runs with the capture buffer widened to
 the whole target file, so it tags the entry at point (where org-capture leaves
-point inside the captured item), not the file's first heading."
+point inside the captured item), not the file's first heading.
+
+Applying the tag is a non-essential convenience.  `org-capture-finalize' has
+already widened the indirect capture buffer by the time this runs, so an error
+escaping here would abort finalize and strand that buffer showing the whole
+file.  We therefore catch and log any failure rather than let it propagate --
+the capture must always finish cleanly even if tagging cannot."
   (let ((rec (org-capture-get :ofc-person)))
     (when rec
-      (save-excursion
-        (when (ignore-errors (org-back-to-heading t))
-          (org-toggle-tag (plist-get rec :tag) 'on))))))
+      (condition-case err
+          (save-excursion
+            (when (ignore-errors (org-back-to-heading t))
+              (org-toggle-tag (plist-get rec :tag) 'on)))
+        (error
+         (message "org-fractional-cto: person tag not applied (%s)"
+                  (error-message-string err)))))))
 
 (provide 'org-fractional-cto-people)
 

@@ -220,6 +220,20 @@
     (goto-char (point-min))
     (should-not (org-get-tags))))
 
+(ert-deftest ofc-apply-person-tag-never-propagates-error ()
+  "A failure while tagging must be swallowed -- escaping it would abort
+`org-capture-finalize' (which has already widened the indirect capture buffer)
+and leave that buffer showing the whole file."
+  (with-temp-buffer
+    (org-mode)
+    (insert "* WAITING Do the thing\n")
+    (goto-char (point-max))
+    (cl-letf (((symbol-function 'org-toggle-tag)
+               (lambda (&rest _) (error "boom"))))
+      (let ((org-capture-plist (list :ofc-person '(:tag "@x"))))
+        ;; Must return normally rather than signal.
+        (should (progn (org-fractional-cto--apply-person-tag) t))))))
+
 (ert-deftest ofc-apply-person-tag-tags-entry-not-ancestor ()
   "With headings above the captured entry, the hook tags the entry at point."
   (with-temp-buffer
