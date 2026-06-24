@@ -36,3 +36,16 @@
     (let ((ctx (ofc-scaffold-test--contents
                 (org-fractional-cto-client-context-file "acme"))))
       (should (string-match-p "Person node" ctx)))))
+
+(ert-deftest ofc-hub-todo-line-has-fast-access-keys ()
+  "The scaffolded #+TODO: line gives every keyword a fast-selection key so
+`C-c C-t' pops a one-keystroke chooser instead of cycling linearly."
+  (ofc-scaffold-test
+    (org-fractional-cto--scaffold "Acme" "acme"
+                                  org-fractional-cto-default-stage)
+    (let ((hub (ofc-scaffold-test--contents
+                (org-fractional-cto-client-org-file "acme"))))
+      (should (string-match-p
+               (regexp-quote
+                "#+TODO: TODO(t) NEXT(n) INPROGRESS(i) WAITING(w) | DONE(d) CANCELLED(c)")
+               hub)))))

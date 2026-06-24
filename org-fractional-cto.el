@@ -154,7 +154,8 @@ visible to the agenda filter.  Set to nil to manage tag inheritance yourself."
   :group 'org-fractional-cto)
 
 (defcustom org-fractional-cto-todo-keywords
-  '((sequence "TODO" "NEXT" "INPROGRESS" "WAITING" "|" "DONE" "CANCELLED"))
+  '((sequence "TODO(t)" "NEXT(n)" "INPROGRESS(i)" "WAITING(w)"
+              "|" "DONE(d)" "CANCELLED(c)"))
   "TODO keyword sequences the workflow relies on.
 Merged into the global `org-todo-keywords' by `org-fractional-cto-setup' so
 that keywords such as INPROGRESS are recognised everywhere -- in agenda matches,

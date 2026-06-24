@@ -73,7 +73,7 @@ heading; TAG is written as the file's `#+filetags'."
     (insert (format "#+title: %s\n" client-name))
     (insert (format "#+AUTHOR: %s\n" org-fractional-cto-author))
     (insert "#+STARTUP: overview\n")
-    (insert "#+TODO: TODO NEXT INPROGRESS WAITING | DONE CANCELLED\n")
+    (insert "#+TODO: TODO(t) NEXT(n) INPROGRESS(i) WAITING(w) | DONE(d) CANCELLED(c)\n")
     (insert (format "#+filetags: :%s:\n" tag))
     (insert "#+OPTIONS: date:nil\n\n")
     (insert (format "* %s Engagement  :%s:\n" client-name stage))
