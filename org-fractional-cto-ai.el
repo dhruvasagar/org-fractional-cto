@@ -26,6 +26,8 @@
 (require 'org-fractional-cto-people)     ; org-fractional-cto-person-record
 
 (declare-function org-fractional-cto-client-org-file "org-fractional-cto")
+(declare-function org-fractional-cto-ai-commit "org-fractional-cto-ai")
+(declare-function org-fractional-cto-ai-discard "org-fractional-cto-ai")
 (defvar org-fractional-cto-sections)
 
 ;;;; Configuration
@@ -233,6 +235,56 @@ after the property drawer."
   (funcall (plist-get (org-fractional-cto-ai--type-spec (plist-get item :type))
                       :render)
            item))
+
+;;;; Review buffer
+
+(defvar-local org-fractional-cto-ai--hub-file nil
+  "Hub file the review buffer's accepted items will be filed into.")
+(defvar-local org-fractional-cto-ai--source-id nil
+  "org-id of the source note, used for the provenance back-link.")
+(defvar-local org-fractional-cto-ai--note-title nil
+  "Display title of the source note.")
+
+(defvar org-fractional-cto-ai-review-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-c C-c") #'org-fractional-cto-ai-commit)
+    (define-key map (kbd "C-c C-k") #'org-fractional-cto-ai-discard)
+    map)
+  "Keymap for `org-fractional-cto-ai-review-mode'.")
+
+(define-derived-mode org-fractional-cto-ai-review-mode org-mode "OFC-AI-Review"
+  "Major mode for reviewing AI-extracted items before filing.
+Edit or delete entries freely, then \\[org-fractional-cto-ai-commit] to file the
+survivors, or \\[org-fractional-cto-ai-discard] to discard them all.")
+
+(defun org-fractional-cto-ai--demote (text n)
+  "Return TEXT with N extra leading stars on every heading line."
+  (let ((stars (make-string n ?*)))
+    (replace-regexp-in-string "^\\(\\*+\\) " (concat stars "\\1 ") text)))
+
+(defun org-fractional-cto-ai--review-buffer (note-title source-id hub-file items)
+  "Pop a review buffer for ITEMS extracted from NOTE-TITLE.
+SOURCE-ID and HUB-FILE are stored buffer-locally for the commit step.  Returns
+the buffer."
+  (let ((buf (get-buffer-create "*ofc-ai-review*"))
+        (n (length items)))
+    (with-current-buffer buf
+      (org-fractional-cto-ai-review-mode)
+      (erase-buffer)
+      (insert (format "* Proposed from %s — %d item%s\n"
+                      note-title n (if (= n 1) "" "s")))
+      (insert "  Edit or delete entries below, then C-c C-c to file the "
+              "survivors (C-c C-k discards all).\n")
+      (dolist (item items)
+        (insert (org-fractional-cto-ai--demote
+                 (org-fractional-cto-ai--render-item item) 1))
+        (unless (bolp) (insert "\n")))
+      (setq org-fractional-cto-ai--hub-file hub-file
+            org-fractional-cto-ai--source-id source-id
+            org-fractional-cto-ai--note-title note-title)
+      (goto-char (point-min)))
+    (pop-to-buffer buf)
+    buf))
 
 (provide 'org-fractional-cto-ai)
 

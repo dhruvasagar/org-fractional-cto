@@ -134,6 +134,26 @@
     (should (string-match-p "Over MySQL for JSONB" s))
     (should (string-match-p ":OFC_AI_SECTION: Architecture Decisions" s))))
 
+(ert-deftest ofc-ai-demote-adds-stars ()
+  (should (equal (org-fractional-cto-ai--demote "* A\nbody\n" 1) "** A\nbody\n")))
+
+(ert-deftest ofc-ai-review-buffer-lists-items ()
+  (ofc-ai-test
+    (let* ((hub (ofc-ai-test--make-hub "acme"))
+           (items '((:type action :title "Chase spec")
+                    (:type risk :title "Lock-in" :fields (:impact "High"))))
+           (buf (org-fractional-cto-ai--review-buffer "STANDUP" "src-1" hub items)))
+      (unwind-protect
+          (with-current-buffer buf
+            (should (derived-mode-p 'org-mode))
+            (goto-char (point-min))
+            (should (re-search-forward "Proposed from STANDUP" nil t))
+            (should (re-search-forward "^\\*\\* TODO Chase spec" nil t))
+            (should (re-search-forward "^\\*\\* \\[RISK\\] Lock-in" nil t))
+            (should (equal org-fractional-cto-ai--hub-file hub))
+            (should (equal org-fractional-cto-ai--source-id "src-1")))
+        (kill-buffer buf)))))
+
 (provide 'org-fractional-cto-ai-test)
 
 ;;; org-fractional-cto-ai-test.el ends here
