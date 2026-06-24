@@ -59,6 +59,28 @@
     (should (string-match-p "JSON" p))
     (should (string-match-p "rotate the API keys" p))))
 
+(ert-deftest ofc-ai-strip-fences-removes-code-block ()
+  (should (equal (org-fractional-cto-ai--strip-fences "```json\n[1]\n```") "[1]"))
+  (should (equal (org-fractional-cto-ai--strip-fences "  [2]  ") "[2]")))
+
+(ert-deftest ofc-ai-parse-response-reads-array-of-objects ()
+  (let ((items (org-fractional-cto-ai--parse-response
+                "[{\"type\":\"action\",\"title\":\"Do X\"}]")))
+    (should (= 1 (length items)))
+    (should (equal (plist-get (car items) :type) "action"))
+    (should (equal (plist-get (car items) :title) "Do X"))))
+
+(ert-deftest ofc-ai-parse-response-unwraps-items-key ()
+  (let ((items (org-fractional-cto-ai--parse-response
+                "```json\n{\"items\":[{\"type\":\"risk\",\"title\":\"R\"}]}\n```")))
+    (should (equal (plist-get (car items) :title) "R"))))
+
+(ert-deftest ofc-ai-parse-response-empty-array-is-nil ()
+  (should (null (org-fractional-cto-ai--parse-response "[]"))))
+
+(ert-deftest ofc-ai-parse-response-signals-on-garbage ()
+  (should-error (org-fractional-cto-ai--parse-response "not json")))
+
 (provide 'org-fractional-cto-ai-test)
 
 ;;; org-fractional-cto-ai-test.el ends here

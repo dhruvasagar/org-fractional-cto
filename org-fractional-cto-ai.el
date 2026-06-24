@@ -82,6 +82,36 @@ Only returns a spec whose :section names a real hub section."
                        (mapcar #'car org-fractional-cto-sections)))
       spec)))
 
+;;;; Parsing
+
+(defun org-fractional-cto-ai--strip-fences (raw)
+  "Return RAW trimmed, with a surrounding Markdown code fence removed if present."
+  (let ((s (string-trim raw)))
+    (if (string-prefix-p "```" s)
+        (string-trim
+         (replace-regexp-in-string
+          "\n?```[ \t]*\\'" ""
+          (replace-regexp-in-string "\\````[a-zA-Z]*[ \t]*\n?" "" s)))
+      s)))
+
+(defun org-fractional-cto-ai--parse-response (raw)
+  "Parse RAW model output into a list of item plists.
+Tolerates a Markdown code fence and an optional {\"items\": [...]} wrapper.
+Signals an error when RAW contains no parseable JSON."
+  (let* ((json (org-fractional-cto-ai--strip-fences raw))
+         (data (let ((json-object-type 'plist)
+                     (json-array-type 'list)
+                     (json-false nil)
+                     (json-null nil))
+                 (json-read-from-string json))))
+    (cond
+     ;; A JSON object parses to a plist whose car is a keyword.
+     ((keywordp (car-safe data))
+      (or (plist-get data :items) (list data)))
+     ;; A JSON array parses to a list of plists (or nil when empty).
+     ((listp data) data)
+     (t (error "Unexpected JSON shape")))))
+
 ;;;; Prompt
 
 (defun org-fractional-cto-ai--build-prompt (text client-name)
