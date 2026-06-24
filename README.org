@@ -310,6 +310,120 @@ one out without deleting the record.
 | =en= | Innovation idea     | Innovation Pipeline    |
 | =eI= | Innovation meeting  | Innovation Pipeline    |
 
+* AI note extraction (optional)
+
+When a flagged capture is finalized, =org-fractional-cto= can send the note
+text to a language-model backend and surface the extracted items for review
+before filing them.  The feature extracts four types of items from the prose:
+*Actions*, *Risks*, *Blockers*, and *Decisions*.  They appear in an Org-native
+review buffer where you edit or delete freely, then file the survivors into the
+right hub sections with a single key, each carrying a =Source:= back-link to the
+origin note.
+
+The feature is *off by default*.  Nothing happens until
+=org-fractional-cto-ai-request-function= is set.
+
+** Wiring a backend
+
+Set =org-fractional-cto-ai-request-function= to any function with the signature
+=(PROMPT CALLBACK)=: your function calls CALLBACK with the model's raw response
+string (or nil on failure).  The implementation may be synchronous or
+asynchronous; the engine always defers the call so finalize never blocks.
+
+A minimal backend using the [[https://llm.datasette.io/][llm]] CLI (any CLI that reads a prompt on stdin works):
+
+#+begin_src emacs-lisp
+(setq org-fractional-cto-ai-request-function
+      (lambda (prompt callback)
+        (let ((buf (generate-new-buffer " *ofc-ai*")))
+          (make-process
+           :name "ofc-ai" :buffer buf
+           :command '("llm" "--no-stream")   ; any CLI reading the prompt on stdin
+           :connection-type 'pipe
+           :sentinel (lambda (proc _e)
+                       (when (memq (process-status proc) '(exit signal))
+                         (with-current-buffer (process-buffer proc)
+                           (funcall callback (buffer-string)))
+                         (kill-buffer (process-buffer proc)))))
+          (process-send-string
+           (get-buffer-process buf) prompt)
+          (process-send-eof (get-buffer-process buf)))))
+#+end_src
+
+Any CLI, HTTP client, or Emacs-native LLM library can serve as the backend —
+the package only cares about the =(PROMPT CALLBACK)= contract.
+
+** The review flow
+
+Once the backend is wired:
+
+1. Finalize any flagged capture (=C-c C-c= in the capture buffer).
+2. The model call runs asynchronously in the background.
+3. When the model responds, the =*ofc-ai-review*= buffer pops up, showing each
+   extracted item as an Org heading.  Edit the titles, delete subtrees you do
+   not want to keep, or adjust any field.
+4. Press ~C-c C-c~ to file every surviving entry into the hub, or ~C-c C-k~ to
+   discard them all.
+
+The buffer stays open until you act — normal editing and other captures
+continue unimpeded.
+
+** Filed items: provenance and tags
+
+Each accepted entry is placed under the appropriate hub section (e.g. =Actions=,
+=Risks=) at the correct heading depth and receives two provenance annotations:
+
+- =Source: [[id:…][<note-title>]]=  — an Org link back to the originating note.
+- The =:AI:= tag (configurable via =org-fractional-cto-ai-provenance-tag=; set
+  it to =nil= to suppress tagging entirely).
+
+** Configuration
+
+| Variable                                       | Default   | Purpose                                           |
+|------------------------------------------------+-----------+---------------------------------------------------|
+| =org-fractional-cto-ai-request-function=       | =nil=     | Backend function =(PROMPT CALLBACK)=; nil disables |
+| =org-fractional-cto-ai-item-types=             | (4 types) | Taxonomy: Actions, Risks, Blockers, Decisions     |
+| =org-fractional-cto-ai-provenance-tag=         | ="AI"=    | Tag added to filed items; nil adds no tag         |
+
+** Extending the taxonomy
+
+=org-fractional-cto-ai-item-types= is an alist of =(TYPE . PLIST)= entries.  To
+add a new extractable type, append a row:
+
+#+begin_src emacs-lisp
+(add-to-list 'org-fractional-cto-ai-item-types
+             '(commitment
+               :section "Commitments"
+               :tag "COMMITMENT"
+               :desc "A commitment or promise made by either party."
+               :render my/ofc-ai-render-commitment)
+             t)  ; append, not prepend
+#+end_src
+
+The =:section= value must match a heading name from =org-fractional-cto-sections=
+(the hub's section list).  The =:render= function receives a normalized item
+plist with keys =:type :title :owner :deadline :priority :body :fields= and must
+return Org entry text.
+
+** Which captures are flagged
+
+The following seven capture templates carry =:ofc-ai-extract t= by default:
+
+| Key  | Capture           |
+|------+-------------------|
+| =es= | Standup           |
+| =ed= | Discovery session |
+| =em= | Client meeting    |
+| =ei= | Internal sync     |
+| =eW= | Weekly review     |
+| =eq= | QBR               |
+| =eR= | Retrospective     |
+
+To flag any other capture template, add =:ofc-ai-extract t= to its
+=org-capture-templates= plist entry.  Per-client template overrides (files
+under =<slug>/templates/=) are used for rendering, but the =:ofc-ai-extract=
+flag is read from the template's Lisp-level entry, not the template file itself.
+
 * The dashboard
 
 ~C-c a E~ (or =M-x org-fractional-cto-dashboard=) opens the *global* dashboard
