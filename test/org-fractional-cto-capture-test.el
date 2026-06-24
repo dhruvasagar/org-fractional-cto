@@ -249,6 +249,44 @@ bundled template (after a single client selection prompt)."
       (should-not (string-match-p
                    "%(org-fractional-cto--capture-person \"[^\"]+\" t)" text)))))
 
+(ert-deftest ofc-capture-install-registers-ai-finalize-hook ()
+  (let ((org-capture-before-finalize-hook nil))
+    (org-fractional-cto-capture-install)
+    (should (memq 'org-fractional-cto-ai-maybe-extract
+                  org-capture-before-finalize-hook))))
+
+(ert-deftest ofc-capture-standup-template-is-ai-flagged ()
+  (let* ((tpls (org-fractional-cto-capture-templates))
+         (standup (assoc "es" tpls)))
+    (should (plist-get (nthcdr 5 standup) :ofc-ai-extract))))
+
+;;;; Tests for goto-section helper
+
+(ert-deftest ofc-goto-section-finds-existing ()
+  (let ((file (make-temp-file "ofc-hub" nil ".org"
+                              "#+title: X\n\n* Eng\n** Actions\n** Risks\n")))
+    (unwind-protect
+        (save-window-excursion
+          (org-fractional-cto--goto-section file "Risks")
+          (should (equal (buffer-file-name) file))
+          (should (string-match-p "Risks"
+                                  (buffer-substring (line-beginning-position)
+                                                    (line-end-position)))))
+      (when (get-file-buffer file) (kill-buffer (get-file-buffer file)))
+      (delete-file file))))
+
+(ert-deftest ofc-goto-section-creates-missing ()
+  (let ((file (make-temp-file "ofc-hub" nil ".org" "#+title: X\n\n* Eng\n")))
+    (unwind-protect
+        (save-window-excursion
+          (org-fractional-cto--goto-section file "Blockers")
+          (should (string-match-p "\\*+ Blockers\\'"
+                                  (buffer-substring (line-beginning-position) (point))))
+          (goto-char (point-min))
+          (should (re-search-forward "^\\*+ Blockers" nil t)))
+      (when (get-file-buffer file) (kill-buffer (get-file-buffer file)))
+      (delete-file file))))
+
 (provide 'org-fractional-cto-capture-test)
 
 ;;; org-fractional-cto-capture-test.el ends here
