@@ -101,6 +101,39 @@
   (should (null (org-fractional-cto-ai--normalize-item
                  '(:type "risk" :title "   ")))))
 
+(ert-deftest ofc-ai-render-action-has-todo-and-section ()
+  (let ((s (org-fractional-cto-ai--render-item
+            '(:type action :title "Chase spec" :owner "Jun"
+              :deadline "2026-06-30" :priority "A"))))
+    (should (string-match-p "^\\* TODO \\[#A\\] Chase spec" s))
+    (should (string-match-p "DEADLINE: <2026-06-30>" s))
+    (should (string-match-p ":OFC_AI_SECTION: Actions" s))
+    (should (string-match-p ":OFC_AI_OWNER: Jun" s))))
+
+(ert-deftest ofc-ai-render-risk-matches-template-shape ()
+  (let ((s (org-fractional-cto-ai--render-item
+            '(:type risk :title "Vendor lock-in"
+              :body "Migrate off proprietary API"
+              :fields (:likelihood "High" :impact "High")))))
+    (should (string-match-p "^\\* \\[RISK\\] Vendor lock-in[ \t]+:RISK:" s))
+    (should (string-match-p "Likelihood: High" s))
+    (should (string-match-p "Impact: High" s))
+    (should (string-match-p "Mitigation: Migrate off proprietary API" s))))
+
+(ert-deftest ofc-ai-render-blocker-is-priority-a-todo ()
+  (let ((s (org-fractional-cto-ai--render-item
+            '(:type blocker :title "Staging down"
+              :fields (:blocking "Release 2.0")))))
+    (should (string-match-p "^\\* TODO \\[#A\\] BLOCKER: Staging down[ \t]+:BLOCKER:" s))
+    (should (string-match-p "Blocking: Release 2.0" s))))
+
+(ert-deftest ofc-ai-render-decision-records-body ()
+  (let ((s (org-fractional-cto-ai--render-item
+            '(:type decision :title "Adopt Postgres" :body "Over MySQL for JSONB"))))
+    (should (string-match-p "^\\* DECISION: Adopt Postgres[ \t]+:DECISION:" s))
+    (should (string-match-p "Over MySQL for JSONB" s))
+    (should (string-match-p ":OFC_AI_SECTION: Architecture Decisions" s))))
+
 (provide 'org-fractional-cto-ai-test)
 
 ;;; org-fractional-cto-ai-test.el ends here

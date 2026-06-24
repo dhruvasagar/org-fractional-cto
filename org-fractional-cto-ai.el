@@ -159,6 +159,81 @@ unknown type or a blank title are dropped."
             :body (org-fractional-cto-ai--clean-string (plist-get raw :body))
             :fields (plist-get raw :fields)))))
 
+;;;; Rendering
+
+(defun org-fractional-cto-ai--entry (heading tag section owner body-lines)
+  "Build a single-heading Org entry string.
+HEADING is headline text (no stars).  TAG is a per-item tag or nil.  SECTION is
+the destination heading, stored in the :OFC_AI_SECTION: property.  OWNER, when
+non-nil, is stored in :OFC_AI_OWNER:.  BODY-LINES is a list of strings placed
+after the property drawer."
+  (concat
+   (format "* %s%s\n" heading (if tag (format "  :%s:" tag) ""))
+   ":PROPERTIES:\n"
+   (format ":OFC_AI_SECTION: %s\n" section)
+   (if owner (format ":OFC_AI_OWNER: %s\n" owner) "")
+   ":END:\n"
+   (mapconcat #'identity body-lines "\n")
+   (if body-lines "\n" "")))
+
+(defun org-fractional-cto-ai--render-action (item)
+  "Render an action ITEM as a TODO entry."
+  (let ((spec (org-fractional-cto-ai--type-spec 'action))
+        (deadline (plist-get item :deadline))
+        (priority (plist-get item :priority))
+        (body (plist-get item :body)))
+    (org-fractional-cto-ai--entry
+     (concat "TODO "
+             (if priority (format "[#%s] " (upcase priority)) "")
+             (plist-get item :title))
+     (plist-get spec :tag) (plist-get spec :section) (plist-get item :owner)
+     (delq nil (list (and deadline (format "DEADLINE: <%s>" deadline))
+                     body)))))
+
+(defun org-fractional-cto-ai--render-risk (item)
+  "Render a risk ITEM mirroring the bundled risk template."
+  (let* ((spec (org-fractional-cto-ai--type-spec 'risk))
+         (fields (plist-get item :fields))
+         (likelihood (or (org-fractional-cto-ai--clean-string
+                          (plist-get fields :likelihood)) "Medium"))
+         (impact (or (org-fractional-cto-ai--clean-string
+                      (plist-get fields :impact)) "Medium"))
+         (body (plist-get item :body)))
+    (org-fractional-cto-ai--entry
+     (format "[RISK] %s" (plist-get item :title))
+     (plist-get spec :tag) (plist-get spec :section) (plist-get item :owner)
+     (delq nil (list "Status: Open"
+                     (format "Likelihood: %s" likelihood)
+                     (format "Impact: %s" impact)
+                     (and body (format "Mitigation: %s" body)))))))
+
+(defun org-fractional-cto-ai--render-blocker (item)
+  "Render a blocker ITEM mirroring the bundled blocker template."
+  (let* ((spec (org-fractional-cto-ai--type-spec 'blocker))
+         (fields (plist-get item :fields))
+         (blocking (org-fractional-cto-ai--clean-string (plist-get fields :blocking)))
+         (body (plist-get item :body)))
+    (org-fractional-cto-ai--entry
+     (format "TODO [#A] BLOCKER: %s" (plist-get item :title))
+     (plist-get spec :tag) (plist-get spec :section) (plist-get item :owner)
+     (delq nil (list (and blocking (format "Blocking: %s" blocking))
+                     (and body (format "*Root cause:* %s" body)))))))
+
+(defun org-fractional-cto-ai--render-decision (item)
+  "Render a decision ITEM mirroring the bundled quick-decision template."
+  (let ((spec (org-fractional-cto-ai--type-spec 'decision))
+        (body (plist-get item :body)))
+    (org-fractional-cto-ai--entry
+     (format "DECISION: %s" (plist-get item :title))
+     (plist-get spec :tag) (plist-get spec :section) (plist-get item :owner)
+     (delq nil (list body)))))
+
+(defun org-fractional-cto-ai--render-item (item)
+  "Render normalized ITEM via its taxonomy :render function."
+  (funcall (plist-get (org-fractional-cto-ai--type-spec (plist-get item :type))
+                      :render)
+           item))
+
 (provide 'org-fractional-cto-ai)
 
 ;;; org-fractional-cto-ai.el ends here
