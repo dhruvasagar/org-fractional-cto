@@ -90,7 +90,7 @@ Responsibilities, each an isolated, independently testable unit:
     (blocker  :section "Blockers"               :tag "BLOCKER"
               :desc "Something actively blocking a work stream."
               :render org-fractional-cto-ai--render-blocker)
-    (decision :section "Architecture Decisions" :tag "ADR"
+    (decision :section "Architecture Decisions" :tag "DECISION"
               :desc "A decision reached during the discussion, worth recording."
               :render org-fractional-cto-ai--render-decision))
   "Taxonomy of AI-extractable item types.
@@ -127,9 +127,11 @@ The model's JSON objects map onto:
                     ;   blocking work stream, options, …)
 ```
 
-`:owner` is resolved through the existing `org-fractional-cto-person-record`,
-so owners become real `[[id:]]` people links — consistent with how capture
-templates handle owners today.
+`:owner` is carried on the rendered review entry as an `:OFC_AI_OWNER:`
+property (a plain name) and is resolved through the existing
+`org-fractional-cto-person-record` into an `[[id:]]` people link only **at
+commit time, for survivors** — so reviewing-then-rejecting a candidate never
+creates an orphan person node.
 
 ## Trigger & data flow
 
@@ -209,10 +211,15 @@ Factor a filing helper from the existing `org-fractional-cto--capture-to-heading
   refactored to call it, preserving current capture behavior.
 
 For each filed item:
-1. Visit the hub file, locate/create the `:section` heading.
-2. Insert the rendered entry as a new child.
-3. Append `Source: [[id:SOURCE-ID][<note title>]]` provenance line.
-4. Add the provenance tag (`org-fractional-cto-ai-provenance-tag`, default
+1. Read `:OFC_AI_SECTION:` (destination) and optional `:OFC_AI_OWNER:` from the
+   review entry, then strip both properties.
+2. Visit the hub file, locate/create the `:section` heading.
+3. Insert the rendered entry as a new child (depth normalized to sit one level
+   below the section heading).
+4. If an owner was present, resolve it via `org-fractional-cto-person-record`
+   and insert an `Owner: [[id:][NAME]]` line under the heading.
+5. Append `Source: [[id:SOURCE-ID][<note title>]]` provenance line.
+6. Add the provenance tag (`org-fractional-cto-ai-provenance-tag`, default
    `"AI"`; nil disables) to the entry.
 
 Per-item tags (`:RISK:`, `:BLOCKER:`, `:ADR:`) come from the renderer, matching
