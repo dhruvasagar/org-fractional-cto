@@ -81,6 +81,26 @@
 (ert-deftest ofc-ai-parse-response-signals-on-garbage ()
   (should-error (org-fractional-cto-ai--parse-response "not json")))
 
+(ert-deftest ofc-ai-clean-string-trims-and-nils ()
+  (should (equal (org-fractional-cto-ai--clean-string "  hi ") "hi"))
+  (should (null (org-fractional-cto-ai--clean-string "   ")))
+  (should (null (org-fractional-cto-ai--clean-string nil))))
+
+(ert-deftest ofc-ai-normalize-keeps-valid-item ()
+  (let ((item (org-fractional-cto-ai--normalize-item
+               '(:type "Action" :title "  Chase spec " :owner "Jun"))))
+    (should (eq (plist-get item :type) 'action))
+    (should (equal (plist-get item :title) "Chase spec"))
+    (should (equal (plist-get item :owner) "Jun"))))
+
+(ert-deftest ofc-ai-normalize-drops-unknown-type ()
+  (should (null (org-fractional-cto-ai--normalize-item
+                 '(:type "gossip" :title "x")))))
+
+(ert-deftest ofc-ai-normalize-drops-blank-title ()
+  (should (null (org-fractional-cto-ai--normalize-item
+                 '(:type "risk" :title "   ")))))
+
 (provide 'org-fractional-cto-ai-test)
 
 ;;; org-fractional-cto-ai-test.el ends here

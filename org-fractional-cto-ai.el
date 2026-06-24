@@ -135,6 +135,30 @@ Signals an error when RAW contains no parseable JSON."
      "If nothing qualifies, return [].\n\n"
      "NOTE:\n" text)))
 
+;;;; Normalization
+
+(defun org-fractional-cto-ai--clean-string (v)
+  "Return V trimmed when it is a non-empty string, else nil."
+  (and (stringp v)
+       (let ((s (string-trim v)))
+         (and (not (string-empty-p s)) s))))
+
+(defun org-fractional-cto-ai--normalize-item (raw)
+  "Return a normalized item plist from parsed RAW, or nil when invalid.
+RAW's :type is matched case-insensitively against the taxonomy; items with an
+unknown type or a blank title are dropped."
+  (let* ((type-str (org-fractional-cto-ai--clean-string (plist-get raw :type)))
+         (type (and type-str (intern (downcase type-str))))
+         (title (org-fractional-cto-ai--clean-string (plist-get raw :title))))
+    (when (and type title (org-fractional-cto-ai--type-spec type))
+      (list :type type
+            :title title
+            :owner (org-fractional-cto-ai--clean-string (plist-get raw :owner))
+            :deadline (org-fractional-cto-ai--clean-string (plist-get raw :deadline))
+            :priority (org-fractional-cto-ai--clean-string (plist-get raw :priority))
+            :body (org-fractional-cto-ai--clean-string (plist-get raw :body))
+            :fields (plist-get raw :fields)))))
+
 (provide 'org-fractional-cto-ai)
 
 ;;; org-fractional-cto-ai.el ends here
