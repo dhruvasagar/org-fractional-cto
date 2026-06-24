@@ -154,6 +154,48 @@
             (should (equal org-fractional-cto-ai--source-id "src-1")))
         (kill-buffer buf)))))
 
+(ert-deftest ofc-ai-strip-properties-removes-drawer-and-promotes ()
+  (let ((s (org-fractional-cto-ai--strip-properties
+            "** TODO X\n:PROPERTIES:\n:OFC_AI_SECTION: Actions\n:END:\nbody\n")))
+    (should (string-match-p "\\`\\* TODO X" s))
+    (should-not (string-match-p "OFC_AI_SECTION" s))
+    (should (string-match-p "body" s))))
+
+(ert-deftest ofc-ai-commit-files-into-sections ()
+  (ofc-ai-test
+    (let* ((hub (ofc-ai-test--make-hub "acme"))
+           (items '((:type action :title "Chase spec" :owner "Jun Tanaka")
+                    (:type risk :title "Lock-in" :fields (:impact "High"))))
+           (buf (org-fractional-cto-ai--review-buffer "STANDUP 2026-06-24"
+                                                      "src-1" hub items)))
+      (unwind-protect
+          (with-current-buffer buf (org-fractional-cto-ai-commit))
+        (when (buffer-live-p buf) (kill-buffer buf)))
+      ;; The review buffer was killed by commit.
+      (should-not (get-buffer "*ofc-ai-review*"))
+      (with-current-buffer (find-file-noselect hub)
+        (let ((text (buffer-string)))
+          ;; Action filed under Actions with owner link and provenance.
+          (should (string-match-p "\\*\\* Actions\n\\*\\*\\* TODO Chase spec.*:AI:" text))
+          (should (string-match-p "Owner: \\[\\[id:.+\\]\\[Jun Tanaka\\]\\]" text))
+          (should (string-match-p "Source: \\[\\[id:src-1\\]\\[STANDUP 2026-06-24\\]\\]" text))
+          ;; Risk filed under Risks.
+          (should (string-match-p "\\*\\* Risks\n\\*\\*\\* \\[RISK\\] Lock-in" text)))
+        ;; Owner became a real person node.
+        (should (file-exists-p (org-fractional-cto-person-file "jun_tanaka")))
+        (kill-buffer)))))
+
+(ert-deftest ofc-ai-discard-kills-buffer-without-filing ()
+  (ofc-ai-test
+    (let* ((hub (ofc-ai-test--make-hub "acme"))
+           (buf (org-fractional-cto-ai--review-buffer
+                 "STANDUP" "src-1" hub '((:type action :title "X")))))
+      (with-current-buffer buf (org-fractional-cto-ai-discard))
+      (should-not (get-buffer "*ofc-ai-review*"))
+      (with-current-buffer (find-file-noselect hub)
+        (should-not (string-match-p "TODO X" (buffer-string)))
+        (kill-buffer)))))
+
 (provide 'org-fractional-cto-ai-test)
 
 ;;; org-fractional-cto-ai-test.el ends here

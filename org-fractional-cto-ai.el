@@ -26,8 +26,6 @@
 (require 'org-fractional-cto-people)     ; org-fractional-cto-person-record
 
 (declare-function org-fractional-cto-client-org-file "org-fractional-cto")
-(declare-function org-fractional-cto-ai-commit "org-fractional-cto-ai")
-(declare-function org-fractional-cto-ai-discard "org-fractional-cto-ai")
 (defvar org-fractional-cto-sections)
 
 ;;;; Configuration
@@ -285,6 +283,84 @@ the buffer."
       (goto-char (point-min)))
     (pop-to-buffer buf)
     buf))
+
+;;;; Filing
+
+(defun org-fractional-cto-ai--strip-properties (text)
+  "Return entry TEXT with its PROPERTIES drawer removed and heading promoted.
+Demotes the level-2 review heading back to a level-1 entry."
+  (let ((s (replace-regexp-in-string
+            ":PROPERTIES:\n\\(?:.*\n\\)*?:END:\n" "" text)))
+    (replace-regexp-in-string "^\\*\\(\\*+\\) " "\\1 " s)))
+
+(defun org-fractional-cto-ai--collect-entries ()
+  "Return (SECTION OWNER TEXT) for each level-2 entry in the review buffer.
+TEXT has the OFC_AI_* properties removed and the heading promoted to level 1."
+  (let (entries)
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward "^\\*\\* " nil t)
+        (beginning-of-line)
+        (let* ((beg (point))
+               (end (save-excursion (org-end-of-subtree t t) (point)))
+               (section (org-entry-get (point) "OFC_AI_SECTION"))
+               (owner (org-entry-get (point) "OFC_AI_OWNER"))
+               (raw (buffer-substring-no-properties beg end)))
+          (when section
+            (push (list section owner
+                        (org-fractional-cto-ai--strip-properties raw))
+                  entries))
+          (goto-char end))))
+    (nreverse entries)))
+
+(defun org-fractional-cto-ai--file-entry (hub section owner text source-id note-title)
+  "File entry TEXT under SECTION in HUB, adding owner, provenance, and tag.
+OWNER (a name or nil) becomes an `[[id:]]' person link; SOURCE-ID/NOTE-TITLE
+become a `Source:' back-link; `org-fractional-cto-ai-provenance-tag' is added."
+  (org-fractional-cto--goto-section hub section)
+  (org-back-to-heading t)
+  (org-end-of-subtree t t)
+  (unless (bolp) (insert "\n"))
+  (let ((start (point)))
+    (insert (org-fractional-cto-ai--demote (string-trim-right text) 2) "\n")
+    (goto-char start)
+    (org-back-to-heading t)
+    (let* ((owner-name (org-fractional-cto-ai--clean-string owner))
+           (owner-link (and owner-name
+                            (plist-get (org-fractional-cto-person-record owner-name)
+                                       :link)))
+           (lines (delq nil
+                        (list (and owner-link (format "Owner: %s" owner-link))
+                              (and source-id note-title
+                                   (format "Source: [[id:%s][%s]]"
+                                           source-id note-title))))))
+      (when lines
+        (end-of-line)
+        (insert "\n" (mapconcat #'identity lines "\n")))
+      (when org-fractional-cto-ai-provenance-tag
+        (org-back-to-heading t)
+        (org-toggle-tag org-fractional-cto-ai-provenance-tag 'on))))
+  (save-buffer))
+
+(defun org-fractional-cto-ai-commit ()
+  "File every surviving proposed entry into the hub, then close the review."
+  (interactive)
+  (let ((hub org-fractional-cto-ai--hub-file)
+        (source-id org-fractional-cto-ai--source-id)
+        (note-title org-fractional-cto-ai--note-title)
+        (entries (org-fractional-cto-ai--collect-entries)))
+    (save-window-excursion
+      (dolist (e entries)
+        (org-fractional-cto-ai--file-entry hub (nth 0 e) (nth 1 e) (nth 2 e)
+                                           source-id note-title)))
+    (let ((n (length entries)))
+      (kill-buffer (current-buffer))
+      (message "org-fractional-cto: filed %d item%s" n (if (= n 1) "" "s")))))
+
+(defun org-fractional-cto-ai-discard ()
+  "Discard all proposed items and close the review buffer."
+  (interactive)
+  (kill-buffer (current-buffer)))
 
 (provide 'org-fractional-cto-ai)
 
