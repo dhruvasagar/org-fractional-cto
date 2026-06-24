@@ -362,6 +362,35 @@ become a `Source:' back-link; `org-fractional-cto-ai-provenance-tag' is added."
   (interactive)
   (kill-buffer (current-buffer)))
 
+;;;; Driver
+
+(defun org-fractional-cto-ai--on-response (raw hub-file source-id note-title)
+  "Turn RAW model output into a review buffer for HUB-FILE.
+SOURCE-ID/NOTE-TITLE identify the source note.  Never throws: empty output,
+unparseable output, and a zero-item result each just message."
+  (condition-case err
+      (if (or (null raw) (string-empty-p (string-trim raw)))
+          (message "org-fractional-cto: AI returned no output")
+        (let* ((parsed (org-fractional-cto-ai--parse-response raw))
+               (items (delq nil (mapcar #'org-fractional-cto-ai--normalize-item
+                                        parsed))))
+          (if (null items)
+              (message "org-fractional-cto: AI found no items to extract")
+            (org-fractional-cto-ai--review-buffer note-title source-id
+                                                  hub-file items))))
+    (error
+     (message "org-fractional-cto: AI extraction failed (%s)"
+              (error-message-string err)))))
+
+(defun org-fractional-cto-ai--extract (text client-name hub-file source-id note-title)
+  "Send note TEXT to the model and review the items it extracts.
+CLIENT-NAME labels the prompt; HUB-FILE/SOURCE-ID/NOTE-TITLE thread through to
+filing and provenance."
+  (funcall org-fractional-cto-ai-request-function
+           (org-fractional-cto-ai--build-prompt text client-name)
+           (lambda (raw)
+             (org-fractional-cto-ai--on-response raw hub-file source-id note-title))))
+
 (provide 'org-fractional-cto-ai)
 
 ;;; org-fractional-cto-ai.el ends here

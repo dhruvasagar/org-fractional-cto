@@ -196,6 +196,33 @@
         (should-not (string-match-p "TODO X" (buffer-string)))
         (kill-buffer)))))
 
+(ert-deftest ofc-ai-extract-pops-review-from-fake-backend ()
+  (ofc-ai-test
+    (let* ((hub (ofc-ai-test--make-hub "acme"))
+           (org-fractional-cto-ai-request-function
+            (lambda (_prompt cb)
+              (funcall cb "[{\"type\":\"action\",\"title\":\"Chase spec\"}]"))))
+      (org-fractional-cto-ai--extract "note text" "Acme" hub "src-1" "STANDUP")
+      (let ((buf (get-buffer "*ofc-ai-review*")))
+        (should buf)
+        (unwind-protect
+            (with-current-buffer buf
+              (should (re-search-forward "Chase spec" nil t)))
+          (kill-buffer buf))))))
+
+(ert-deftest ofc-ai-on-response-no-items-pops-nothing ()
+  (ofc-ai-test
+    (let ((hub (ofc-ai-test--make-hub "acme")))
+      (org-fractional-cto-ai--on-response "[]" hub "src-1" "STANDUP")
+      (should-not (get-buffer "*ofc-ai-review*")))))
+
+(ert-deftest ofc-ai-on-response-garbage-does-not-throw ()
+  (ofc-ai-test
+    (let ((hub (ofc-ai-test--make-hub "acme")))
+      ;; Returns normally despite unparseable input.
+      (should (progn (org-fractional-cto-ai--on-response "nonsense" hub "s" "N") t))
+      (should-not (get-buffer "*ofc-ai-review*")))))
+
 (provide 'org-fractional-cto-ai-test)
 
 ;;; org-fractional-cto-ai-test.el ends here
