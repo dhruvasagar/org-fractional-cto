@@ -38,7 +38,8 @@ Searches for the first `^\\*+ HEADING' line; if none exists, appends a new
   (unless (re-search-forward
            (concat "^\\*+ " (regexp-quote heading) "\\(?:[ \t]\\|$\\)") nil t)
     (goto-char (point-max))
-    (insert (format "\n** %s\n" heading)))
+    (insert (format "\n** %s\n" heading))
+    (forward-line -1))
   (end-of-line))
 
 (defun org-fractional-cto--capture-client-slug ()

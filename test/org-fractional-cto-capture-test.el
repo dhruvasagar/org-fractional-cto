@@ -269,6 +269,8 @@ bundled template (after a single client selection prompt)."
     (unwind-protect
         (save-window-excursion
           (org-fractional-cto--goto-section file "Blockers")
+          (should (string-match-p "\\*+ Blockers\\'"
+                                  (buffer-substring (line-beginning-position) (point))))
           (goto-char (point-min))
           (should (re-search-forward "^\\*+ Blockers" nil t)))
       (when (get-file-buffer file) (kill-buffer (get-file-buffer file)))
