@@ -82,6 +82,29 @@ Only returns a spec whose :section names a real hub section."
                        (mapcar #'car org-fractional-cto-sections)))
       spec)))
 
+;;;; Prompt
+
+(defun org-fractional-cto-ai--build-prompt (text client-name)
+  "Build the extraction prompt for note TEXT belonging to CLIENT-NAME."
+  (let ((types (mapconcat
+                (lambda (entry)
+                  (format "- \"%s\": %s"
+                          (car entry) (plist-get (cdr entry) :desc)))
+                org-fractional-cto-ai-item-types "\n")))
+    (concat
+     "You analyze a consulting engagement note and extract concrete, "
+     "trackable items.\n"
+     (format "Client: %s\n\n" (or client-name ""))
+     "Extract only items clearly supported by the note. Use these types:\n"
+     types "\n\n"
+     "Return ONLY a JSON array (no prose, no code fence). Each element:\n"
+     "{\"type\": <one of the type keys above>, \"title\": <short imperative title>,\n"
+     " \"owner\": <person name or null>, \"deadline\": <ISO date or null>,\n"
+     " \"priority\": <\"A\"|\"B\"|\"C\" or null>, \"body\": <one-line detail or null>,\n"
+     " \"fields\": {\"likelihood\": ..., \"impact\": ..., \"blocking\": ...} or null}\n"
+     "If nothing qualifies, return [].\n\n"
+     "NOTE:\n" text)))
+
 (provide 'org-fractional-cto-ai)
 
 ;;; org-fractional-cto-ai.el ends here

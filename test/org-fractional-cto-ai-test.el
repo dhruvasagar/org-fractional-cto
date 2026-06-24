@@ -51,6 +51,14 @@
     (should (equal (plist-get spec :tag) "RISK")))
   (should-not (org-fractional-cto-ai--type-spec 'nonsense)))
 
+(ert-deftest ofc-ai-build-prompt-includes-types-and-note ()
+  (let ((p (org-fractional-cto-ai--build-prompt "We must rotate the API keys." "Acme")))
+    (should (string-match-p "Acme" p))
+    (should (string-match-p "action" p))
+    (should (string-match-p "risk" p))
+    (should (string-match-p "JSON" p))
+    (should (string-match-p "rotate the API keys" p))))
+
 (provide 'org-fractional-cto-ai-test)
 
 ;;; org-fractional-cto-ai-test.el ends here
