@@ -288,6 +288,7 @@ picked up automatically."
 (require 'org-fractional-cto-actions)
 (require 'org-fractional-cto-doc)
 (require 'org-fractional-cto-people)
+(require 'org-fractional-cto-ai)
 
 ;;;; Top-level commands and keymap
 

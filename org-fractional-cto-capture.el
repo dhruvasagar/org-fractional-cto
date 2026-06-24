@@ -25,6 +25,7 @@
 (declare-function org-fractional-cto-client-template-file "org-fractional-cto")
 (declare-function org-fractional-cto--capture-to-person "org-fractional-cto-people")
 (declare-function org-fractional-cto--apply-person-tag "org-fractional-cto-people")
+(declare-function org-fractional-cto-ai-maybe-extract "org-fractional-cto-ai")
 
 ;;;; Capture-time helpers
 
@@ -147,7 +148,7 @@ are not scoped to a client."
     ("eW" "Weekly review" entry
      (function ,(org-fractional-cto--target "Weekly Reviews"))
      (function ,(org-fractional-cto--file "weekly_review.org"))
-     :clock-in t :clock-resume t)
+     :clock-in t :clock-resume t :ofc-ai-extract t)
     ("eP" "Person note (global)" entry
      (function org-fractional-cto--capture-to-person)
      (function ,(org-fractional-cto--bundled-file "person_note.org")))
@@ -156,15 +157,15 @@ are not scoped to a client."
     ("em" "Client meeting" entry
      (function ,(org-fractional-cto--target "Meeting Notes"))
      (function ,(org-fractional-cto--file "client_meeting.org"))
-     :clock-in t :clock-resume t)
+     :clock-in t :clock-resume t :ofc-ai-extract t)
     ("ei" "Internal sync" entry
      (function ,(org-fractional-cto--target "Internal Syncs"))
      (function ,(org-fractional-cto--file "internal_sync.org"))
-     :clock-in t :clock-resume t)
+     :clock-in t :clock-resume t :ofc-ai-extract t)
     ("es" "Standup" entry
      (function ,(org-fractional-cto--target "Standup Notes"))
      (function ,(org-fractional-cto--file "standup.org"))
-     :clock-in t :clock-resume t)
+     :clock-in t :clock-resume t :ofc-ai-extract t)
     ("ec" "Commitment" entry
      (function ,(org-fractional-cto--target "Commitments"))
      (function ,(org-fractional-cto--file "commitment.org"))
@@ -182,7 +183,7 @@ are not scoped to a client."
     ("eq" "QBR" entry
      (function ,(org-fractional-cto--target "QBRs"))
      (function ,(org-fractional-cto--file "qbr.org"))
-     :clock-in t :clock-resume t)
+     :clock-in t :clock-resume t :ofc-ai-extract t)
 
     ;; -- Risk & delivery --------------------------------------------------
     ("er" "Risk" entry
@@ -197,13 +198,13 @@ are not scoped to a client."
     ("eR" "Retrospective" entry
      (function ,(org-fractional-cto--target "Retrospectives"))
      (function ,(org-fractional-cto--file "retrospective.org"))
-     :clock-in t :clock-resume t)
+     :clock-in t :clock-resume t :ofc-ai-extract t)
 
     ;; -- Technical --------------------------------------------------------
     ("ed" "Discovery session" entry
      (function ,(org-fractional-cto--target "Discovery Sessions"))
      (function ,(org-fractional-cto--file "discovery.org"))
-     :clock-in t :clock-resume t)
+     :clock-in t :clock-resume t :ofc-ai-extract t)
     ("ek" "Tech spike" entry
      (function ,(org-fractional-cto--target "Discovery Sessions"))
      (function ,(org-fractional-cto--file "tech_spike.org"))
@@ -247,6 +248,8 @@ re-running after editing the templates updates them in place rather than
 leaving stale duplicates."
   (add-hook 'org-capture-before-finalize-hook
             #'org-fractional-cto--apply-person-tag)
+  (add-hook 'org-capture-before-finalize-hook
+            #'org-fractional-cto-ai-maybe-extract)
   (let* ((templates (org-fractional-cto-capture-templates))
          (keys (mapcar #'car templates)))
     (setq org-capture-templates

@@ -362,6 +362,43 @@ become a `Source:' back-link; `org-fractional-cto-ai-provenance-tag' is added."
   (interactive)
   (kill-buffer (current-buffer)))
 
+;;;; Finalize trigger
+
+(defun org-fractional-cto-ai--heading-title ()
+  "Return the title of the heading at point (no stars, keyword, or tags)."
+  (org-back-to-heading t)
+  (or (nth 4 (org-heading-components)) ""))
+
+(defun org-fractional-cto-ai--subtree-text ()
+  "Return the plain text of the subtree at point (heading plus body)."
+  (save-excursion
+    (org-back-to-heading t)
+    (buffer-substring-no-properties
+     (point)
+     (progn (org-end-of-subtree t t) (point)))))
+
+(defun org-fractional-cto-ai-maybe-extract ()
+  "On `org-capture-before-finalize-hook', queue AI extraction for flagged captures.
+A no-op unless the capture template carries `:ofc-ai-extract' and a request
+function is configured.  Reads the note synchronously, then defers the model
+call so finalize never blocks.  Wrapped so a failure can never abort finalize."
+  (when (and (org-capture-get :ofc-ai-extract)
+             (org-fractional-cto-ai--enabled-p))
+    (condition-case err
+        (let* ((slug (org-capture-get :ofc-client-slug))
+               (client-name (org-capture-get :ofc-client-name))
+               (hub-file (and slug (org-fractional-cto-client-org-file slug))))
+          (save-excursion
+            (when (ignore-errors (org-back-to-heading t))
+              (let ((source-id (ignore-errors (org-id-get-create)))
+                    (note-title (org-fractional-cto-ai--heading-title))
+                    (text (org-fractional-cto-ai--subtree-text)))
+                (run-at-time 0 nil #'org-fractional-cto-ai--extract
+                             text client-name hub-file source-id note-title)))))
+      (error
+       (message "org-fractional-cto: AI extraction not queued (%s)"
+                (error-message-string err))))))
+
 ;;;; Driver
 
 (defun org-fractional-cto-ai--on-response (raw hub-file source-id note-title)

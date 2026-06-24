@@ -249,6 +249,17 @@ bundled template (after a single client selection prompt)."
       (should-not (string-match-p
                    "%(org-fractional-cto--capture-person \"[^\"]+\" t)" text)))))
 
+(ert-deftest ofc-capture-install-registers-ai-finalize-hook ()
+  (let ((org-capture-before-finalize-hook nil))
+    (org-fractional-cto-capture-install)
+    (should (memq 'org-fractional-cto-ai-maybe-extract
+                  org-capture-before-finalize-hook))))
+
+(ert-deftest ofc-capture-standup-template-is-ai-flagged ()
+  (let* ((tpls (org-fractional-cto-capture-templates))
+         (standup (assoc "es" tpls)))
+    (should (plist-get (nthcdr 5 standup) :ofc-ai-extract))))
+
 ;;;; Tests for goto-section helper
 
 (ert-deftest ofc-goto-section-finds-existing ()

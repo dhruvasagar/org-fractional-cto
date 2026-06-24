@@ -223,6 +223,56 @@
       (should (progn (org-fractional-cto-ai--on-response "nonsense" hub "s" "N") t))
       (should-not (get-buffer "*ofc-ai-review*")))))
 
+(ert-deftest ofc-ai-subtree-text-and-title ()
+  (with-temp-buffer
+    (org-mode)
+    (insert "* STANDUP 2026-06-24  :STANDUP:\nbody line\n** sub\nmore\n")
+    (goto-char (point-min))
+    (should (equal (org-fractional-cto-ai--heading-title) "STANDUP 2026-06-24"))
+    (should (string-match-p "body line" (org-fractional-cto-ai--subtree-text)))))
+
+(ert-deftest ofc-ai-maybe-extract-noop-when-not-flagged ()
+  (ofc-ai-test
+    (let ((calls 0))
+      (cl-letf (((symbol-function 'run-at-time)
+                 (lambda (&rest _) (cl-incf calls))))
+        (let ((org-capture-plist nil)            ; :ofc-ai-extract not set
+              (org-fractional-cto-ai-request-function (lambda (_p _cb) nil)))
+          (org-fractional-cto-ai-maybe-extract)))
+      (should (= calls 0)))))
+
+(ert-deftest ofc-ai-maybe-extract-queues-when-flagged ()
+  (ofc-ai-test
+    (ofc-ai-test--make-hub "acme")
+    (let ((queued nil))
+      (cl-letf (((symbol-function 'run-at-time)
+                 (lambda (_t _r fn &rest args) (setq queued (cons fn args)))))
+        (with-temp-buffer
+          (org-mode)
+          (insert "* STANDUP  :STANDUP:\nnote body\n")
+          (goto-char (point-min))
+          (let ((org-capture-plist
+                 (list :ofc-ai-extract t :ofc-client-slug "acme"
+                       :ofc-client-name "Acme"))
+                (org-fractional-cto-ai-request-function (lambda (_p _cb) nil)))
+            (org-fractional-cto-ai-maybe-extract))))
+      (should (eq (car queued) #'org-fractional-cto-ai--extract))
+      ;; args: text client-name hub-file source-id note-title
+      (should (string-match-p "note body" (nth 1 queued)))
+      (should (equal (nth 2 queued) "Acme")))))
+
+(ert-deftest ofc-ai-maybe-extract-never-throws ()
+  (ofc-ai-test
+    (cl-letf (((symbol-function 'org-id-get-create)
+               (lambda (&rest _) (error "boom"))))
+      (with-temp-buffer
+        (org-mode)
+        (insert "* STANDUP  :STANDUP:\nx\n")
+        (goto-char (point-min))
+        (let ((org-capture-plist (list :ofc-ai-extract t :ofc-client-slug "acme"))
+              (org-fractional-cto-ai-request-function (lambda (_p _cb) nil)))
+          (should (progn (org-fractional-cto-ai-maybe-extract) t)))))))
+
 (provide 'org-fractional-cto-ai-test)
 
 ;;; org-fractional-cto-ai-test.el ends here
