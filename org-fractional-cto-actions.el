@@ -67,7 +67,7 @@ point is not on a usable heading, so it is safe as an `interactive' default."
   "Return DATE (a string Org can parse) as an active timestamp string."
   (format-time-string "<%Y-%m-%d %a>" (org-time-string-to-time date)))
 
-(defun org-fractional-cto--goto-section (heading)
+(defun org-fractional-cto--goto-section-in-current-buffer (heading)
   "Move point to the headline named HEADING, creating it if absent.
 Search is from the top of the (widened) buffer.  When the section is missing it
 is appended at end of buffer as a level-2 heading.  Returns the heading's level
@@ -189,7 +189,7 @@ WHAT describes what is blocked; OWNER (optional) is the person who can clear it
             (let* ((title (org-fractional-cto--heading-title))
                    (action-link (format "[[*%s][%s]]" title title)))
               (save-excursion
-                (let ((level (1+ (org-fractional-cto--goto-section "Blockers"))))
+                (let ((level (1+ (org-fractional-cto--goto-section-in-current-buffer "Blockers"))))
                   (org-end-of-subtree t t)
                   (unless (bolp) (insert "\n"))
                   (insert (org-fractional-cto--blocker-subtree

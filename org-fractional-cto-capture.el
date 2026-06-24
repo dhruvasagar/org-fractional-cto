@@ -28,6 +28,19 @@
 
 ;;;; Capture-time helpers
 
+(defun org-fractional-cto--goto-section (file heading)
+  "Visit FILE and leave point at the end of HEADING's line.
+Searches for the first `^\\*+ HEADING' line; if none exists, appends a new
+`** HEADING' at end of file.  Shared by capture targeting and AI filing."
+  (find-file file)
+  (widen)
+  (goto-char (point-min))
+  (unless (re-search-forward
+           (concat "^\\*+ " (regexp-quote heading) "\\(?:[ \t]\\|$\\)") nil t)
+    (goto-char (point-max))
+    (insert (format "\n** %s\n" heading)))
+  (end-of-line))
+
 (defun org-fractional-cto--capture-client-slug ()
   "Return the client slug for the current capture, selecting at most once.
 Memoised into the capture plist under :ofc-client-slug.  Org resolves a
@@ -53,14 +66,7 @@ backward compatibility but templates must NOT embed it in headlines
          (file (org-fractional-cto-client-org-file slug)))
     (org-capture-put :ofc-client-tag  tag)
     (org-capture-put :ofc-client-name (org-fractional-cto-client-name slug))
-    (find-file file)
-    (widen)
-    (goto-char (point-min))
-    (unless (re-search-forward
-             (concat "^\\*+ " (regexp-quote heading) "\\(?:[ \t]\\|$\\)") nil t)
-      (goto-char (point-max))
-      (insert (format "\n** %s\n" heading)))
-    (end-of-line)))
+    (org-fractional-cto--goto-section file heading)))
 
 (defun org-fractional-cto--file-contents (path)
   "Return the contents of PATH as a string, for use as a capture template.
