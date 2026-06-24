@@ -185,6 +185,31 @@
         (should (file-exists-p (org-fractional-cto-person-file "jun_tanaka")))
         (kill-buffer)))))
 
+(ert-deftest ofc-ai-commit-skips-unknown-section ()
+  "Items with a bogus :OFC_AI_SECTION: are not filed; valid items still are."
+  (ofc-ai-test
+    (let* ((hub (ofc-ai-test--make-hub "acme"))
+           (items '((:type action :title "Valid action")
+                    (:type risk :title "Valid risk" :fields (:impact "High"))))
+           (buf (org-fractional-cto-ai--review-buffer "STANDUP 2026-06-24"
+                                                      "src-1" hub items)))
+      (unwind-protect
+          (with-current-buffer buf
+            ;; Corrupt the first entry's section to a bogus value.
+            (goto-char (point-min))
+            (re-search-forward "^\\*\\* " nil t)
+            (beginning-of-line)
+            (org-entry-put (point) "OFC_AI_SECTION" "Bogus")
+            (org-fractional-cto-ai-commit))
+        (when (buffer-live-p buf) (kill-buffer buf)))
+      (with-current-buffer (find-file-noselect hub)
+        (let ((text (buffer-string)))
+          ;; Bogus section must NOT be created.
+          (should-not (string-match-p "^\\*\\* Bogus" text))
+          ;; The valid risk item must be filed.
+          (should (string-match-p "\\[RISK\\] Valid risk" text)))
+        (kill-buffer)))))
+
 (ert-deftest ofc-ai-discard-kills-buffer-without-filing ()
   (ofc-ai-test
     (let* ((hub (ofc-ai-test--make-hub "acme"))
@@ -212,12 +237,14 @@
 
 (ert-deftest ofc-ai-on-response-no-items-pops-nothing ()
   (ofc-ai-test
+    (when (get-buffer "*ofc-ai-review*") (kill-buffer "*ofc-ai-review*"))
     (let ((hub (ofc-ai-test--make-hub "acme")))
       (org-fractional-cto-ai--on-response "[]" hub "src-1" "STANDUP")
       (should-not (get-buffer "*ofc-ai-review*")))))
 
 (ert-deftest ofc-ai-on-response-garbage-does-not-throw ()
   (ofc-ai-test
+    (when (get-buffer "*ofc-ai-review*") (kill-buffer "*ofc-ai-review*"))
     (let ((hub (ofc-ai-test--make-hub "acme")))
       ;; Returns normally despite unparseable input.
       (should (progn (org-fractional-cto-ai--on-response "nonsense" hub "s" "N") t))

@@ -368,6 +368,10 @@ Once the backend is wired:
 The buffer stays open until you act — normal editing and other captures
 continue unimpeded.
 
+Note: re-finalizing or re-running extraction on the same note will produce
+duplicate candidates — duplicate detection is not performed in v1, so review
+and discard any items you have already filed.
+
 ** Filed items: provenance and tags
 
 Each accepted entry is placed under the appropriate hub section (e.g. =Actions=,

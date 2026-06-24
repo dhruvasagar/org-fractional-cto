@@ -295,8 +295,11 @@ Demotes the level-2 review heading back to a level-1 entry."
 
 (defun org-fractional-cto-ai--collect-entries ()
   "Return (SECTION OWNER TEXT) for each level-2 entry in the review buffer.
-TEXT has the OFC_AI_* properties removed and the heading promoted to level 1."
-  (let (entries)
+TEXT has the OFC_AI_* properties removed and the heading promoted to level 1.
+Entries with an unknown section (not in `org-fractional-cto-sections') are
+skipped with a message."
+  (let ((valid-sections (mapcar #'car org-fractional-cto-sections))
+        entries)
     (save-excursion
       (goto-char (point-min))
       (while (re-search-forward "^\\*\\* " nil t)
@@ -306,10 +309,15 @@ TEXT has the OFC_AI_* properties removed and the heading promoted to level 1."
                (section (org-entry-get (point) "OFC_AI_SECTION"))
                (owner (org-entry-get (point) "OFC_AI_OWNER"))
                (raw (buffer-substring-no-properties beg end)))
-          (when section
+          (cond
+           ((null section))           ; nil section: silently skip
+           ((not (member section valid-sections))
+            (message "org-fractional-cto: skipping item with unknown section %S"
+                     section))
+           (t
             (push (list section owner
                         (org-fractional-cto-ai--strip-properties raw))
-                  entries))
+                  entries)))
           (goto-char end))))
     (nreverse entries)))
 
@@ -322,6 +330,7 @@ become a `Source:' back-link; `org-fractional-cto-ai-provenance-tag' is added."
   (org-end-of-subtree t t)
   (unless (bolp) (insert "\n"))
   (let ((start (point)))
+    ; strip-properties promoted the entry to level 1; section headings are level 2, so demote by 2 to nest the entry as a level-3 child.
     (insert (org-fractional-cto-ai--demote (string-trim-right text) 2) "\n")
     (goto-char start)
     (org-back-to-heading t)
