@@ -14,7 +14,7 @@ discover the system, make and record decisions, run a delivery cadence,
 delegate and track work, manage people, and grow the account — and gives you
 the Org scaffolding to do all of it without leaving Emacs.
 
-Three moving parts, one workflow:
+Four moving parts, one workflow:
 
 1. *Onboarding* — =org-fractional-cto-new-client= scaffolds a complete
    per-client workspace in seconds (operational hub, a =templates/= folder of
@@ -27,6 +27,11 @@ Three moving parts, one workflow:
 3. *Dashboard* — a global agenda view (~C-c a E~) surfacing delegated work,
    blockers, open actions, commitments, and active risks across all clients.
    When an active client is set, it opens pre-focused on that client.
+4. *AI note extraction (optional)* — when you finalize a meeting, standup, or
+   discovery note, a pluggable language-model backend reads the prose and drafts
+   the *Actions*, *Risks*, *Blockers*, and *Decisions* buried in it. You review
+   the candidates in an Org buffer and file the keepers into the hub with one
+   key. Off until you wire a backend; see [[*AI note extraction (optional)][AI note extraction]].
 
 Every engagement also carries a *stage* — from =LEAD= (a fresh pre-sales
 prospect) through =QUALIFIED= and =ACTIVE= to =LOST= / =DORMANT= — and a
@@ -54,6 +59,11 @@ every capture and the dashboard follow it. Switch clients with one command.
   the bundled template — so edit one client's copy to tailor a capture for that
   engagement, or point =org-fractional-cto-template-directory= at your own folder
   to change the defaults for every client.
+- *AI extraction is review-then-file, never silent.* The model only ever
+  proposes; nothing reaches the hub without your edit and confirmation. It is
+  provider-agnostic (any CLI, HTTP client, or Emacs LLM library satisfies the
+  one-function backend contract) and adds no hard dependency — the package ships
+  with no backend and the feature stays dormant until you set one.
 
 * Installation
 
