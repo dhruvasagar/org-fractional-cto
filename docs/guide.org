@@ -586,6 +586,102 @@ The loop is: Org tells you /what/ and /why/ → the skill helps you /do/ it → 
 capture the /outcome/ back into Org. See the README's
 "Working with AI session skills" section for the per-capture skill mapping.
 
+* Step 12b — Let AI draft your action items (optional)
+
+When you finalize a standup, meeting, or retrospective capture,
+=org-fractional-cto= can pass the note's prose to a language-model backend and
+surface candidate *Actions*, *Risks*, *Blockers*, and *Decisions* for your
+review before anything is filed. The model proposes; you decide — nothing lands
+in your hub without a deliberate ~C-c C-c~.
+
+The feature is *off by default*. Until you set
+=org-fractional-cto-ai-request-function=, captures are completely unaffected.
+
+** 1. Wire up a backend
+
+Set =org-fractional-cto-ai-request-function= to any function with the signature
+=(PROMPT CALLBACK)=: your function calls CALLBACK with the model's raw response
+string (or =nil= on failure). The call may be synchronous or async; the engine
+always defers it so finalize never blocks and a backend failure never aborts
+the capture.
+
+The README's "AI note extraction" section has a ready-to-paste backend wired to
+the [[https://llm.datasette.io/][llm]] CLI (any CLI reading a prompt on stdin works equally well):
+
+#+begin_src emacs-lisp
+(setq org-fractional-cto-ai-request-function
+      (lambda (prompt callback)
+        ;; … see README for the full make-process implementation …
+        ))
+#+end_src
+
+Any HTTP client or Emacs-native LLM library works just as well — the package
+only cares about the =(PROMPT CALLBACK)= contract.
+
+** 2. Capture and finalize a standup
+
+Press ~C-c c e s~ to open a standup capture. Fill in yesterday, today, and any
+blockers, then press ~C-c C-c~ to finalize.
+
+The capture files immediately — you are back at your buffer in the usual time.
+The model call runs in the background; you do not wait for it.
+
+** 3. Curate the review buffer
+
+When the model responds, the =*ofc-ai-review*= buffer pops up. It shows each
+extracted item as an Org heading in the same shape it will take in the hub —
+for example:
+
+: ** TODO Follow up with design team on mockup sign-off
+: ** [RISK] Delayed API access may push the sprint boundary       :RISK:
+: ** TODO [#A] BLOCKER: No staging environment blocks integration :BLOCKER:
+
+Each heading also carries an =:OFC_AI_SECTION:= property naming the hub section
+it will be filed under (and an =:OFC_AI_OWNER:= property when the model named an
+owner). Edit freely: fix wording, change priority, adjust the owner. Delete any
+subtree you do not want to keep. Normal Org editing commands all work; the
+buffer stays open until you act on it, and other captures continue unimpeded.
+The =:AI:= tag and =Source:= back-link are added when you file, not here.
+
+** 4. File the keepers
+
+- ~C-c C-c~ — files every surviving entry into the hub under the appropriate
+  section (=Actions=, =Risks=, =Blockers=, or =Decisions=).
+- ~C-c C-k~ — discards all candidates without filing anything.
+
+Each filed item receives two provenance annotations automatically:
+
+- =Source: [[id:…][<note-title>]]= — an Org link back to the standup note.
+- The =:AI:= tag (configurable via =org-fractional-cto-ai-provenance-tag=; set
+  it to =nil= to suppress tagging entirely).
+
+An action filed this way lands under =** Actions= just like a hand-captured
+=ew= item, with the same =TODO= keyword and client tag — it will appear on your
+dashboard the next time you press ~C-c a E~ or refresh with =r=.
+
+** Which captures are flagged by default
+
+Seven templates carry =:ofc-ai-extract t= out of the box:
+
+| Key   | Capture           |
+|-------+-------------------|
+| =es=  | Standup           |
+| =ed=  | Discovery session |
+| =em=  | Client meeting    |
+| =ei=  | Internal sync     |
+| =eW=  | Weekly review     |
+| =eq=  | QBR               |
+| =eR=  | Retrospective     |
+
+All other captures are unaffected. To opt in a custom template, add
+=:ofc-ai-extract t= to its =org-capture-templates= plist entry.
+
+** A note on duplicates
+
+Re-finalizing the same note re-runs extraction and produces duplicate
+candidates. Duplicate detection is not performed in v1 — review the buffer
+carefully and discard any items you have already filed.
+
 * Step 13 — Settle into the rhythm
 
 You now know every moving part. The operating cadence ties them together:
