@@ -55,6 +55,7 @@ Guide
 * Step 10 — The management commands::
 * Step 11 — Make it yours::
 * Step 12 — Wire in AI session skills (optional)::
+* Step 12b — Let AI draft your action items (optional)::
 * Step 13 — Settle into the rhythm::
 * Troubleshooting::
 * People & Stakeholders::
@@ -91,6 +92,15 @@ Step 11 — Make it yours
 * Override a template for one client::
 * Override every template globally::
 * Reorder or extend the dashboard::
+
+Step 12b — Let AI draft your action items (optional)
+
+* 1. Wire up a backend: 1 Wire up a backend. 
+* 2. Capture and finalize a standup: 2 Capture and finalize a standup. 
+* 3. Curate the review buffer: 3 Curate the review buffer. 
+* 4. File the keepers: 4 File the keepers. 
+* Which captures are flagged by default::
+* A note on duplicates::
 
 People & Stakeholders
 
@@ -144,6 +154,7 @@ Phase 3 — Operating Rhythm
 
 * Purpose: Purpose (3). 
 * Ceremonies::
+* AI-assisted capture (optional)::
 * Capture templates: Capture templates (3). 
 * Managing client expectations::
 
@@ -176,6 +187,7 @@ Reference
 * Legend::
 * File Organization::
 * Capture Templates — Complete Reference::
+* AI Note Extraction::
 * Customisation::
 * Operating Rhythms — Day by Day::
 * The Hat Model in Practice::
@@ -235,7 +247,7 @@ Action Tracking & Delegation Templates
 * @samp{eb} — Blocker / Escalation::
 * Acting on an item that already exists (@samp{delegate-at-point}, @samp{block-at-point}): Acting on an item that already exists (@samp{delegate-at-point} @samp{block-at-point}). 
 * @samp{eW} — Weekly Review::
-* @samp{eP} — Person / Team Member Note::
+* @samp{eP} — Person Note (global node)::
 
 Risk & Delivery Templates
 
@@ -254,6 +266,15 @@ Technical Templates
 * @samp{et} — Technical Debt Item::
 * @samp{ex} — Security Finding::
 * @samp{en} — Innovation Pipeline Idea::
+
+AI Note Extraction
+
+* Flow::
+* The review buffer::
+* Filed items::
+* The backend contract::
+* The item taxonomy::
+* Flagged captures::
 
 Operating Rhythms — Day by Day
 
@@ -338,6 +359,7 @@ should @strong{see} so you can confirm it worked before moving on.
 * Step 10 — The management commands::
 * Step 11 — Make it yours::
 * Step 12 — Wire in AI session skills (optional)::
+* Step 12b — Let AI draft your action items (optional)::
 * Step 13 — Settle into the rhythm::
 * Troubleshooting::
 * People & Stakeholders::
@@ -734,7 +756,7 @@ into, and when to reach for it. (Field-by-field detail is in @uref{reference.org
 @tab Your Friday delegation + team pulse pass
 @item @samp{eP}
 @tab Person / team note
-@tab People
+@tab Person node
 @tab Capacity, a concern, or a win to record
 @end multitable
 
@@ -1227,6 +1249,138 @@ The loop is: Org tells you @emph{what} and @emph{why} → the skill helps you @e
 capture the @emph{outcome} back into Org. See the README's
 "Working with AI session skills" section for the per-capture skill mapping.
 
+@node Step 12b — Let AI draft your action items (optional)
+@section Step 12b — Let AI draft your action items (optional)
+
+When you finalize a standup, meeting, or retrospective capture,
+@samp{org-fractional-cto} can pass the note's prose to a language-model backend and
+surface candidate @strong{Actions}, @strong{Risks}, @strong{Blockers}, and @strong{Decisions} for your
+review before anything is filed. The model proposes; you decide — nothing lands
+in your hub without a deliberate @code{C-c C-c}.
+
+The feature is @strong{off by default}. Until you set
+@samp{org-fractional-cto-ai-request-function}, captures are completely unaffected.
+
+@menu
+* 1. Wire up a backend: 1 Wire up a backend. 
+* 2. Capture and finalize a standup: 2 Capture and finalize a standup. 
+* 3. Curate the review buffer: 3 Curate the review buffer. 
+* 4. File the keepers: 4 File the keepers. 
+* Which captures are flagged by default::
+* A note on duplicates::
+@end menu
+
+@node 1 Wire up a backend
+@subsection 1. Wire up a backend
+
+Set @samp{org-fractional-cto-ai-request-function} to any function with the signature
+@samp{(PROMPT CALLBACK)}: your function calls CALLBACK with the model's raw response
+string (or @samp{nil} on failure). The call may be synchronous or async; the engine
+always defers it so finalize never blocks and a backend failure never aborts
+the capture.
+
+The README's "AI note extraction" section has a ready-to-paste backend wired to
+the @uref{https://llm.datasette.io/, llm} CLI (any CLI reading a prompt on stdin works equally well):
+
+@lisp
+(setq org-fractional-cto-ai-request-function
+      (lambda (prompt callback)
+        ;; … see README for the full make-process implementation …
+        ))
+@end lisp
+
+Any HTTP client or Emacs-native LLM library works just as well — the package
+only cares about the @samp{(PROMPT CALLBACK)} contract.
+
+@node 2 Capture and finalize a standup
+@subsection 2. Capture and finalize a standup
+
+Press @code{C-c c e s} to open a standup capture. Fill in yesterday, today, and any
+blockers, then press @code{C-c C-c} to finalize.
+
+The capture files immediately — you are back at your buffer in the usual time.
+The model call runs in the background; you do not wait for it.
+
+@node 3 Curate the review buffer
+@subsection 3. Curate the review buffer
+
+When the model responds, the @samp{*ofc-ai-review*} buffer pops up. It shows each
+extracted item as an Org heading in the same shape it will take in the hub —
+for example:
+
+@example
+** TODO Follow up with design team on mockup sign-off
+** [RISK] Delayed API access may push the sprint boundary       :RISK:
+** TODO [#A] BLOCKER: No staging environment blocks integration :BLOCKER:
+@end example
+
+
+Each heading also carries an @samp{:OFC_AI_SECTION:} property naming the hub section
+it will be filed under (and an @samp{:OFC_AI_OWNER:} property when the model named an
+owner). Edit freely: fix wording, change priority, adjust the owner. Delete any
+subtree you do not want to keep. Normal Org editing commands all work; the
+buffer stays open until you act on it, and other captures continue unimpeded.
+The @samp{:AI:} tag and @samp{Source:} back-link are added when you file, not here.
+
+@node 4 File the keepers
+@subsection 4. File the keepers
+
+@itemize
+@item
+@code{C-c C-c} — files every surviving entry into the hub under the appropriate
+section (@samp{Actions}, @samp{Risks}, @samp{Blockers}, or @samp{Decisions}).
+@item
+@code{C-c C-k} — discards all candidates without filing anything.
+@end itemize
+
+Each filed item receives two provenance annotations automatically:
+
+@itemize
+@item
+@samp{Source: [[id:…][<note-title>]]} — an Org link back to the standup note.
+@item
+The @samp{:AI:} tag (configurable via @samp{org-fractional-cto-ai-provenance-tag}; set
+it to @samp{nil} to suppress tagging entirely).
+@end itemize
+
+An action filed this way lands under @samp{** Actions} just like a hand-captured
+@samp{ew} item, with the same @samp{TODO} keyword and client tag — it will appear on your
+dashboard the next time you press @code{C-c a E} or refresh with @samp{r}.
+
+@node Which captures are flagged by default
+@subsection Which captures are flagged by default
+
+Seven templates carry @samp{:ofc-ai-extract t} out of the box:
+
+@multitable {aaaa} {aaaaaaaaaaaaaaaaa}
+@headitem Key
+@tab Capture
+@item @samp{es}
+@tab Standup
+@item @samp{ed}
+@tab Discovery session
+@item @samp{em}
+@tab Client meeting
+@item @samp{ei}
+@tab Internal sync
+@item @samp{eW}
+@tab Weekly review
+@item @samp{eq}
+@tab QBR
+@item @samp{eR}
+@tab Retrospective
+@end multitable
+
+All other captures are unaffected. To opt in a custom template, add
+@samp{:ofc-ai-extract t} to its @samp{org-capture-templates} plist entry.
+
+@node A note on duplicates
+@subsection A note on duplicates
+
+Re-finalizing the same note re-runs extraction and produces duplicate
+candidates. Duplicate detection is not performed in v1 — review the buffer
+carefully and discard any items you have already filed.
+
 @node Step 13 — Settle into the rhythm
 @section Step 13 — Settle into the rhythm
 
@@ -1589,6 +1743,16 @@ What's the one thing they'll judge this engagement on?
 @samp{C-c c eP} Team member note — one per key internal team member (stream leads, eng leads)
 @end itemize
 
+People named in stakeholder profiles, delegations, and team notes are linked to
+durable, @strong{global person nodes} — one Org file per person under
+@samp{org-fractional-cto-people-directory}, not bare text. Type a name at any
+assignee / owner / attendee / decision-maker prompt: an existing person is
+completed and linked, a new name creates the node on the spot. Stakeholder
+profiles point at the same global node via their @samp{Person (global node):} line, so
+one person can be a stakeholder at several clients while their cross-engagement
+history accumulates in one place. Need a standalone link? @samp{M-x
+org-fractional-cto-insert-person}.
+
 @node Deliverable
 @subsection Deliverable
 
@@ -1792,6 +1956,7 @@ with owners and timelines. Compliance gap analysis with remediation plan.
 @menu
 * Purpose: Purpose (3). 
 * Ceremonies::
+* AI-assisted capture (optional)::
 * Capture templates: Capture templates (3). 
 * Managing client expectations::
 @end menu
@@ -1832,6 +1997,11 @@ Ping directly (don't wait for standup) for anything due within 2 days
 @code{C-c a E} opens the global engagement dashboard (all clients, pre-focused on the
 active client; press @samp{/} to widen) — the "Delegated — awaiting response" block
 is your inbox within it
+@item
+To pull up one person's open work across types, press @samp{/} and type their
+@samp{@@<slug>} tag (e.g. @samp{@@jane_doe}) — delegations, blockers, commitments, risks,
+and security items are tagged with their owner's person tag, so the filter
+gathers everything that person owns in one view
 @item
 Evil users: with point on an agenda line, @samp{, g} delegates and @samp{, b} files a
 blocker without leaving the agenda
@@ -1921,40 +2091,67 @@ Scalability, maintainability, integration fragility, dependency risk, tech debt
 Frame findings as transparency and forward planning, not a problem list
 @end itemize
 
+@node AI-assisted capture (optional)
+@subsection AI-assisted capture (optional)
+
+The rhythm generates a lot of prose — standups, internal syncs, retros, QBRs —
+and buried in it is the work that actually needs tracking. If you wire a
+language-model backend (@samp{org-fractional-cto-ai-request-function}; off until you
+do), finalizing any of the flagged note captures hands the prose to the model,
+which drafts the @strong{Actions}, @strong{Risks}, @strong{Blockers}, and @strong{Decisions} it finds. You
+get them in a review buffer to curate — the model does the mechanical first
+pass, your judgment decides what becomes tracked work, and nothing reaches the
+hub without your @samp{C-c C-c}. The discipline is unchanged; the transcription is
+cheaper. See the User Guide ("Let AI draft your action items") for the
+walkthrough and the Reference for the full contract.
+
 @node Capture templates (3)
 @subsection Capture templates
 
-@multitable {aaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+The ceremony templates marked @samp{AI} below auto-draft items for review when you
+finalize them (when a backend is configured).
+
+@multitable {aaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa} {aa}
 @headitem Key
 @tab Template
 @tab Ceremony
+@tab AI
 @item @samp{C-c c es}
 @tab Standup notes
 @tab Daily
+@tab AI
 @item @samp{C-c c eg}
 @tab Delegate action (WAITING)
 @tab When delegating any task
+@tab 
 @item @samp{C-c c eb}
 @tab Blocker / escalation
 @tab When a blocker is identified
+@tab 
 @item @samp{C-c c eW}
 @tab Weekly review
 @tab Friday delegation + team review
+@tab AI
 @item @samp{C-c c em}
 @tab Client meeting
 @tab Weekly client sync
+@tab AI
 @item @samp{C-c c ei}
 @tab Internal sync
 @tab Weekly internal sync
+@tab AI
 @item @samp{C-c c eh}
 @tab Client health check
 @tab Monthly
+@tab 
 @item @samp{C-c c eq}
 @tab QBR
 @tab Quarterly
+@tab AI
 @item @samp{C-c c eA}
 @tab Architecture health review
 @tab Quarterly
+@tab 
 @end multitable
 
 @node Managing client expectations
@@ -2158,6 +2355,12 @@ populates each client's @samp{templates/}, so edit a file there to tailor a temp
 for that client. Active client must be set (@samp{M-x org-fractional-cto-set-active-client})
 or you will be prompted on each capture.
 
+Seven note-style templates are @strong{AI-flagged} — @samp{es} (standup), @samp{ed} (discovery),
+@samp{em} (client meeting), @samp{ei} (internal sync), @samp{eW} (weekly review), @samp{eq} (QBR),
+and @samp{eR} (retrospective). With a backend configured, finalizing any of them
+drafts Actions/Risks/Blockers/Decisions for your review (see the Reference's "AI
+Note Extraction" section).
+
 @menu
 * Relationship & Communication::
 * Action Tracking & Delegation::
@@ -2329,6 +2532,7 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 * Legend::
 * File Organization::
 * Capture Templates — Complete Reference::
+* AI Note Extraction::
 * Customisation::
 * Operating Rhythms — Day by Day::
 * The Hat Model in Practice::
@@ -2376,7 +2580,7 @@ on top of it: when to use each capture, the operating rhythm, and the hats.
 @tab <client>.org → Weekly Reviews
 @item Note on a team member
 @tab @samp{C-c c eP}
-@tab <client>.org → People
+@tab <person>.org → Notes / History
 @item Capture a standup
 @tab @samp{C-c c es}
 @tab <client>.org → Standup Notes
@@ -2613,7 +2817,7 @@ type tags.
 @item @samp{REVIEW}
 @tab Weekly Reviews (@samp{eW})
 @item @samp{PEOPLE}
-@tab People (@samp{eP})
+@tab People — roster (link via @samp{insert-person})
 @item @samp{MEETING}
 @tab Meeting Notes (@samp{em})
 @item @samp{STANDUP}
@@ -2656,6 +2860,8 @@ type tags.
 @tab Research (@samp{eo})
 @item @samp{QUALIFICATION}
 @tab Qualification (@samp{eF})
+@item @samp{AI}
+@tab Item drafted by AI note extraction (any section)
 @end multitable
 
 Some captures file under a typed section but stamp the item with their own
@@ -2669,6 +2875,11 @@ and @samp{SECURITY} — also carry the assignee's @samp{@@<person-slug>} tag on 
 Press @samp{/} in the dashboard or any agenda view and type the tag (e.g. @samp{@@jane_doe})
 to filter to that person's open work.  No new command is needed; this is plain
 Org tag filtering.
+
+@samp{AI} is a @strong{provenance} tag, not a section tag: it is added to any item filed by
+AI note extraction, on top of that item's own type tag.  Filter with @samp{C-c a m AI}
+to audit everything the model drafted.  See @ref{AI Note Extraction}.  Configure the tag with
+@samp{org-fractional-cto-ai-provenance-tag} (set it to @samp{nil} to add no tag).
 
 @node Key bindings
 @subsection Key bindings
@@ -2963,6 +3174,7 @@ Passed prospects move to @samp{QUALIFIED}; passes are marked @samp{LOST}.
 @emph{Structure:} Per-team sections (Shipped / Next / Blockers) + Actions/Escalations.
 @emph{After capturing:} Scan for any blocker that needs a risk entry (@samp{er}) or
 commitment capture (@samp{ec}). Refile to client's discovery or ops folder.
+@emph{AI-flagged:} Finalizing drafts Actions/Risks/Blockers/Decisions for review (see @ref{AI Note Extraction}).
 
 @node @samp{em} — Client Meeting
 @subsubsection @samp{em} — Client Meeting
@@ -2974,6 +3186,7 @@ commitment capture (@samp{ec}). Refile to client's discovery or ops folder.
 @emph{After capturing:} Immediately capture any commitments (@samp{ec}). Send written
 summary to client within 2 hours. Never let a meeting end without a follow-up
 summary — this is how trust is built.
+@emph{AI-flagged:} Finalizing drafts Actions/Risks/Blockers/Decisions for review (see @ref{AI Note Extraction}).
 
 @node @samp{ei} — Internal Sync
 @subsubsection @samp{ei} — Internal Sync
@@ -2984,6 +3197,7 @@ summary — this is how trust is built.
 @emph{Structure:} Commitments vs. reality gap | Blockers to escalate | Risk updates |
 Client comms review | Actions.
 @emph{Rule:} Nothing surfaces to the client that hasn't passed through this sync first.
+@emph{AI-flagged:} Finalizing drafts Actions/Risks/Blockers/Decisions for review (see @ref{AI Note Extraction}).
 
 @node @samp{ep} — Stakeholder Profile
 @subsubsection @samp{ep} — Stakeholder Profile
@@ -2991,10 +3205,13 @@ Client comms review | Actions.
 @emph{Use:} First time you meet or learn about a significant client contact. One profile
 per person. Update it as the relationship develops.
 @emph{Clock:} Yes.
-@emph{Fields:} Full name, role, organisation.
-@emph{Key sections:} Their personal definition of success (not the project's) | Key
-priorities & concerns | Communication preferences | Relationship status |
-How to engage them effectively.
+@emph{Fields:} Full name, role, organisation, and @samp{Person (global node):} — link to the
+person's durable node (@samp{M-x org-fractional-cto-insert-person}) so the engagement
+profile and the cross-client record stay connected.
+@emph{Key sections:} Role in decisions (Decision Maker / Influencer / Technical
+Evaluator / Champion / Blocker) | Their personal definition of success (not the
+project's) | Key priorities & concerns | Communication preferences |
+Relationship status | How to engage them effectively.
 @emph{Why it matters:} Stakeholder maps decay fast. Documenting what makes each person
 tick lets you tailor every communication.
 
@@ -3045,6 +3262,7 @@ part of the ceremony — don't skip it.
 @emph{Strategic recommendation:} Always include one recommendation they didn't ask for.
 Frame it as business opportunity first, technology second. This is what separates
 a vendor from a strategic partner.
+@emph{AI-flagged:} Finalizing drafts Actions/Risks/Blockers/Decisions for review (see @ref{AI Note Extraction}).
 
 @node Action Tracking & Delegation Templates
 @subsection Action Tracking & Delegation Templates
@@ -3055,7 +3273,7 @@ a vendor from a strategic partner.
 * @samp{eb} — Blocker / Escalation::
 * Acting on an item that already exists (@samp{delegate-at-point}, @samp{block-at-point}): Acting on an item that already exists (@samp{delegate-at-point} @samp{block-at-point}). 
 * @samp{eW} — Weekly Review::
-* @samp{eP} — Person / Team Member Note::
+* @samp{eP} — Person Note (global node)::
 @end menu
 
 @node @samp{ew} — Action Item (quick TODO)
@@ -3125,18 +3343,23 @@ table | Blockers to escalate | Key decisions | Team pulse | Top 3 next week | Co
 Anyone who's gone quiet gets a direct ping — don't wait for the next standup.
 @emph{After capturing:} Each "change/action needed" becomes a TODO@. Use @samp{C-c a E} delegated
 block as the source of truth while filling the inbox table.
+@emph{AI-flagged:} Finalizing drafts Actions/Risks/Blockers/Decisions for review (see @ref{AI Note Extraction}).
 
-@node @samp{eP} — Person / Team Member Note
-@subsubsection @samp{eP} — Person / Team Member Note
+@node @samp{eP} — Person Note (global node)
+@subsubsection @samp{eP} — Person Note (global node)
 
-@emph{Use:} Capturing something about a team member — capacity, a concern, a win, a
-development need. Builds the People section over time.
-@emph{Fields:} Name, role/stream, @samp{STREAM} property.
+@emph{Use:} Capturing something about a person — capacity, a concern, a win, a
+development need. Picks (or creates) the person's @strong{global node} and files a
+timestamped note under its @samp{Notes / History}, so the record follows the person
+across engagements instead of living in one client hub.
+@emph{Fields:} Person (completed by name; a new name creates the node), then a
+free-form timestamped note.
 @emph{Why it matters:} As a fractional CTO you're managing people you didn't hire and
 don't see daily. Tracking capacity signals (who's overloaded, who's a single point
 of failure) is how you spot delivery risk before it becomes a missed deadline.
-@emph{Maintain:} The People section also holds the Team Roster and Stream → Lead map —
-keep those current as the team changes.
+@emph{Maintain:} The client hub's People section is a @strong{roster}: link each person in the
+engagement with @samp{M-x org-fractional-cto-insert-person} (or @samp{C-c C-l}), and keep the
+Team Roster and Stream → Lead map there current as the team changes.
 
 @node Risk & Delivery Templates
 @subsection Risk & Delivery Templates
@@ -3195,6 +3418,7 @@ well | What we'll change (owned, time-boxed) | Team health signals | Action item
 @emph{After capturing:} Each "what we'll change" row becomes a TODO in the Actions section.
 @emph{Discipline:} Focus on the system, not the person. "What process let this happen?"
 not "who dropped this?" The retro is for improving how the team works, not assigning blame.
+@emph{AI-flagged:} Finalizing drafts Actions/Risks/Blockers/Decisions for review (see @ref{AI Note Extraction}).
 
 @node Technical Templates
 @subsection Technical Templates
@@ -3223,6 +3447,7 @@ Follow-up actions.
 @emph{Before the session:} Run @samp{/grill-me} (mattpocock/skills) to surface your assumptions.
 @emph{After the session:} Refile immediately. Update cross-cutting sections of the master
 discovery doc. Run a synthesis pass after every 2–3 sessions.
+@emph{AI-flagged:} Finalizing drafts Actions/Risks/Blockers/Decisions for review (see @ref{AI Note Extraction}).
 
 @node @samp{ek} — Tech Spike
 @subsubsection @samp{ek} — Tech Spike
@@ -3313,6 +3538,184 @@ why this client | Rough effort | Next step.
 @emph{Pipeline review:} Monthly — select one idea to develop into a brief. Present the
 best one at each QBR as the "Strategic Recommendation."
 
+@node AI Note Extraction
+@section AI Note Extraction
+
+When a @strong{flagged} capture is finalized, @samp{org-fractional-cto} sends the note's
+prose to a pluggable language-model backend, which proposes structured items —
+@strong{Actions}, @strong{Risks}, @strong{Blockers}, and @strong{Decisions} — for review before any are
+filed. The model only proposes; nothing reaches the hub without your
+confirmation. The feature is @strong{off} until @samp{org-fractional-cto-ai-request-function}
+is set; until then captures behave exactly as before.
+
+@menu
+* Flow::
+* The review buffer::
+* Filed items::
+* The backend contract::
+* The item taxonomy::
+* Flagged captures::
+@end menu
+
+@node Flow
+@subsection Flow
+
+@enumerate
+@item
+Finalize a flagged capture (@samp{C-c C-c}). The note text, its client, and an
+@samp{org-id} back-reference are captured, and the model call is @strong{deferred} — the
+capture finalizes immediately and never blocks on the network. A backend
+failure is logged and never aborts the capture.
+@item
+When the model responds, the @samp{*ofc-ai-review*} buffer pops up with one Org
+entry per candidate.
+@item
+You curate the buffer, then file the survivors or discard them all.
+@end enumerate
+
+@node The review buffer
+@subsection The review buffer
+
+@samp{*ofc-ai-review*} is an ordinary Org buffer (major mode
+@samp{org-fractional-cto-ai-review-mode}, derived from @samp{org-mode}). Each candidate is
+a heading rendered in its final hub shape, carrying two properties:
+
+@multitable {aaaaaaaaaaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Property
+@tab Meaning
+@item @samp{:OFC_AI_SECTION:}
+@tab Hub section the item will be filed under
+@item @samp{:OFC_AI_OWNER:}
+@tab Owner name the model identified (present only if any)
+@end multitable
+
+Edit any field freely; @strong{delete a subtree to reject that item}. Two keys act on
+the buffer:
+
+@multitable {aaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+@headitem Key
+@tab Action
+@item @code{C-c C-c}
+@tab File every surviving entry into the hub, then close the buffer
+@item @code{C-c C-k}
+@tab Discard all candidates without filing
+@end multitable
+
+If you edit an entry's @samp{:OFC_AI_SECTION:} to a name that is not a real hub
+section (see @ref{File Organization, , the section list}), that item is skipped with a message rather than
+filed — a typo can never create a junk section.
+
+@node Filed items
+@subsection Filed items
+
+Each accepted item is placed under its hub section at the correct heading depth
+and annotated with:
+
+@itemize
+@item
+@samp{Source: [[id:…][<note-title>]]} — an Org link back to the originating note.
+@item
+The provenance tag @samp{org-fractional-cto-ai-provenance-tag} (@samp{:AI:} by default;
+@samp{nil} disables tagging).
+@end itemize
+
+If the model named an owner, it is resolved to a real person node (an
+@samp{[[id:…][Name]]} link) @strong{at file time only} — candidates you reject never create a
+person node.
+
+Re-finalizing a note re-runs extraction and yields duplicate candidates;
+duplicate detection is not performed in v1, so discard items you have already
+filed.
+
+@node The backend contract
+@subsection The backend contract
+
+Set @samp{org-fractional-cto-ai-request-function} to a function @samp{(PROMPT CALLBACK)}
+that arranges for @samp{CALLBACK} to be called with the model's raw response string,
+or @samp{nil} on failure. It may be synchronous or asynchronous — the engine defers
+the call regardless. Any CLI, HTTP client, or Emacs-native LLM library can serve
+as the backend; the package only depends on this one-function contract and ships
+no backend of its own. The README's "AI note extraction" section has a
+ready-to-paste example over the @samp{llm} CLI@.
+
+@node The item taxonomy
+@subsection The item taxonomy
+
+@samp{org-fractional-cto-ai-item-types} is an alist of @samp{(TYPE . PLIST)} entries — the
+single point at which the feature is extended. The defaults:
+
+@multitable {aaaaaaaaaa} {aaaaaaaaaaaaaaaaaaaaaa} {aaaaaaaaaa}
+@headitem Type
+@tab @samp{:section}
+@tab @samp{:tag}
+@item @samp{action}
+@tab Actions
+@tab (none)
+@item @samp{risk}
+@tab Risks
+@tab @samp{RISK}
+@item @samp{blocker}
+@tab Blockers
+@tab @samp{BLOCKER}
+@item @samp{decision}
+@tab Architecture Decisions
+@tab @samp{DECISION}
+@end multitable
+
+Each entry's @samp{PLIST} holds:
+@itemize
+@item
+@samp{:section} — destination hub heading; must be a heading in
+@samp{org-fractional-cto-sections}.
+@item
+@samp{:tag} — per-item Org tag (or @samp{nil}), mirroring the bundled capture template.
+@item
+@samp{:desc} — a short description fed to the model to guide classification.
+@item
+@samp{:render} — a function taking a normalized item plist and returning the Org
+entry text. The plist has keys @samp{:type :title :owner :deadline :priority :body
+  :fields}.
+@end itemize
+
+Append a row to add a type — no other code changes are needed:
+
+@lisp
+(add-to-list 'org-fractional-cto-ai-item-types
+             '(commitment :section "Commitments" :tag "COMMITMENT"
+               :desc "A commitment or promise made by either party."
+               :render my/ofc-ai-render-commitment)
+             t)  ; append
+@end lisp
+
+@node Flagged captures
+@subsection Flagged captures
+
+Seven templates carry @samp{:ofc-ai-extract t} and trigger extraction on finalize:
+
+@multitable {aaaa} {aaaaaaaaaaaaaaaaa}
+@headitem Key
+@tab Capture
+@item @samp{es}
+@tab Standup
+@item @samp{ed}
+@tab Discovery session
+@item @samp{em}
+@tab Client meeting
+@item @samp{ei}
+@tab Internal sync
+@item @samp{eW}
+@tab Weekly review
+@item @samp{eq}
+@tab QBR
+@item @samp{eR}
+@tab Retrospective
+@end multitable
+
+All other captures are unaffected. To flag another, add @samp{:ofc-ai-extract t} to
+its @samp{org-capture-templates} entry — the flag is read from the Lisp template
+entry, not from the template @samp{.org} file, so per-client template overrides still
+apply to rendering.
+
 @node Customisation
 @section Customisation
 
@@ -3375,6 +3778,15 @@ RET org-fractional-cto RET}.
 @item @samp{org-fractional-cto-doc-directory}
 @tab @samp{<package-dir>/doc}
 @tab Directory holding the bundled documentation sources
+@item @samp{org-fractional-cto-ai-request-function}
+@tab @samp{nil}
+@tab AI backend, signature @samp{(PROMPT CALLBACK)}; @samp{nil} disables AI note extraction entirely
+@item @samp{org-fractional-cto-ai-item-types}
+@tab 4 types (action / risk / blocker / decision)
+@tab Taxonomy of extractable item types; append a row to extend (see AI Note Extraction)
+@item @samp{org-fractional-cto-ai-provenance-tag}
+@tab @samp{"AI"}
+@tab Tag added to items filed by AI extraction; @samp{nil} adds no tag
 @end multitable
 
 @node Operating Rhythms — Day by Day
