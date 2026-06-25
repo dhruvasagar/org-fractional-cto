@@ -340,7 +340,62 @@ Set =org-fractional-cto-ai-request-function= to any function with the signature
 string (or nil on failure).  The implementation may be synchronous or
 asynchronous; the engine always defers the call so finalize never blocks.
 
-A minimal backend using the [[https://llm.datasette.io/][llm]] CLI (any CLI that reads a prompt on stdin works):
+The engine builds the prompt and parses the reply, so a backend only moves a
+string to a model and back.  You do *not* need to post-process the output: the
+parser already tolerates a Markdown code fence and an optional ={"items": […]}=
+wrapper around the model's JSON.  Three ready-to-paste backends for the most
+common setups follow; pick one.
+
+*** Claude Code CLI
+
+If you already use [[https://docs.claude.com/en/docs/claude-code][Claude Code]], its headless =print= mode (=claude -p=) is a
+one-shot string-in/string-out call that reuses your existing CLI auth.  No API
+key wiring, no extra dependency.
+
+#+begin_src emacs-lisp
+(setq org-fractional-cto-ai-request-function
+      (lambda (prompt callback)
+        (let ((buf (generate-new-buffer " *ofc-ai-claude*")))
+          (make-process
+           :name "ofc-ai-claude" :buffer buf :connection-type 'pipe :noquery t
+           ;; -p = headless; text = raw model reply; no tools = fast, no side effects
+           :command '("claude" "-p" "--output-format" "text" "--allowedTools" "")
+           :sentinel
+           (lambda (proc _e)
+             (when (memq (process-status proc) '(exit signal))
+               (let ((out (with-current-buffer (process-buffer proc)
+                            (buffer-string))))
+                 (kill-buffer (process-buffer proc))
+                 (funcall callback (and (= (process-exit-status proc) 0)
+                                        (> (length (string-trim out)) 0)
+                                        out))))))
+          (process-send-string (get-buffer-process buf) prompt)
+          (process-send-eof (get-buffer-process buf)))))
+#+end_src
+
+Add =("--model" "claude-sonnet-4-6")= to the =:command= list to pin a model
+(=claude-haiku-4-5= is cheaper/faster for extraction); omit it to inherit your
+CLI default.  Each finalize is one billed =claude= call using whatever auth
+=~/.claude= holds.  =--allowedTools ""= stops Claude from invoking tools — for
+pure extraction that is faster, cheaper, and side-effect-free.
+
+*** gptel (Emacs-native)
+
+If you use [[https://github.com/karthink/gptel][gptel]], the contract is two lines — it is already async and uses
+whichever model/backend gptel is configured for (Anthropic, OpenAI, Ollama, …).
+
+#+begin_src emacs-lisp
+(setq org-fractional-cto-ai-request-function
+      (lambda (prompt callback)
+        (gptel-request prompt
+          :callback (lambda (response _info)
+                      (funcall callback (and (stringp response) response))))))
+#+end_src
+
+*** Generic CLI (llm, ollama, …)
+
+Any CLI that reads a prompt on stdin and prints the reply works — e.g. the
+[[https://llm.datasette.io/][llm]] tool, or =ollama run <model>= for a fully local, offline backend.
 
 #+begin_src emacs-lisp
 (setq org-fractional-cto-ai-request-function
@@ -348,7 +403,7 @@ A minimal backend using the [[https://llm.datasette.io/][llm]] CLI (any CLI that
         (let ((buf (generate-new-buffer " *ofc-ai*")))
           (make-process
            :name "ofc-ai" :buffer buf
-           :command '("llm" "--no-stream")   ; any CLI reading the prompt on stdin
+           :command '("llm" "--no-stream")   ; or e.g. '("ollama" "run" "llama3.1")
            :connection-type 'pipe
            :sentinel (lambda (proc _e)
                        (when (memq (process-status proc) '(exit signal))
@@ -360,8 +415,8 @@ A minimal backend using the [[https://llm.datasette.io/][llm]] CLI (any CLI that
           (process-send-eof (get-buffer-process buf)))))
 #+end_src
 
-Any CLI, HTTP client, or Emacs-native LLM library can serve as the backend —
-the package only cares about the =(PROMPT CALLBACK)= contract.
+Any HTTP client (=url-retrieve=, =request.el=) can serve too — the package only
+cares about the =(PROMPT CALLBACK)= contract.
 
 ** The review flow
 

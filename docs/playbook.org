@@ -290,8 +290,11 @@ which drafts the *Actions*, *Risks*, *Blockers*, and *Decisions* it finds. You
 get them in a review buffer to curate — the model does the mechanical first
 pass, your judgment decides what becomes tracked work, and nothing reaches the
 hub without your =C-c C-c=. The discipline is unchanged; the transcription is
-cheaper. See the User Guide ("Let AI draft your action items") for the
-walkthrough and the Reference for the full contract.
+cheaper. The backend is your choice — if you already run [[https://docs.claude.com/en/docs/claude-code][Claude Code]], its
+=claude -p= headless mode is a paste-in one-liner that reuses your existing CLI
+auth; [[https://github.com/karthink/gptel][gptel]] and any =llm=/=ollama= CLI work just as well. See the User Guide
+("Let AI draft your action items") for the walkthrough and ready-to-paste
+backends, and the Reference for the full contract.
 
 *** Capture templates
 The ceremony templates marked =AI= below auto-draft items for review when you

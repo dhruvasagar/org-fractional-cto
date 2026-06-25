@@ -605,18 +605,44 @@ string (or =nil= on failure). The call may be synchronous or async; the engine
 always defers it so finalize never blocks and a backend failure never aborts
 the capture.
 
-The README's "AI note extraction" section has a ready-to-paste backend wired to
-the [[https://llm.datasette.io/][llm]] CLI (any CLI reading a prompt on stdin works equally well):
+The fastest path if you already use [[https://docs.claude.com/en/docs/claude-code][Claude Code]] is its headless =print= mode
+(=claude -p=) — a one-shot call that reuses your existing CLI auth, with no API
+key wiring:
 
 #+begin_src emacs-lisp
 (setq org-fractional-cto-ai-request-function
       (lambda (prompt callback)
-        ;; … see README for the full make-process implementation …
-        ))
+        (let ((buf (generate-new-buffer " *ofc-ai-claude*")))
+          (make-process
+           :name "ofc-ai-claude" :buffer buf :connection-type 'pipe :noquery t
+           :command '("claude" "-p" "--output-format" "text" "--allowedTools" "")
+           :sentinel
+           (lambda (proc _e)
+             (when (memq (process-status proc) '(exit signal))
+               (let ((out (with-current-buffer (process-buffer proc)
+                            (buffer-string))))
+                 (kill-buffer (process-buffer proc))
+                 (funcall callback (and (= (process-exit-status proc) 0)
+                                        (> (length (string-trim out)) 0)
+                                        out))))))
+          (process-send-string (get-buffer-process buf) prompt)
+          (process-send-eof (get-buffer-process buf)))))
 #+end_src
 
-Any HTTP client or Emacs-native LLM library works just as well — the package
-only cares about the =(PROMPT CALLBACK)= contract.
+Prefer [[https://github.com/karthink/gptel][gptel]]? The whole backend is two lines:
+
+#+begin_src emacs-lisp
+(setq org-fractional-cto-ai-request-function
+      (lambda (prompt callback)
+        (gptel-request prompt
+          :callback (lambda (response _info)
+                      (funcall callback (and (stringp response) response))))))
+#+end_src
+
+The README's "Wiring a backend" section has these plus a generic CLI option
+(=llm=, =ollama=, …) and the trade-offs between them. Any CLI, HTTP client, or
+Emacs-native LLM library works — the package only cares about the
+=(PROMPT CALLBACK)= contract.
 
 ** 2. Capture and finalize a standup
 
