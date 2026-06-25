@@ -281,18 +281,33 @@ decisions under pressure.
 - Scalability, maintainability, integration fragility, dependency risk, tech debt
 - Frame findings as transparency and forward planning, not a problem list
 
+*** AI-assisted capture (optional)
+The rhythm generates a lot of prose — standups, internal syncs, retros, QBRs —
+and buried in it is the work that actually needs tracking. If you wire a
+language-model backend (=org-fractional-cto-ai-request-function=; off until you
+do), finalizing any of the flagged note captures hands the prose to the model,
+which drafts the *Actions*, *Risks*, *Blockers*, and *Decisions* it finds. You
+get them in a review buffer to curate — the model does the mechanical first
+pass, your judgment decides what becomes tracked work, and nothing reaches the
+hub without your =C-c C-c=. The discipline is unchanged; the transcription is
+cheaper. See the User Guide ("Let AI draft your action items") for the
+walkthrough and the Reference for the full contract.
+
 *** Capture templates
-| Key        | Template                   | Ceremony                        |
-|------------+----------------------------+---------------------------------|
-| =C-c c es= | Standup notes              | Daily                           |
-| =C-c c eg= | Delegate action (WAITING)  | When delegating any task        |
-| =C-c c eb= | Blocker / escalation       | When a blocker is identified    |
-| =C-c c eW= | Weekly review              | Friday delegation + team review |
-| =C-c c em= | Client meeting             | Weekly client sync              |
-| =C-c c ei= | Internal sync              | Weekly internal sync            |
-| =C-c c eh= | Client health check        | Monthly                         |
-| =C-c c eq= | QBR                        | Quarterly                       |
-| =C-c c eA= | Architecture health review | Quarterly                       |
+The ceremony templates marked =AI= below auto-draft items for review when you
+finalize them (when a backend is configured).
+
+| Key        | Template                   | Ceremony                        | AI  |
+|------------+----------------------------+---------------------------------+-----|
+| =C-c c es= | Standup notes              | Daily                           | AI  |
+| =C-c c eg= | Delegate action (WAITING)  | When delegating any task        |     |
+| =C-c c eb= | Blocker / escalation       | When a blocker is identified    |     |
+| =C-c c eW= | Weekly review              | Friday delegation + team review | AI  |
+| =C-c c em= | Client meeting             | Weekly client sync              | AI  |
+| =C-c c ei= | Internal sync              | Weekly internal sync            | AI  |
+| =C-c c eh= | Client health check        | Monthly                         |     |
+| =C-c c eq= | QBR                        | Quarterly                       | AI  |
+| =C-c c eA= | Architecture health review | Quarterly                       |     |
 
 *** Managing client expectations
 - Under-promise on timelines; over-deliver on quality
@@ -392,6 +407,12 @@ else the bundled template (=org-fractional-cto-template-directory=). Onboarding
 populates each client's =templates/=, so edit a file there to tailor a template
 for that client. Active client must be set (=M-x org-fractional-cto-set-active-client=)
 or you will be prompted on each capture.
+
+Seven note-style templates are *AI-flagged* — =es= (standup), =ed= (discovery),
+=em= (client meeting), =ei= (internal sync), =eW= (weekly review), =eq= (QBR),
+and =eR= (retrospective). With a backend configured, finalizing any of them
+drafts Actions/Risks/Blockers/Decisions for your review (see the Reference's "AI
+Note Extraction" section).
 
 *** Relationship & Communication
 | Full key   | Template            | Phase | Hat                 |
