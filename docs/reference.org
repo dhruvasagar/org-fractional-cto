@@ -173,6 +173,7 @@ type tags.
 | =PRESALES=      | Pre-Sales Notes (=el=)                                  |
 | =RESEARCH=      | Research (=eo=)                                         |
 | =QUALIFICATION= | Qualification (=eF=)                                    |
+| =AI=            | Item drafted by AI note extraction (any section)        |
 
 Some captures file under a typed section but stamp the item with their own
 distinct tag: =eD= (quick decision) files under Architecture Decisions but
@@ -185,6 +186,11 @@ and =SECURITY= — also carry the assignee's =@<person-slug>= tag on the heading
 Press =/= in the dashboard or any agenda view and type the tag (e.g. =@jane_doe=)
 to filter to that person's open work.  No new command is needed; this is plain
 Org tag filtering.
+
+=AI= is a *provenance* tag, not a section tag: it is added to any item filed by
+AI note extraction, on top of that item's own type tag.  Filter with =C-c a m AI=
+to audit everything the model drafted.  See [[*AI Note Extraction][AI Note Extraction]].  Configure the tag with
+=org-fractional-cto-ai-provenance-tag= (set it to =nil= to add no tag).
 
 *** Key bindings
 | ~C-c c e<key>~                             | Capture (see [[*Capture Templates — Complete Reference][capture reference]])                      |
@@ -394,6 +400,7 @@ Passed prospects move to =QUALIFIED=; passes are marked =LOST=.
 /Structure:/ Per-team sections (Shipped / Next / Blockers) + Actions/Escalations.
 /After capturing:/ Scan for any blocker that needs a risk entry (=er=) or
 commitment capture (=ec=). Refile to client's discovery or ops folder.
+/AI-flagged:/ Finalizing drafts Actions/Risks/Blockers/Decisions for review (see [[*AI Note Extraction][AI Note Extraction]]).
 
 **** =em= — Client Meeting
 /Use:/ Any call or meeting with the client — planning, status, ad hoc.
@@ -403,6 +410,7 @@ commitment capture (=ec=). Refile to client's discovery or ops folder.
 /After capturing:/ Immediately capture any commitments (=ec=). Send written
 summary to client within 2 hours. Never let a meeting end without a follow-up
 summary — this is how trust is built.
+/AI-flagged:/ Finalizing drafts Actions/Risks/Blockers/Decisions for review (see [[*AI Note Extraction][AI Note Extraction]]).
 
 **** =ei= — Internal Sync
 /Use:/ Weekly internal sync with team leads — always before client-facing comms.
@@ -411,6 +419,7 @@ summary — this is how trust is built.
 /Structure:/ Commitments vs. reality gap | Blockers to escalate | Risk updates |
 Client comms review | Actions.
 /Rule:/ Nothing surfaces to the client that hasn't passed through this sync first.
+/AI-flagged:/ Finalizing drafts Actions/Risks/Blockers/Decisions for review (see [[*AI Note Extraction][AI Note Extraction]]).
 
 **** =ep= — Stakeholder Profile
 /Use:/ First time you meet or learn about a significant client contact. One profile
@@ -465,6 +474,7 @@ part of the ceremony — don't skip it.
 /Strategic recommendation:/ Always include one recommendation they didn't ask for.
 Frame it as business opportunity first, technology second. This is what separates
 a vendor from a strategic partner.
+/AI-flagged:/ Finalizing drafts Actions/Risks/Blockers/Decisions for review (see [[*AI Note Extraction][AI Note Extraction]]).
 
 *** Action Tracking & Delegation Templates
 
@@ -521,6 +531,7 @@ table | Blockers to escalate | Key decisions | Team pulse | Top 3 next week | Co
 Anyone who's gone quiet gets a direct ping — don't wait for the next standup.
 /After capturing:/ Each "change/action needed" becomes a TODO. Use =C-c a E= delegated
 block as the source of truth while filling the inbox table.
+/AI-flagged:/ Finalizing drafts Actions/Risks/Blockers/Decisions for review (see [[*AI Note Extraction][AI Note Extraction]]).
 
 **** =eP= — Person Note (global node)
 /Use:/ Capturing something about a person — capacity, a concern, a win, a
@@ -577,6 +588,7 @@ well | What we'll change (owned, time-boxed) | Team health signals | Action item
 /After capturing:/ Each "what we'll change" row becomes a TODO in the Actions section.
 /Discipline:/ Focus on the system, not the person. "What process let this happen?"
 not "who dropped this?" The retro is for improving how the team works, not assigning blame.
+/AI-flagged:/ Finalizing drafts Actions/Risks/Blockers/Decisions for review (see [[*AI Note Extraction][AI Note Extraction]]).
 
 *** Technical Templates
 
@@ -591,6 +603,7 @@ Follow-up actions.
 /Before the session:/ Run =/grill-me= (mattpocock/skills) to surface your assumptions.
 /After the session:/ Refile immediately. Update cross-cutting sections of the master
 discovery doc. Run a synthesis pass after every 2–3 sessions.
+/AI-flagged:/ Finalizing drafts Actions/Risks/Blockers/Decisions for review (see [[*AI Note Extraction][AI Note Extraction]]).
 
 **** =ek= — Tech Spike
 /Use:/ A time-boxed investigation to answer a specific technical question before
@@ -667,6 +680,119 @@ why this client | Rough effort | Next step.
 /Pipeline review:/ Monthly — select one idea to develop into a brief. Present the
 best one at each QBR as the "Strategic Recommendation."
 
+** AI Note Extraction
+
+When a *flagged* capture is finalized, =org-fractional-cto= sends the note's
+prose to a pluggable language-model backend, which proposes structured items —
+*Actions*, *Risks*, *Blockers*, and *Decisions* — for review before any are
+filed. The model only proposes; nothing reaches the hub without your
+confirmation. The feature is *off* until =org-fractional-cto-ai-request-function=
+is set; until then captures behave exactly as before.
+
+*** Flow
+1. Finalize a flagged capture (=C-c C-c=). The note text, its client, and an
+   =org-id= back-reference are captured, and the model call is *deferred* — the
+   capture finalizes immediately and never blocks on the network. A backend
+   failure is logged and never aborts the capture.
+2. When the model responds, the =*ofc-ai-review*= buffer pops up with one Org
+   entry per candidate.
+3. You curate the buffer, then file the survivors or discard them all.
+
+*** The review buffer
+=*ofc-ai-review*= is an ordinary Org buffer (major mode
+=org-fractional-cto-ai-review-mode=, derived from =org-mode=). Each candidate is
+a heading rendered in its final hub shape, carrying two properties:
+
+| Property            | Meaning                                                    |
+|---------------------+------------------------------------------------------------|
+| =:OFC_AI_SECTION:=  | Hub section the item will be filed under                   |
+| =:OFC_AI_OWNER:=    | Owner name the model identified (present only if any)      |
+
+Edit any field freely; *delete a subtree to reject that item*. Two keys act on
+the buffer:
+
+| Key        | Action                                                          |
+|------------+-----------------------------------------------------------------|
+| ~C-c C-c~  | File every surviving entry into the hub, then close the buffer  |
+| ~C-c C-k~  | Discard all candidates without filing                           |
+
+If you edit an entry's =:OFC_AI_SECTION:= to a name that is not a real hub
+section (see [[*File Organization][the section list]]), that item is skipped with a message rather than
+filed — a typo can never create a junk section.
+
+*** Filed items
+Each accepted item is placed under its hub section at the correct heading depth
+and annotated with:
+
+- =Source: [[id:…][<note-title>]]= — an Org link back to the originating note.
+- The provenance tag =org-fractional-cto-ai-provenance-tag= (=:AI:= by default;
+  =nil= disables tagging).
+
+If the model named an owner, it is resolved to a real person node (an
+=[[id:…][Name]]= link) *at file time only* — candidates you reject never create a
+person node.
+
+Re-finalizing a note re-runs extraction and yields duplicate candidates;
+duplicate detection is not performed in v1, so discard items you have already
+filed.
+
+*** The backend contract
+Set =org-fractional-cto-ai-request-function= to a function =(PROMPT CALLBACK)=
+that arranges for =CALLBACK= to be called with the model's raw response string,
+or =nil= on failure. It may be synchronous or asynchronous — the engine defers
+the call regardless. Any CLI, HTTP client, or Emacs-native LLM library can serve
+as the backend; the package only depends on this one-function contract and ships
+no backend of its own. The README's "AI note extraction" section has a
+ready-to-paste example over the =llm= CLI.
+
+*** The item taxonomy
+=org-fractional-cto-ai-item-types= is an alist of =(TYPE . PLIST)= entries — the
+single point at which the feature is extended. The defaults:
+
+| Type       | =:section=              | =:tag=     |
+|------------+-------------------------+------------|
+| =action=   | Actions                 | (none)     |
+| =risk=     | Risks                   | =RISK=     |
+| =blocker=  | Blockers                | =BLOCKER=  |
+| =decision= | Architecture Decisions  | =DECISION= |
+
+Each entry's =PLIST= holds:
+- =:section= — destination hub heading; must be a heading in
+  =org-fractional-cto-sections=.
+- =:tag= — per-item Org tag (or =nil=), mirroring the bundled capture template.
+- =:desc= — a short description fed to the model to guide classification.
+- =:render= — a function taking a normalized item plist and returning the Org
+  entry text. The plist has keys =:type :title :owner :deadline :priority :body
+  :fields=.
+
+Append a row to add a type — no other code changes are needed:
+
+#+begin_src emacs-lisp
+(add-to-list 'org-fractional-cto-ai-item-types
+             '(commitment :section "Commitments" :tag "COMMITMENT"
+               :desc "A commitment or promise made by either party."
+               :render my/ofc-ai-render-commitment)
+             t)  ; append
+#+end_src
+
+*** Flagged captures
+Seven templates carry =:ofc-ai-extract t= and trigger extraction on finalize:
+
+| Key  | Capture           |
+|------+-------------------|
+| =es= | Standup           |
+| =ed= | Discovery session |
+| =em= | Client meeting    |
+| =ei= | Internal sync     |
+| =eW= | Weekly review     |
+| =eq= | QBR               |
+| =eR= | Retrospective     |
+
+All other captures are unaffected. To flag another, add =:ofc-ai-extract t= to
+its =org-capture-templates= entry — the flag is read from the Lisp template
+entry, not from the template =.org= file, so per-client template overrides still
+apply to rendering.
+
 ** Customisation
 
 All package variables are =defcustom=s. Set them before calling
@@ -692,6 +818,9 @@ RET org-fractional-cto RET=.
 | =org-fractional-cto-dashboard-blocks=     | 9 blocks (agenda → delegated → blockers → …)            | The agenda series composing the =C-c a E= dashboard; reorder or extend freely             |
 | =org-fractional-cto-people-directory=     | =~/org/people=                                          | Directory holding one Org file per person (global, durable =org-id= nodes)               |
 | =org-fractional-cto-doc-directory=        | =<package-dir>/doc=                                     | Directory holding the bundled documentation sources                                       |
+| =org-fractional-cto-ai-request-function=  | =nil=                                                   | AI backend, signature =(PROMPT CALLBACK)=; =nil= disables AI note extraction entirely     |
+| =org-fractional-cto-ai-item-types=        | 4 types (action / risk / blocker / decision)            | Taxonomy of extractable item types; append a row to extend (see AI Note Extraction)       |
+| =org-fractional-cto-ai-provenance-tag=    | ="AI"=                                                  | Tag added to items filed by AI extraction; =nil= adds no tag                              |
 
 ** Operating Rhythms — Day by Day
 
